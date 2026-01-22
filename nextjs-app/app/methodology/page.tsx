@@ -220,8 +220,10 @@ export default function MethodologyPage() {
                 >
                     <div className="space-y-6 text-gray-600">
                         <p className="text-sm bg-blue-50 p-4 rounded-lg border border-blue-200">
-                            <strong>Transparency Note:</strong> Below we document exactly which data points were pulled from each source,
-                            including specific reports, tables, and pages where applicable. This allows you to verify our assumptions or substitute your own values.
+                            <strong>Transparency Note:</strong> Below we document data sources where available.
+                            Values marked with <span className="inline-block px-1.5 py-0.5 bg-amber-100 text-amber-800 text-xs rounded font-medium">Model Assumption</span> are
+                            based on industry understanding or selected from published ranges, but not directly cited from a specific source.
+                            You can substitute your own values in the calculator.
                         </p>
 
                         {/* EIA Data */}
@@ -305,7 +307,7 @@ export default function MethodologyPage() {
                                             <a href="https://cdn.misoenergy.org/MTEP23%20Executive%20Summary630586.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                                 MISO MTEP23 Transmission Expansion Plan
                                             </a>
-                                            <span className="block text-gray-400">Range: $200k-$500k/MW depending on voltage; $350k median</span>
+                                            <span className="block text-gray-400">Range: $200k-$500k/MW; <span className="px-1 bg-amber-100 text-amber-800 rounded">$350k selected as median</span></span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
@@ -315,7 +317,7 @@ export default function MethodologyPage() {
                                             <a href="https://docs.nrel.gov/docs/fy18osti/70710.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                                 NREL: The Cost of Distribution System Upgrades (2018)
                                             </a>
-                                            <span className="block text-gray-400">Substation + feeder upgrades for large load interconnection</span>
+                                            <span className="block text-gray-400">Substation + feeder costs; <span className="px-1 bg-amber-100 text-amber-800 rounded">$150k inferred from study ranges</span></span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
@@ -323,9 +325,9 @@ export default function MethodologyPage() {
                                         <td className="text-right font-medium">{(INFRASTRUCTURE_COSTS.annualBaselineUpgradePercent * 100).toFixed(1)}%</td>
                                         <td className="pl-4 text-xs">
                                             <a href="https://www.brattle.com/wp-content/uploads/2021/10/2021-10-12-Brattle-GridStrategies-Transmission-Planning-Report_v2.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                                Brattle/Grid Strategies: Transmission Planning for the 21st Century (2021)
+                                                Brattle/Grid Strategies: Transmission Planning (2021)
                                             </a>
-                                            <span className="block text-gray-400">Aging infrastructure replacement: 1-2% of rate base annually</span>
+                                            <span className="block text-gray-400">Report cites 1-2% range; <span className="px-1 bg-amber-100 text-amber-800 rounded">1.5% selected as midpoint</span></span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
@@ -335,7 +337,7 @@ export default function MethodologyPage() {
                                             <a href="https://atb.nrel.gov/electricity/2024/fossil_energy_technologies" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                                 NREL ATB 2024: Fossil Energy Technologies
                                             </a>
-                                            <span className="block text-gray-400">Peaker capacity cost of $98,000-$175,000/MW-yr; annualized CAPEX + fixed O&M</span>
+                                            <span className="block text-gray-400">Range: $98k-$175k/MW-yr; <span className="px-1 bg-amber-100 text-amber-800 rounded">$150k selected as representative</span></span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -371,10 +373,8 @@ export default function MethodologyPage() {
                                         <td className="py-2">Allocation weighting method</td>
                                         <td className="text-right font-medium">40/40/20</td>
                                         <td className="pl-4 text-xs">
-                                            <a href="https://www.raponline.org/knowledge-center/electric-cost-allocation-new-era/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                                RAP Cost Allocation Manual
-                                            </a>
-                                            <span className="block text-gray-400">40% volumetric (kWh), 40% demand (peak MW), 20% customer count</span>
+                                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium">Model Assumption</span>
+                                            <span className="block text-gray-400 mt-1">Simplified blend: 40% volumetric, 40% demand, 20% customer count. Actual utility methods vary.</span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
@@ -384,7 +384,15 @@ export default function MethodologyPage() {
                                             <a href="https://www.psoklahoma.com/company/about/rates/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                                 PSO Rate Schedules - Large Power & Light (LPL) Tariff
                                             </a>
-                                            <span className="block text-gray-400">Demand charge for large industrial/commercial customers</span>
+                                            <span className="block text-gray-400"><span className="px-1 bg-amber-100 text-amber-800 rounded">Representative value</span> from PSO large customer tariff</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Energy margin (utility spread)</td>
+                                        <td className="text-right font-medium">$4.88/MWh</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium">Model Assumption</span>
+                                            <span className="block text-gray-400 mt-1">Utility's wholesale-to-retail spread on energy sales. Industry typical range $3-8/MWh.</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -420,10 +428,8 @@ export default function MethodologyPage() {
                                         <td className="py-2">Flexible load factor</td>
                                         <td className="text-right font-medium">{(DEFAULT_DATA_CENTER.flexLoadFactor * 100).toFixed(0)}%</td>
                                         <td className="pl-4 text-xs">
-                                            <a href="https://arxiv.org/abs/2507.00909" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                                arXiv: Turning AI Data Centers into Grid-Interactive Assets (2025)
-                                            </a>
-                                            <span className="block text-gray-400">With load shifting, average utilization increases to ~95%</span>
+                                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium">Model Assumption</span>
+                                            <span className="block text-gray-400 mt-1">Inferred: shifting peak workloads to off-peak enables higher avg utilization. Not directly measured.</span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
@@ -483,6 +489,12 @@ export default function MethodologyPage() {
                         <p>
                             Data center flexibility varies by workload type. The table below shows the theoretical
                             flexibility potential based on typical workload mix:
+                        </p>
+
+                        <p className="text-sm bg-amber-50 p-3 rounded-lg border border-amber-200">
+                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium text-xs">Model Assumptions</span>
+                            <span className="ml-2">The workload percentages and flexibility values below are illustrative estimates based on industry understanding
+                            of AI/cloud workloads. Actual values vary significantly by data center operator and workload mix.</span>
                         </p>
 
                         <table className="w-full mt-4 text-sm">
@@ -619,8 +631,9 @@ export default function MethodologyPage() {
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
                                         <td className="text-right">40%</td>
-                                        <td className="pl-4 text-xs text-gray-500">
-                                            Embedded in rate base; equal to residential revenue share
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Embedded in rate base; assumed equal to residential revenue share</span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
@@ -666,16 +679,16 @@ export default function MethodologyPage() {
                                         <td className="py-2 font-medium">Base Residential Allocation</td>
                                         <td className="text-right">35%</td>
                                         <td className="pl-4 text-xs">
-                                            <a href="https://www.pjm.com/-/media/DotCom/markets-ops/rpm/rpm-auction-info/2025-2026/2025-2026-base-residual-auction-report.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                                PJM Base Residual Auction Report (2024)
-                                            </a>
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Lower than regulated due to deregulated retail market structure</span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-amber-100">
                                         <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
                                         <td className="text-right">50%</td>
-                                        <td className="pl-4 text-xs text-gray-500">
-                                            Retail supplier pass-through of RPM costs; higher due to market structure
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Retail supplier pass-through of RPM costs; higher due to market structure</span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-amber-100">
@@ -740,16 +753,16 @@ export default function MethodologyPage() {
                                         <td className="py-2 font-medium">Base Residential Allocation</td>
                                         <td className="text-right">30%</td>
                                         <td className="pl-4 text-xs">
-                                            <a href="https://www.puc.texas.gov/industry/electric/business/retailmkt.aspx" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                                Texas PUC Retail Market Information
-                                            </a>
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Lower allocation reflects competitive retail market; large loads face prices directly</span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-green-100">
                                         <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
                                         <td className="text-right">25%</td>
-                                        <td className="pl-4 text-xs text-gray-500">
-                                            No capacity market; only transmission CREZ costs flow through
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">No capacity market; only transmission CREZ costs flow through</span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-green-100">
@@ -812,16 +825,18 @@ export default function MethodologyPage() {
                                         <td className="py-2 font-medium">Base Residential Allocation</td>
                                         <td className="text-right">40%</td>
                                         <td className="pl-4 text-xs">
-                                            <a href="https://www.psoklahoma.com/company/about/rates/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                                PSO Rate Schedules
-                                            </a>
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Typical for vertically integrated utility; based on{' '}
+                                                <a href="https://www.psoklahoma.com/company/about/rates/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">PSO rate structure</a>
+                                            </span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
                                         <td className="text-right">40%</td>
-                                        <td className="pl-4 text-xs text-gray-500">
-                                            Bilateral capacity; flows through vertically integrated rates
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Bilateral capacity; flows through vertically integrated rates</span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
@@ -866,9 +881,8 @@ export default function MethodologyPage() {
                                         <td className="py-2 font-medium">Base Residential Allocation</td>
                                         <td className="text-right">38%</td>
                                         <td className="pl-4 text-xs">
-                                            <a href="https://www.misoenergy.org/planning/transmission-planning/mtep/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                                MISO Transmission Expansion Planning
-                                            </a>
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Between regulated (40%) and PJM (35%); many utilities still vertically integrated</span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
