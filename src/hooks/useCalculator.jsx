@@ -28,7 +28,7 @@ export const CalculatorProvider = ({ children }) => {
 
   // UI state
   const [selectedScenarios, setSelectedScenarios] = useState(['baseline', 'unoptimized', 'flexible', 'dispatchable']);
-  const [projectionYears, setProjectionYears] = useState(15);
+  const [projectionYears, setProjectionYears] = useState(10);
 
   // Calculate trajectories (memoized for performance)
   const trajectories = useMemo(() => {
@@ -69,7 +69,7 @@ export const CalculatorProvider = ({ children }) => {
     setUtility(DEFAULT_UTILITY);
     setDataCenter(DEFAULT_DATA_CENTER);
     setSelectedScenarios(['baseline', 'unoptimized', 'flexible', 'dispatchable']);
-    setProjectionYears(15);
+    setProjectionYears(10);
   }, []);
 
   // Context value

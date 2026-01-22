@@ -60,7 +60,7 @@ if 'utility' not in st.session_state:
 if 'datacenter' not in st.session_state:
     st.session_state.datacenter = DEFAULT_DATA_CENTER.copy()
 if 'projection_years' not in st.session_state:
-    st.session_state.projection_years = 15
+    st.session_state.projection_years = 10
 
 # Sidebar for inputs
 with st.sidebar:
@@ -137,7 +137,7 @@ with st.sidebar:
     if st.button("Reset to Defaults", type="secondary"):
         st.session_state.utility = DEFAULT_UTILITY.copy()
         st.session_state.datacenter = DEFAULT_DATA_CENTER.copy()
-        st.session_state.projection_years = 15
+        st.session_state.projection_years = 10
         st.rerun()
 
 # Calculate trajectories
@@ -184,20 +184,44 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 
 # Tab 1: Overview
 with tab1:
-    st.header("Scenario Comparison")
+    st.header("What Does a Data Center Mean for Your Electric Bill?")
+    st.markdown("""
+    A new data center has been proposed in your community. As a homeowner or community leader,
+    you deserve to understand how this could affect the electricity costs for you and your neighbors.
+    """)
 
-    # Key metrics
+    # Calculate baseline comparisons
+    baseline_final = summary['final_year_bills']['baseline']
+    firm_diff = summary['final_year_bills']['unoptimized'] - baseline_final
+    flex_diff = summary['final_year_bills']['flexible'] - baseline_final
+    dispatch_diff = summary['final_year_bills']['dispatchable'] - baseline_final
+
+    st.subheader("The Bottom Line for Your Household")
+    st.markdown(f"""
+    Based on a **{st.session_state.datacenter['capacity_mw']:,} MW** data center serving
+    **{st.session_state.utility['residential_customers']:,}** residential customers,
+    here's what your monthly bill could look like in **{st.session_state.projection_years} years**:
+    """)
+
+    # Key metrics - showing baseline comparisons
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         st.metric(
-            "Current Bill",
+            "Your Bill Today",
             f"${st.session_state.utility['avg_monthly_bill']}/mo",
             delta=None
         )
 
     with col2:
-        firm_diff = summary['final_year_difference']['unoptimized']
+        st.metric(
+            f"Without DC ({st.session_state.projection_years}yr)",
+            f"${baseline_final:.0f}/mo",
+            delta="Baseline",
+            delta_color="off"
+        )
+
+    with col3:
         st.metric(
             f"Firm Load ({st.session_state.projection_years}yr)",
             f"${summary['final_year_bills']['unoptimized']:.0f}/mo",
@@ -205,28 +229,31 @@ with tab1:
             delta_color="inverse"
         )
 
-    with col3:
-        flex_savings = summary['savings_vs_unoptimized']['flexible']
+    with col4:
         st.metric(
-            f"Flexible ({st.session_state.projection_years}yr)",
-            f"${summary['final_year_bills']['flexible']:.0f}/mo",
-            delta=f"Save ${flex_savings:.2f}/mo vs firm",
-            delta_color="normal"
+            f"Optimized DC ({st.session_state.projection_years}yr)",
+            f"${summary['final_year_bills']['dispatchable']:.0f}/mo",
+            delta=f"{'+' if dispatch_diff >= 0 else ''}{dispatch_diff:.2f} vs baseline",
+            delta_color="normal" if dispatch_diff < 0 else "inverse"
         )
 
-    with col4:
-        dispatch_savings = summary['savings_vs_unoptimized']['dispatchable']
-        st.metric(
-            f"Flex + Gen ({st.session_state.projection_years}yr)",
-            f"${summary['final_year_bills']['dispatchable']:.0f}/mo",
-            delta=f"Save ${dispatch_savings:.2f}/mo vs firm",
-            delta_color="normal"
-        )
+    # Key takeaway
+    dispatch_savings = summary['savings_vs_unoptimized']['dispatchable']
+    cumulative_savings = summary['cumulative_costs']['unoptimized'] - summary['cumulative_costs']['dispatchable']
+
+    st.warning(f"""
+    **Why does it matter HOW the data center operates?**
+
+    The difference between a "firm load" data center (always on, no flexibility) and an "optimized"
+    data center (with demand response and backup generation) could mean
+    **${dispatch_savings:.2f} {'less' if dispatch_savings > 0 else 'more'}** per month on your electric bill.
+    Over {st.session_state.projection_years} years, that's **${cumulative_savings/st.session_state.utility['residential_customers']:.0f}** per household.
+    """)
 
     st.divider()
 
     # Chart
-    st.subheader("Projected Monthly Bills")
+    st.subheader("Your Monthly Bill Over Time: Four Possible Futures")
 
     # Create DataFrame for plotting
     df = pd.DataFrame({
@@ -286,28 +313,78 @@ with tab1:
 
     st.plotly_chart(fig, use_container_width=True)
 
-    # Key findings
-    st.subheader("Key Findings")
+    # Scenario comparison cards
+    st.subheader("Understanding the Four Scenarios")
 
     col1, col2 = st.columns(2)
 
     with col1:
-        firm_diff = summary['final_year_difference']['unoptimized']
+        st.markdown(f"""
+        **Baseline: No New Data Center**
+        - Normal inflation and infrastructure aging
+        - Your comparison point
+        - Bill in {st.session_state.projection_years} years: **${baseline_final:.0f}/mo**
+        """)
+
         if firm_diff >= 0:
             st.error(f"""
-            **Firm Load Impact:** +${firm_diff:.2f}/mo
-            Additional cost per household vs baseline
+            **Firm Load: No Flexibility**
+            - Runs 24/7 at full power, no peak reduction
+            - Requires the most infrastructure investment
+            - Bill: **${summary['final_year_bills']['unoptimized']:.0f}/mo** (+${firm_diff:.2f} vs baseline)
             """)
         else:
             st.success(f"""
-            **Firm Load Savings:** -${abs(firm_diff):.2f}/mo
-            Savings per household vs baseline
+            **Firm Load: No Flexibility**
+            - Runs 24/7 at full power, no peak reduction
+            - Still provides revenue to offset costs
+            - Bill: **${summary['final_year_bills']['unoptimized']:.0f}/mo** (${firm_diff:.2f} vs baseline)
             """)
 
     with col2:
+        flex_diff_display = summary['final_year_bills']['flexible'] - baseline_final
+        if flex_diff_display >= 0:
+            st.warning(f"""
+            **Flexible Load: With Demand Response**
+            - Can reduce power 20% during peaks
+            - Less infrastructure needed
+            - Bill: **${summary['final_year_bills']['flexible']:.0f}/mo** (+${flex_diff_display:.2f} vs baseline)
+            """)
+        else:
+            st.success(f"""
+            **Flexible Load: With Demand Response**
+            - Can reduce power 20% during peaks
+            - Less infrastructure needed
+            - Bill: **${summary['final_year_bills']['flexible']:.0f}/mo** (${flex_diff_display:.2f} vs baseline)
+            """)
+
         st.success(f"""
-        **Best Case (Flex + Gen):** Save ${dispatch_savings:.2f}/mo
-        Savings vs firm load per household
+        **Optimized: Flexibility + Onsite Generation**
+        - Demand response plus backup generators
+        - Maximum benefit for all ratepayers
+        - Bill: **${summary['final_year_bills']['dispatchable']:.0f}/mo** ({'+' if dispatch_diff >= 0 else ''}{dispatch_diff:.2f} vs baseline)
+        """)
+
+    # Questions for community leaders
+    st.divider()
+    st.subheader("Questions to Ask About a Data Center Proposal")
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("""
+        **For the Developer:**
+        - Will your facility participate in demand response programs?
+        - What percentage of load can be curtailed during peak periods?
+        - Will you have onsite generation that can support the grid?
+        - What demand charges will you be paying?
+        """)
+    with col2:
+        st.markdown("""
+        **For the Utility/Regulators:**
+        - How will infrastructure costs be allocated to ratepayers?
+        - Are there interconnection requirements for flexibility?
+        - What rate structure will the data center be on?
+        - How will residential allocation change over time?
         """)
 
     # Community impact

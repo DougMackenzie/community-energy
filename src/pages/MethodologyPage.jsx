@@ -2,6 +2,7 @@
  * MethodologyPage Component
  *
  * Detailed explanation of the mathematical models and data sources.
+ * Expanded to include specific data points pulled from each reference.
  */
 
 import { useState } from 'react';
@@ -10,6 +11,9 @@ import {
   TIME_PARAMS,
   WORKLOAD_TYPES,
   ALLOCATION_METHODS,
+  DC_RATE_STRUCTURE,
+  DEFAULT_UTILITY,
+  DEFAULT_DATA_CENTER,
   formatCurrency,
 } from '../data/constants';
 
@@ -52,7 +56,7 @@ const MethodologyPage = ({ onNavigate }) => {
       {/* Header */}
       <div className="bg-gray-100 rounded-2xl p-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Methodology & Sources
+          Methodology & Data Sources
         </h1>
         <p className="text-lg text-gray-600 max-w-3xl">
           This tool uses industry-standard methodologies and publicly available data
@@ -69,9 +73,9 @@ const MethodologyPage = ({ onNavigate }) => {
         </p>
         <ol className="list-decimal list-inside space-y-2 text-gray-600 mb-6">
           <li><strong>Baseline:</strong> Normal cost growth from infrastructure aging and inflation</li>
-          <li><strong>Unoptimized:</strong> Data center as firm load, adding to peak demand</li>
-          <li><strong>Flexible:</strong> Data center with demand response capability</li>
-          <li><strong>Dispatchable:</strong> Demand response plus onsite generation</li>
+          <li><strong>Firm Load:</strong> Data center as firm load, adding 100% to peak demand</li>
+          <li><strong>Flexible Load:</strong> Data center with demand response capability (20% curtailable)</li>
+          <li><strong>Flex + Generation:</strong> Demand response plus onsite generation</li>
         </ol>
         <p className="text-gray-600">
           For each scenario, we calculate infrastructure costs, revenue contributions, and
@@ -99,14 +103,14 @@ const MethodologyPage = ({ onNavigate }) => {
 
             <p className="mt-4"><strong>Revenue Offset:</strong></p>
             <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>Demand charges: $9,050/MW-month (based on coincident peak)</li>
-              <li>Energy margin: $4.88/MWh (utility's wholesale spread)</li>
+              <li>Demand charges: ${DC_RATE_STRUCTURE.demandChargePerMWMonth.toLocaleString()}/MW-month (based on coincident peak)</li>
+              <li>Energy margin: ${DC_RATE_STRUCTURE.energyMarginPerMWh}/MWh (utility's wholesale spread)</li>
               <li>Higher load factor = more energy = more revenue</li>
             </ul>
 
             <p className="mt-4"><strong>Residential Allocation (Calculated from Tariff Structure):</strong></p>
             <ul className="list-disc list-inside space-y-1 ml-4">
-              <li>Starts at ~40% (typical for utilities per FERC/EIA data)</li>
+              <li>Starts at ~{(DEFAULT_UTILITY.baseResidentialAllocation * 100).toFixed(0)}% (typical for utilities per FERC/EIA data)</li>
               <li><strong>Calculated</strong> based on weighted blend: 40% volumetric, 40% demand, 20% customer</li>
               <li>As DC adds energy → residential volumetric share decreases</li>
               <li>As DC adds to peak → residential demand share decreases</li>
@@ -118,6 +122,241 @@ const MethodologyPage = ({ onNavigate }) => {
               inflation and {(INFRASTRUCTURE_COSTS.annualBaselineUpgradePercent * 100).toFixed(1)}% annual
               infrastructure replacement costs.
             </p>
+          </div>
+        </Section>
+
+        <Section id="data-sources" title="Data Sources & Specific Values Used">
+          <div className="space-y-6 text-gray-600">
+            <p className="text-sm bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <strong>Transparency Note:</strong> Below we document exactly which data points were pulled from each source
+              and how they are used in the model. This allows you to verify our assumptions or substitute your own values.
+            </p>
+
+            {/* EIA Data */}
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">
+                <a href="https://www.eia.gov/electricity/data.php" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  Energy Information Administration (EIA)
+                </a>
+              </h4>
+              <p className="text-sm text-gray-500 mb-3">U.S. Department of Energy - Electricity Data Browser</p>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-2 font-medium">Data Point</th>
+                    <th className="text-right py-2 font-medium">Value Used</th>
+                    <th className="text-left py-2 pl-4 font-medium">How We Use It</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Average residential monthly bill</td>
+                    <td className="text-right">${DEFAULT_UTILITY.averageMonthlyBill}</td>
+                    <td className="pl-4 text-gray-500">Starting point for projections</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Residential share of total sales</td>
+                    <td className="text-right">{(DEFAULT_UTILITY.residentialEnergyShare * 100).toFixed(0)}%</td>
+                    <td className="pl-4 text-gray-500">Volumetric allocation calculation</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Typical residential customer count</td>
+                    <td className="text-right">{DEFAULT_UTILITY.residentialCustomers.toLocaleString()}</td>
+                    <td className="pl-4 text-gray-500">Per-household cost division</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Electricity price inflation (historical)</td>
+                    <td className="text-right">{(TIME_PARAMS.electricityInflation * 100).toFixed(1)}%/yr</td>
+                    <td className="pl-4 text-gray-500">Baseline trajectory escalation</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* FERC Data */}
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">
+                <a href="https://www.ferc.gov/industries-data/electric" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  Federal Energy Regulatory Commission (FERC)
+                </a>
+              </h4>
+              <p className="text-sm text-gray-500 mb-3">Form 1 Utility Financial Filings, Transmission Cost Studies</p>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-2 font-medium">Data Point</th>
+                    <th className="text-right py-2 font-medium">Value Used</th>
+                    <th className="text-left py-2 pl-4 font-medium">How We Use It</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Transmission cost per MW</td>
+                    <td className="text-right">{formatCurrency(INFRASTRUCTURE_COSTS.transmissionCostPerMW)}/MW</td>
+                    <td className="pl-4 text-gray-500">Infrastructure cost for new load</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Distribution cost per MW</td>
+                    <td className="text-right">{formatCurrency(INFRASTRUCTURE_COSTS.distributionCostPerMW)}/MW</td>
+                    <td className="pl-4 text-gray-500">Local grid upgrade costs</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Base residential allocation</td>
+                    <td className="text-right">{(DEFAULT_UTILITY.baseResidentialAllocation * 100).toFixed(0)}%</td>
+                    <td className="pl-4 text-gray-500">Starting cost allocation share</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Annual infrastructure upgrade rate</td>
+                    <td className="text-right">{(INFRASTRUCTURE_COSTS.annualBaselineUpgradePercent * 100).toFixed(1)}%</td>
+                    <td className="pl-4 text-gray-500">Baseline cost escalation</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* PJM/MISO Data */}
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">
+                <a href="https://www.pjm.com/markets-and-operations/rpm" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  PJM Interconnection & MISO
+                </a>
+              </h4>
+              <p className="text-sm text-gray-500 mb-3">Regional Transmission Organizations - Capacity Market Data</p>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-2 font-medium">Data Point</th>
+                    <th className="text-right py-2 font-medium">Value Used</th>
+                    <th className="text-left py-2 pl-4 font-medium">How We Use It</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Capacity cost per MW-year</td>
+                    <td className="text-right">{formatCurrency(INFRASTRUCTURE_COSTS.capacityCostPerMWYear)}/MW-yr</td>
+                    <td className="pl-4 text-gray-500">System capacity procurement cost</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Demand charge rate</td>
+                    <td className="text-right">${DC_RATE_STRUCTURE.demandChargePerMWMonth.toLocaleString()}/MW-mo</td>
+                    <td className="pl-4 text-gray-500">DC revenue contribution</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Energy margin</td>
+                    <td className="text-right">${DC_RATE_STRUCTURE.energyMarginPerMWh}/MWh</td>
+                    <td className="pl-4 text-gray-500">DC energy revenue offset</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">DR capacity credit factor</td>
+                    <td className="text-right">80%</td>
+                    <td className="pl-4 text-gray-500">Value of curtailable load</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* NREL Data */}
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">
+                <a href="https://atb.nrel.gov/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  NREL Annual Technology Baseline (ATB)
+                </a>
+              </h4>
+              <p className="text-sm text-gray-500 mb-3">Generation Technology Costs and Performance</p>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-2 font-medium">Data Point</th>
+                    <th className="text-right py-2 font-medium">Value Used</th>
+                    <th className="text-left py-2 pl-4 font-medium">How We Use It</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Peaker plant capital cost</td>
+                    <td className="text-right">{formatCurrency(INFRASTRUCTURE_COSTS.peakerCostPerMW)}/MW</td>
+                    <td className="pl-4 text-gray-500">New capacity construction cost</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Generation availability factor</td>
+                    <td className="text-right">{(DEFAULT_DATA_CENTER.generationAvailability * 100).toFixed(0)}%</td>
+                    <td className="pl-4 text-gray-500">Onsite generation credit calculation</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Generation capacity credit</td>
+                    <td className="text-right">95%</td>
+                    <td className="pl-4 text-gray-500">Value of dispatchable generation</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* LBNL Data */}
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">
+                <a href="https://eta.lbl.gov/publications/united-states-data-center-energy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                  Lawrence Berkeley National Laboratory (LBNL)
+                </a>
+              </h4>
+              <p className="text-sm text-gray-500 mb-3">Data Center Energy and Demand Response Research</p>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-2 font-medium">Data Point</th>
+                    <th className="text-right py-2 font-medium">Value Used</th>
+                    <th className="text-left py-2 pl-4 font-medium">How We Use It</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Firm load factor</td>
+                    <td className="text-right">{(DEFAULT_DATA_CENTER.firmLoadFactor * 100).toFixed(0)}%</td>
+                    <td className="pl-4 text-gray-500">Energy consumption - firm scenario</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Flexible load factor</td>
+                    <td className="text-right">{(DEFAULT_DATA_CENTER.flexLoadFactor * 100).toFixed(0)}%</td>
+                    <td className="pl-4 text-gray-500">Energy consumption - flex scenario</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Curtailable load percentage</td>
+                    <td className="text-right">{((1 - DEFAULT_DATA_CENTER.flexPeakCoincidence) * 100).toFixed(0)}%</td>
+                    <td className="pl-4 text-gray-500">Peak demand reduction potential</td>
+                  </tr>
+                  <tr className="border-b border-gray-100">
+                    <td className="py-2">Aggregate workload flexibility</td>
+                    <td className="text-right">{(DEFAULT_DATA_CENTER.flexibleLoadPercent * 100).toFixed(0)}%</td>
+                    <td className="pl-4 text-gray-500">Shiftable workload fraction</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Industry Research */}
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-semibold text-gray-900 mb-2">
+                Industry Research & Academic Literature
+              </h4>
+              <p className="text-sm text-gray-500 mb-3">Google DeepMind, Microsoft Sustainability Reports, IEEE Publications</p>
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="text-left py-2 font-medium">Data Point</th>
+                    <th className="text-right py-2 font-medium">Value Used</th>
+                    <th className="text-left py-2 pl-4 font-medium">Source</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(WORKLOAD_TYPES).map(([key, wl]) => (
+                    <tr key={key} className="border-b border-gray-100">
+                      <td className="py-2">{wl.name} flexibility</td>
+                      <td className="text-right">{(wl.flexibility * 100).toFixed(0)}%</td>
+                      <td className="pl-4 text-gray-500">Google/Microsoft sustainability research</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </Section>
 
@@ -311,7 +550,7 @@ const MethodologyPage = ({ onNavigate }) => {
             </table>
 
             <p className="mt-4">
-              Our default uses the <strong>hybrid method (40% initial residential allocation)</strong>,
+              Our default uses the <strong>hybrid method ({(DEFAULT_UTILITY.baseResidentialAllocation * 100).toFixed(0)}% initial residential allocation)</strong>,
               which reflects typical outcomes from rate cases where multiple allocation factors
               are weighted together.
             </p>
@@ -395,114 +634,6 @@ const MethodologyPage = ({ onNavigate }) => {
           </div>
         </Section>
 
-        <Section id="sources" title="Data Sources & References">
-          <div className="space-y-4 text-gray-600">
-            <p>Key data sources used in this model:</p>
-
-            <ul className="space-y-4 mt-4">
-              <li>
-                <a href="https://www.eia.gov/electricity/data.php" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">
-                  Energy Information Administration (EIA)
-                </a>
-                <br />
-                <span className="text-sm text-gray-500">
-                  Electricity data, utility statistics, average retail prices, system capacity
-                </span>
-                <br />
-                <span className="text-xs text-gray-400">
-                  Used for: Average monthly bills ($130), residential energy share (35%), baseline rates
-                </span>
-              </li>
-              <li>
-                <a href="https://atb.nrel.gov/" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">
-                  National Renewable Energy Laboratory (NREL) - Annual Technology Baseline
-                </a>
-                <br />
-                <span className="text-sm text-gray-500">
-                  Generation technology costs, capacity factors, cost projections
-                </span>
-                <br />
-                <span className="text-xs text-gray-400">
-                  Used for: Peaker capacity costs ($1.2M/MW), generation availability assumptions
-                </span>
-              </li>
-              <li>
-                <a href="https://www.ferc.gov/industries-data/electric" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">
-                  Federal Energy Regulatory Commission (FERC) - Electric Industry Data
-                </a>
-                <br />
-                <span className="text-sm text-gray-500">
-                  Utility financial filings (Form 1), transmission costs, interconnection data
-                </span>
-                <br />
-                <span className="text-xs text-gray-400">
-                  Used for: Transmission costs ($350k/MW), utility rate base data
-                </span>
-              </li>
-              <li>
-                <a href="https://www.pjm.com/markets-and-operations/rpm" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">
-                  PJM Interconnection - Capacity Markets
-                </a>
-                <br />
-                <span className="text-sm text-gray-500">
-                  Capacity market clearing prices, demand response program data
-                </span>
-                <br />
-                <span className="text-xs text-gray-400">
-                  Used for: Capacity costs ($150k/MW-year), demand response value
-                </span>
-              </li>
-              <li>
-                <a href="https://www.misoenergy.org/markets-and-operations/resource-adequacy/" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">
-                  MISO - Resource Adequacy
-                </a>
-                <br />
-                <span className="text-sm text-gray-500">
-                  Planning reserve margins, capacity auction results
-                </span>
-                <br />
-                <span className="text-xs text-gray-400">
-                  Used for: Regional capacity value benchmarks, reserve margin requirements
-                </span>
-              </li>
-              <li>
-                <a href="https://eta.lbl.gov/publications/united-states-data-center-energy" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">
-                  Lawrence Berkeley National Laboratory - Data Center Energy
-                </a>
-                <br />
-                <span className="text-sm text-gray-500">
-                  Data center energy consumption, efficiency trends, demand response potential
-                </span>
-                <br />
-                <span className="text-xs text-gray-400">
-                  Used for: Load factors, workload flexibility estimates, PUE assumptions
-                </span>
-              </li>
-              <li>
-                <a href="https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=5165411" target="_blank" rel="noopener noreferrer" className="font-semibold text-blue-600 hover:underline">
-                  IEEE Transactions on Smart Grid
-                </a>
-                <br />
-                <span className="text-sm text-gray-500">
-                  Academic research on demand response, grid integration, load flexibility
-                </span>
-                <br />
-                <span className="text-xs text-gray-400">
-                  Used for: Demand response modeling methodology, curtailment value calculations
-                </span>
-              </li>
-            </ul>
-
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800">
-                <strong>Note on Data Values:</strong> The specific values used in this model (e.g., $9,050/MW-month demand charge,
-                $350k/MW transmission cost) represent industry averages and benchmarks. Actual values vary significantly by utility,
-                region, and regulatory environment. Users should consult local utility tariffs and regulatory filings for region-specific data.
-              </p>
-            </div>
-          </div>
-        </Section>
-
         <Section id="contribute" title="Open Source & Contributing">
           <div className="space-y-4 text-gray-600">
             <p>
@@ -518,7 +649,7 @@ const MethodologyPage = ({ onNavigate }) => {
 
             <div className="mt-6 p-4 bg-gray-100 rounded-lg">
               <p className="font-mono text-sm text-gray-700">
-                github.com/community-energy/calculator
+                github.com/DougMackenzie/community-energy
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 Licensed under MIT License

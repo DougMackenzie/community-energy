@@ -2,6 +2,7 @@
  * SummaryCards Component
  *
  * Displays key statistics for each scenario in easy-to-understand cards.
+ * All comparisons are now shown against baseline for clarity.
  */
 
 import { SCENARIOS, formatCurrency, formatPercent } from '../data/constants';
@@ -32,10 +33,12 @@ const StatCard = ({ label, value, subtext, color, highlight = false }) => {
   );
 };
 
-// Comparison row
-const ComparisonRow = ({ scenario, finalBill, difference, percentChange, isBest }) => {
+// Comparison row - updated to show baseline comparison
+const ComparisonRow = ({ scenario, finalBill, baselineBill, isBest }) => {
   const scenarioInfo = SCENARIOS[scenario];
+  const difference = finalBill - baselineBill;
   const isNegative = difference < 0;
+  const isBaseline = scenario === 'baseline';
 
   return (
     <div
@@ -57,8 +60,8 @@ const ComparisonRow = ({ scenario, finalBill, difference, percentChange, isBest 
         <p className="font-bold text-lg" style={{ color: scenarioInfo.color }}>
           ${finalBill.toFixed(2)}/mo
         </p>
-        <p className={`text-xs ${isNegative ? 'text-green-600' : difference > 0 ? 'text-red-600' : 'text-gray-500'}`}>
-          {difference === 0 ? 'baseline' : `${isNegative ? '' : '+'}$${difference.toFixed(2)} (${formatPercent(percentChange)})`}
+        <p className={`text-xs ${isBaseline ? 'text-gray-500' : isNegative ? 'text-green-600' : difference > 0 ? 'text-red-600' : 'text-gray-500'}`}>
+          {isBaseline ? '(baseline)' : `${isNegative ? '' : '+'}$${difference.toFixed(2)} vs baseline`}
         </p>
       </div>
     </div>
@@ -68,34 +71,44 @@ const ComparisonRow = ({ scenario, finalBill, difference, percentChange, isBest 
 const SummaryCards = ({ compact = false }) => {
   const { summary, utility, projectionYears } = useCalculator();
 
+  // Calculate baseline comparisons
+  const baselineFinal = summary.finalYearBills.baseline;
+  const firmLoadDiff = summary.finalYearBills.unoptimized - baselineFinal;
+  const flexLoadDiff = summary.finalYearBills.flexible - baselineFinal;
+  const dispatchableDiff = summary.finalYearBills.dispatchable - baselineFinal;
+
   if (compact) {
-    // Compact view - just the key numbers
+    // Compact view - show baseline and all vs baseline comparisons
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
-          label="Current Bill"
-          value={`$${utility.averageMonthlyBill.toFixed(0)}/mo`}
-          subtext="Your starting point"
-          color="#6B7280"
+          label={`Baseline (${projectionYears}yr)`}
+          value={`$${baselineFinal.toFixed(0)}/mo`}
+          subtext="Without data center"
+          color={SCENARIOS.baseline.color}
         />
         <StatCard
-          label={`With Firm Load (${projectionYears}yr)`}
+          label={`Firm Load (${projectionYears}yr)`}
           value={`$${summary.finalYearBills.unoptimized.toFixed(0)}/mo`}
-          subtext={summary.finalYearDifference.unoptimized >= 0
-            ? `+$${summary.finalYearDifference.unoptimized.toFixed(2)} vs baseline`
-            : `-$${Math.abs(summary.finalYearDifference.unoptimized).toFixed(2)} vs baseline`}
+          subtext={firmLoadDiff >= 0
+            ? `+$${firmLoadDiff.toFixed(2)} vs baseline`
+            : `-$${Math.abs(firmLoadDiff).toFixed(2)} vs baseline`}
           color={SCENARIOS.unoptimized.color}
         />
         <StatCard
-          label={`With Flex Load (${projectionYears}yr)`}
+          label={`Flexible (${projectionYears}yr)`}
           value={`$${summary.finalYearBills.flexible.toFixed(0)}/mo`}
-          subtext={`Save $${summary.savingsVsUnoptimized.flexible.toFixed(2)}/mo vs firm`}
+          subtext={flexLoadDiff >= 0
+            ? `+$${flexLoadDiff.toFixed(2)} vs baseline`
+            : `-$${Math.abs(flexLoadDiff).toFixed(2)} vs baseline`}
           color={SCENARIOS.flexible.color}
         />
         <StatCard
-          label={`With Flex + Gen (${projectionYears}yr)`}
+          label={`Optimized (${projectionYears}yr)`}
           value={`$${summary.finalYearBills.dispatchable.toFixed(0)}/mo`}
-          subtext={`Save $${summary.savingsVsUnoptimized.dispatchable.toFixed(2)}/mo vs firm`}
+          subtext={dispatchableDiff >= 0
+            ? `+$${dispatchableDiff.toFixed(2)} vs baseline`
+            : `-$${Math.abs(dispatchableDiff).toFixed(2)} vs baseline`}
           color={SCENARIOS.dispatchable.color}
           highlight={true}
         />
@@ -112,7 +125,7 @@ const SummaryCards = ({ compact = false }) => {
           Your Monthly Bill: Now vs {projectionYears} Years
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="text-center p-4 bg-gray-50 rounded-lg">
             <p className="text-sm text-gray-600 mb-1">Today</p>
             <p className="text-4xl font-bold text-gray-900">
@@ -121,27 +134,37 @@ const SummaryCards = ({ compact = false }) => {
             <p className="text-sm text-gray-500">per month</p>
           </div>
 
+          <div className="text-center p-4 bg-gray-100 rounded-lg border border-gray-300">
+            <p className="text-sm text-gray-600 mb-1">Baseline ({projectionYears} years)</p>
+            <p className="text-4xl font-bold text-gray-700">
+              ${baselineFinal.toFixed(0)}
+            </p>
+            <p className="text-sm text-gray-500">without data center</p>
+          </div>
+
           <div className="text-center p-4 bg-green-50 rounded-lg border-2 border-green-200">
             <p className="text-sm text-gray-600 mb-1">Best Case ({projectionYears} years)</p>
             <p className="text-4xl font-bold text-green-600">
               ${summary.finalYearBills.dispatchable.toFixed(0)}
             </p>
-            <p className="text-sm text-gray-500">per month with optimized DC</p>
+            <p className="text-sm text-gray-500">with optimized DC</p>
+            <p className={`text-sm font-medium mt-1 ${dispatchableDiff >= 0 ? 'text-red-600' : 'text-green-600'}`}>
+              {dispatchableDiff >= 0 ? '+' : ''}{dispatchableDiff.toFixed(2)} vs baseline
+            </p>
           </div>
         </div>
 
-        {/* All scenarios comparison */}
+        {/* All scenarios comparison - vs baseline */}
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-gray-700 mb-3">
-            Compare All Scenarios
+            All Scenarios (Compared to Baseline)
           </h4>
           {['baseline', 'unoptimized', 'flexible', 'dispatchable'].map(scenario => (
             <ComparisonRow
               key={scenario}
               scenario={scenario}
               finalBill={summary.finalYearBills[scenario]}
-              difference={summary.finalYearDifference[scenario] || 0}
-              percentChange={summary.percentChange[scenario] - summary.percentChange.baseline}
+              baselineBill={baselineFinal}
               isBest={scenario === 'dispatchable'}
             />
           ))}
@@ -160,7 +183,10 @@ const SummaryCards = ({ compact = false }) => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {['baseline', 'unoptimized', 'flexible', 'dispatchable'].map(scenario => {
             const cost = summary.cumulativeHouseholdCosts[scenario];
+            const baselineCost = summary.cumulativeHouseholdCosts.baseline;
+            const diff = cost - baselineCost;
             const scenarioInfo = SCENARIOS[scenario];
+            const isBaseline = scenario === 'baseline';
             return (
               <div
                 key={scenario}
@@ -174,6 +200,11 @@ const SummaryCards = ({ compact = false }) => {
                 >
                   {formatCurrency(cost)}
                 </p>
+                {!isBaseline && (
+                  <p className={`text-xs mt-1 ${diff >= 0 ? 'text-red-600' : 'text-green-600'}`}>
+                    {diff >= 0 ? '+' : ''}{formatCurrency(diff)} vs baseline
+                  </p>
+                )}
               </div>
             );
           })}
