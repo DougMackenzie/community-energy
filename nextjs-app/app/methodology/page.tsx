@@ -79,14 +79,27 @@ export default function MethodologyPage() {
                 </p>
                 <ol className="list-decimal list-inside space-y-2 text-gray-600 mb-6">
                     <li><strong>Baseline:</strong> Normal cost growth from infrastructure aging and inflation</li>
-                    <li><strong>Firm Load:</strong> Data center as firm load, adding 100% to peak demand</li>
-                    <li><strong>Flexible Load:</strong> Data center with demand response capability (25% curtailable - DCFlex validated)</li>
-                    <li><strong>Flex + Generation:</strong> Demand response plus onsite generation</li>
+                    <li><strong>Firm Load:</strong> Data center operates at constant power, adding 100% of capacity to system peak</li>
+                    <li><strong>Flexible Load:</strong> Data center reduces load by 25% during peak hours by deferring non-time-sensitive workloads</li>
+                    <li><strong>Flex + Dispatchable:</strong> Flexible operation plus onsite generation to further reduce grid draw during peaks</li>
                 </ol>
-                <p className="text-gray-600">
+                <p className="text-gray-600 mb-4">
                     For each scenario, we calculate infrastructure costs, revenue contributions, and
-                    allocate net impacts to residential customers based on typical regulatory methods.
+                    allocate net impacts to residential customers based on market-specific regulatory methods.
                 </p>
+                <div className="p-4 bg-gray-50 rounded-lg text-sm">
+                    <p className="font-semibold text-gray-900 mb-2">About the Flexibility Assumptions</p>
+                    <p className="text-gray-600">
+                        The 25% peak reduction capability is based on{' '}
+                        <a href="https://msites.epri.com/dcflex" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                            EPRI's DCFlex initiative
+                        </a>
+                        , a 2024 field demonstration at a major data center that achieved 25% sustained power reduction
+                        during 3-hour peak events. While theoretical flexibility from workload analysis suggests up to 42%
+                        is possible, the 25% figure represents a conservative, field-validated baseline. See the
+                        <strong> Workload Flexibility Model</strong> section for details.
+                    </p>
+                </div>
             </div>
 
             {/* Detailed sections */}
@@ -100,33 +113,98 @@ export default function MethodologyPage() {
                     <div className="space-y-4 text-gray-600">
                         <p><strong>Basic Formula:</strong></p>
                         <div className="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-x-auto">
-                            <p>Monthly Impact = (Infrastructure Costs - DC Revenue Offset) × Residential Share / Customers / 12</p>
+                            <p>Monthly Impact = (Infrastructure Costs − DC Revenue Offset) × Residential Allocation / Customers / 12</p>
                         </div>
 
-                        <p className="mt-4"><strong>Key Insight - Firm vs Flexible (based on EPRI DCFlex 2024):</strong></p>
+                        <p className="mt-6"><strong>Key Terms Explained:</strong></p>
+                        <div className="bg-gray-50 p-4 rounded-lg space-y-3 text-sm">
+                            <div>
+                                <span className="font-semibold">Load Factor:</span> Average power draw ÷ nameplate capacity.
+                                A 2,000 MW data center at 80% load factor draws 1,600 MW on average.
+                            </div>
+                            <div>
+                                <span className="font-semibold">Peak Coincidence:</span> Fraction of capacity drawing power during system peak hours.
+                                100% means full contribution to peak; 75% means the facility reduces load by 25% during peaks.
+                            </div>
+                            <div>
+                                <span className="font-semibold">Curtailable:</span> The portion of load that can be temporarily reduced during grid stress events
+                                by pausing or deferring non-time-sensitive workloads (e.g., AI training, batch processing).
+                            </div>
+                        </div>
+
+                        <p className="mt-6"><strong>Firm vs Flexible Load Scenarios:</strong></p>
+                        <table className="w-full text-sm mt-2">
+                            <thead>
+                                <tr className="border-b border-gray-200">
+                                    <th className="text-left py-2 font-medium">Parameter</th>
+                                    <th className="text-right py-2 font-medium">Firm Load</th>
+                                    <th className="text-right py-2 font-medium">Flexible Load</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr className="border-b border-gray-100">
+                                    <td className="py-2">Load Factor</td>
+                                    <td className="text-right">{(DEFAULT_DATA_CENTER.firmLoadFactor * 100).toFixed(0)}%</td>
+                                    <td className="text-right">{(DEFAULT_DATA_CENTER.flexLoadFactor * 100).toFixed(0)}%</td>
+                                </tr>
+                                <tr className="border-b border-gray-100">
+                                    <td className="py-2">Peak Coincidence</td>
+                                    <td className="text-right">{(DEFAULT_DATA_CENTER.firmPeakCoincidence * 100).toFixed(0)}%</td>
+                                    <td className="text-right">{(DEFAULT_DATA_CENTER.flexPeakCoincidence * 100).toFixed(0)}%</td>
+                                </tr>
+                                <tr className="border-b border-gray-100">
+                                    <td className="py-2">Curtailable During Peaks</td>
+                                    <td className="text-right">0%</td>
+                                    <td className="text-right">{((1 - DEFAULT_DATA_CENTER.flexPeakCoincidence) * 100).toFixed(0)}%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <p className="text-sm">
+                                <strong>Why 95% load factor for flexible?</strong> By shifting deferrable workloads (AI training, batch jobs)
+                                to off-peak hours, data centers can run at higher average utilization while reducing peak contribution.
+                                This is more efficient than running at constant 80% regardless of grid conditions.
+                            </p>
+                        </div>
+
+                        <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                            <p className="text-sm font-semibold text-green-900 mb-2">Grid Capacity Math: Why 33% More?</p>
+                            <p className="text-sm text-green-800">
+                                If a grid has X MW of available capacity for new load:
+                            </p>
+                            <ul className="list-disc list-inside text-sm text-green-800 mt-2 space-y-1">
+                                <li><strong>Firm load</strong> (100% peak): Grid supports X MW of data center capacity</li>
+                                <li><strong>Flexible load</strong> (75% peak): Grid supports X ÷ 0.75 = <strong>1.33X MW</strong> of data center capacity</li>
+                            </ul>
+                            <p className="text-sm text-green-800 mt-2">
+                                Result: <strong>33% more data center capacity</strong> can connect to the same grid infrastructure
+                                when operating flexibly, because each MW only adds 0.75 MW to the system peak.
+                            </p>
+                        </div>
+
+                        <p className="mt-6"><strong>Revenue Offset:</strong></p>
                         <ul className="list-disc list-inside space-y-1 ml-4">
-                            <li><strong>Firm load:</strong> 80% load factor, 100% contributes to peak demand</li>
-                            <li><strong>Flexible load:</strong> 95% load factor, only 75% at peak (25% curtailable - DCFlex validated)</li>
-                            <li>Same grid can support 33% MORE flexible capacity than firm</li>
+                            <li>Demand charges: ${DC_RATE_STRUCTURE.demandChargePerMWMonth.toLocaleString()}/MW-month (based on coincident peak contribution)</li>
+                            <li>Energy margin: ${DC_RATE_STRUCTURE.energyMarginPerMWh}/MWh (utility's wholesale spread on energy sales)</li>
+                            <li>Higher load factor = more energy sold = more revenue to offset infrastructure costs</li>
                         </ul>
 
-                        <p className="mt-4"><strong>Revenue Offset:</strong></p>
+                        <p className="mt-6"><strong>Residential Cost Allocation:</strong></p>
+                        <p className="text-sm mb-3">
+                            The share of net costs allocated to residential customers depends on the utility's market structure.
+                            See the <strong>"Market Structures & Cost Allocation Framework"</strong> section below for detailed
+                            allocation factors by market type (regulated, PJM, ERCOT, etc.).
+                        </p>
                         <ul className="list-disc list-inside space-y-1 ml-4">
-                            <li>Demand charges: ${DC_RATE_STRUCTURE.demandChargePerMWMonth.toLocaleString()}/MW-month (based on coincident peak)</li>
-                            <li>Energy margin: ${DC_RATE_STRUCTURE.energyMarginPerMWh}/MWh (utility's wholesale spread)</li>
-                            <li>Higher load factor = more energy = more revenue</li>
+                            <li><strong>Base allocation:</strong> Varies by market (30-40% typical)</li>
+                            <li><strong>Calculation method:</strong> Weighted blend of 40% volumetric (kWh), 40% demand (peak MW), 20% customer count</li>
+                            <li><strong>Dynamic adjustment:</strong> As data center adds energy and peak, residential shares shift</li>
+                            <li><strong>Regulatory lag:</strong> Changes phase in over ~5 years through rate case proceedings</li>
+                            <li><strong>Market multipliers:</strong> ERCOT applies 0.85× (large loads face prices directly); high PJM capacity prices increase allocation</li>
                         </ul>
 
-                        <p className="mt-4"><strong>Residential Allocation (Calculated from Tariff Structure):</strong></p>
-                        <ul className="list-disc list-inside space-y-1 ml-4">
-                            <li>Starts at ~{(DEFAULT_UTILITY.baseResidentialAllocation * 100).toFixed(0)}% (typical for utilities per FERC/EIA data)</li>
-                            <li><strong>Calculated</strong> based on weighted blend: 40% volumetric, 40% demand, 20% customer</li>
-                            <li>As DC adds energy → residential volumetric share decreases</li>
-                            <li>As DC adds to peak → residential demand share decreases</li>
-                            <li>Regulatory lag: changes phase in over ~5 years through rate cases</li>
-                        </ul>
-
-                        <p className="mt-4">
+                        <p className="mt-4 text-sm text-gray-500">
                             The baseline trajectory includes {(TIME_PARAMS.generalInflation * 100).toFixed(1)}% annual
                             inflation and {(INFRASTRUCTURE_COSTS.annualBaselineUpgradePercent * 100).toFixed(1)}% annual
                             infrastructure replacement costs.
@@ -260,8 +338,8 @@ export default function MethodologyPage() {
                 >
                     <div className="space-y-4 text-gray-600">
                         <p>
-                            Data center flexibility varies by workload type. Our model uses the following
-                            breakdown based on industry research:
+                            Data center flexibility varies by workload type. The table below shows the theoretical
+                            flexibility potential based on typical workload mix:
                         </p>
 
                         <table className="w-full mt-4 text-sm">
@@ -281,19 +359,43 @@ export default function MethodologyPage() {
                                         <td className="text-right">{(wl.flexibility * 100).toFixed(0)}%</td>
                                         <td className="pl-4 text-gray-500 text-xs">{wl.description}</td></tr>
                                 ))}
+                                <tr className="border-t-2 border-gray-300 font-semibold">
+                                    <td className="py-2">Theoretical Aggregate</td>
+                                    <td className="text-right">100%</td>
+                                    <td className="text-right">~42%</td>
+                                    <td className="pl-4 text-gray-500 text-xs">Weighted sum of flexibility by load share</td>
+                                </tr>
                             </tbody>
                         </table>
 
+                        <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <h4 className="font-semibold text-amber-900 mb-2">Why We Use 25% (Not 42%)</h4>
+                            <p className="text-sm text-amber-800">
+                                While the theoretical workload analysis suggests ~42% aggregate flexibility, our model uses
+                                a more conservative <strong>25% curtailable</strong> assumption based on:
+                            </p>
+                            <ul className="list-disc list-inside text-sm text-amber-800 mt-2 space-y-1">
+                                <li>Field-validated results from EPRI DCFlex demonstration (see below)</li>
+                                <li>Real-world constraints (coordination overhead, workload queuing, IT operations)</li>
+                                <li>Reliability margin for grid operators to depend on</li>
+                                <li>Conservative baseline that most data centers could achieve without major changes</li>
+                            </ul>
+                        </div>
+
                         <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
-                            <h4 className="font-semibold text-green-900 mb-2">Field Demonstration Results</h4>
+                            <h4 className="font-semibold text-green-900 mb-2">EPRI DCFlex Field Demonstration (2024)</h4>
                             <p className="text-sm text-green-800 mb-2">
-                                The EPRI DCFlex demonstration at Oracle's Phoenix data center (2024) achieved:
+                                The EPRI DCFlex demonstration at a major hyperscale data center in Phoenix achieved:
                             </p>
                             <ul className="list-disc list-inside text-sm text-green-800 space-y-1">
                                 <li><strong>25% sustained power reduction</strong> during 3-hour peak grid events</li>
                                 <li><strong>Up to 40% reduction</strong> demonstrated while maintaining AI quality of service</li>
                                 <li><strong>~90% of workloads</strong> on representative clusters can be preempted (paused/delayed)</li>
                             </ul>
+                            <p className="text-sm text-green-800 mt-2">
+                                This validates that 25% curtailment is achievable in real-world conditions, with potential
+                                for higher reductions as data center operators gain experience with demand response programs.
+                            </p>
                         </div>
 
                         <div className="mt-4 space-y-2">
@@ -313,7 +415,7 @@ export default function MethodologyPage() {
                                     <a href="https://www.latitudemedia.com/news/catalyst-the-mechanics-of-data-center-flexibility/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                         Latitude Media: The Mechanics of Data Center Flexibility (2024)
                                     </a>
-                                    {' '}- includes Databricks 90% preemptible workload finding
+                                    {' '}- includes 90% preemptible workload finding
                                 </li>
                                 <li>
                                     <a href="https://cloud.google.com/blog/products/infrastructure/using-demand-response-to-reduce-data-center-power-consumption" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
@@ -324,7 +426,7 @@ export default function MethodologyPage() {
                                     <a href="https://msites.epri.com/dcflex" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                         EPRI DCFlex Initiative
                                     </a>
-                                    {' '}- 45+ industry collaborators including Google, Meta, Microsoft, NVIDIA
+                                    {' '}- 45+ industry collaborators including major cloud and AI companies
                                 </li>
                             </ul>
                         </div>
