@@ -98,6 +98,10 @@ export default function CalculatorPage() {
         setProjectionYears,
         resetToDefaults,
         summary,
+        selectedUtilityId,
+        selectedUtilityProfile,
+        selectUtilityProfile,
+        utilityProfiles,
     } = useCalculator();
 
     const [activeSection, setActiveSection] = useState('utility');
@@ -128,6 +132,32 @@ export default function CalculatorPage() {
             <div className="grid lg:grid-cols-3 gap-8">
                 {/* Input panel */}
                 <div className="lg:col-span-1 space-y-6">
+                    {/* Location Selector */}
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200 p-4">
+                        <label className="block text-sm font-semibold text-blue-900 mb-2">
+                            Select Your Utility / Location
+                        </label>
+                        <select
+                            value={selectedUtilityId}
+                            onChange={(e) => selectUtilityProfile(e.target.value)}
+                            className="w-full px-3 py-2.5 bg-white border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 font-medium"
+                        >
+                            {utilityProfiles.map((profile) => (
+                                <option key={profile.id} value={profile.id}>
+                                    {profile.shortName} {profile.state && `(${profile.state})`}
+                                </option>
+                            ))}
+                        </select>
+                        {selectedUtilityProfile && selectedUtilityProfile.id !== 'custom' && (
+                            <div className="mt-3 text-xs text-blue-700 space-y-1">
+                                <p><strong>{selectedUtilityProfile.residentialCustomers.toLocaleString()}</strong> residential customers in rate base</p>
+                                {selectedUtilityProfile.hasDataCenterActivity && selectedUtilityProfile.dataCenterNotes && (
+                                    <p className="text-blue-600 italic">{selectedUtilityProfile.dataCenterNotes}</p>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
                     {/* Section tabs */}
                     <div className="flex border-b border-gray-200">
                         {[

@@ -13,12 +13,15 @@ import {
     type SummaryStats,
     type TrajectoryPoint,
 } from '@/lib/calculations';
+import { UTILITY_PROFILES, getUtilityById, type UtilityProfile } from '@/lib/utilityData';
 
 interface CalculatorContextType {
     utility: Utility;
     dataCenter: DataCenter;
     selectedScenarios: string[];
     projectionYears: number;
+    selectedUtilityId: string;
+    selectedUtilityProfile: UtilityProfile | undefined;
     trajectories: {
         baseline: TrajectoryPoint[];
         unoptimized: TrajectoryPoint[];
@@ -32,7 +35,9 @@ interface CalculatorContextType {
     toggleScenario: (scenarioId: string) => void;
     setSelectedScenarios: (scenarios: string[]) => void;
     setProjectionYears: (years: number) => void;
+    selectUtilityProfile: (utilityId: string) => void;
     resetToDefaults: () => void;
+    utilityProfiles: UtilityProfile[];
 }
 
 const CalculatorContext = createContext<CalculatorContextType | null>(null);
@@ -47,6 +52,11 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
         'dispatchable',
     ]);
     const [projectionYears, setProjectionYears] = useState(10);
+    const [selectedUtilityId, setSelectedUtilityId] = useState<string>('pso-oklahoma');
+
+    const selectedUtilityProfile = useMemo(() => {
+        return getUtilityById(selectedUtilityId);
+    }, [selectedUtilityId]);
 
     const trajectories = useMemo(() => {
         return generateAllTrajectories(utility, dataCenter, projectionYears);
@@ -78,11 +88,33 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
         });
     }, []);
 
+    const selectUtilityProfile = useCallback((utilityId: string) => {
+        const profile = getUtilityById(utilityId);
+        if (profile) {
+            setSelectedUtilityId(utilityId);
+            // Auto-populate utility values from profile
+            setUtility({
+                ...utility,
+                residentialCustomers: profile.residentialCustomers,
+                averageMonthlyBill: profile.averageMonthlyBill,
+                averageMonthlyUsage: profile.averageMonthlyUsageKWh,
+                systemPeakMW: profile.systemPeakMW,
+            });
+            // Auto-populate data center capacity
+            setDataCenter((prev) => ({
+                ...prev,
+                capacityMW: profile.defaultDataCenterMW,
+                onsiteGenerationMW: Math.round(profile.defaultDataCenterMW * 0.2),
+            }));
+        }
+    }, [utility]);
+
     const resetToDefaults = useCallback(() => {
         setUtility(DEFAULT_UTILITY);
         setDataCenter(DEFAULT_DATA_CENTER);
         setSelectedScenarios(['baseline', 'unoptimized', 'flexible', 'dispatchable']);
         setProjectionYears(10);
+        setSelectedUtilityId('pso-oklahoma');
     }, []);
 
     const value: CalculatorContextType = {
@@ -90,6 +122,8 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
         dataCenter,
         selectedScenarios,
         projectionYears,
+        selectedUtilityId,
+        selectedUtilityProfile,
         trajectories,
         chartData,
         summary,
@@ -98,7 +132,9 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
         toggleScenario,
         setSelectedScenarios,
         setProjectionYears,
+        selectUtilityProfile,
         resetToDefaults,
+        utilityProfiles: UTILITY_PROFILES,
     };
 
     return <CalculatorContext.Provider value={value}>{children}</CalculatorContext.Provider>;

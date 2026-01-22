@@ -22,6 +22,7 @@ from calculations import (
     INFRASTRUCTURE_COSTS,
     DC_RATE_STRUCTURE,
 )
+from utility_data import UTILITY_PROFILES, get_utility_by_id, get_utility_options
 
 # Page config
 st.set_page_config(
@@ -63,11 +64,61 @@ if 'datacenter' not in st.session_state:
     st.session_state.datacenter = DEFAULT_DATA_CENTER.copy()
 if 'projection_years' not in st.session_state:
     st.session_state.projection_years = 10
+if 'selected_utility_id' not in st.session_state:
+    st.session_state.selected_utility_id = 'pso-oklahoma'
+
+
+def apply_utility_profile(utility_id):
+    """Apply a utility profile to the session state."""
+    profile = get_utility_by_id(utility_id)
+    if profile:
+        st.session_state.utility['residential_customers'] = profile['residential_customers']
+        st.session_state.utility['system_peak_mw'] = profile['system_peak_mw']
+        st.session_state.utility['avg_monthly_bill'] = profile['avg_monthly_bill']
+        st.session_state.utility['avg_monthly_usage'] = profile['avg_monthly_usage_kwh']
+        st.session_state.datacenter['capacity_mw'] = profile['default_dc_mw']
+        st.session_state.datacenter['onsite_generation_mw'] = int(profile['default_dc_mw'] * 0.2)
+        st.session_state.selected_utility_id = utility_id
+
 
 # Sidebar for inputs
 with st.sidebar:
     st.title("⚡ Calculator Settings")
 
+    # Location/Utility Selector
+    st.header("📍 Select Your Utility")
+
+    utility_options = get_utility_options()
+    utility_names = [name for name, _ in utility_options]
+    utility_ids = [uid for _, uid in utility_options]
+
+    # Find current index
+    current_idx = utility_ids.index(st.session_state.selected_utility_id) if st.session_state.selected_utility_id in utility_ids else 0
+
+    selected_name = st.selectbox(
+        "Utility / Location",
+        options=utility_names,
+        index=current_idx,
+        key="utility_selector"
+    )
+
+    # Get the ID for the selected name
+    selected_idx = utility_names.index(selected_name)
+    new_utility_id = utility_ids[selected_idx]
+
+    # Check if selection changed
+    if new_utility_id != st.session_state.selected_utility_id:
+        apply_utility_profile(new_utility_id)
+        st.rerun()
+
+    # Show utility info
+    selected_profile = get_utility_by_id(st.session_state.selected_utility_id)
+    if selected_profile and selected_profile['id'] != 'custom':
+        st.info(f"**{selected_profile['residential_customers']:,}** residential customers in rate base")
+        if selected_profile['has_dc_activity'] and selected_profile['dc_notes']:
+            st.caption(f"_{selected_profile['dc_notes']}_")
+
+    st.divider()
     st.header("Utility Parameters")
 
     st.session_state.utility['residential_customers'] = st.number_input(
@@ -140,6 +191,7 @@ with st.sidebar:
         st.session_state.utility = DEFAULT_UTILITY.copy()
         st.session_state.datacenter = DEFAULT_DATA_CENTER.copy()
         st.session_state.projection_years = 10
+        st.session_state.selected_utility_id = 'pso-oklahoma'
         st.rerun()
 
 # Calculate trajectories

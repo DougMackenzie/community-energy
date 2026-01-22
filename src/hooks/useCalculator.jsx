@@ -12,6 +12,7 @@ import {
   formatTrajectoriesForChart,
   calculateSummaryStats,
 } from '../utils/calculations';
+import { UTILITY_PROFILES, getUtilityById } from '../data/utilityData';
 
 // Create context
 const CalculatorContext = createContext(null);
@@ -29,6 +30,12 @@ export const CalculatorProvider = ({ children }) => {
   // UI state
   const [selectedScenarios, setSelectedScenarios] = useState(['baseline', 'unoptimized', 'flexible', 'dispatchable']);
   const [projectionYears, setProjectionYears] = useState(10);
+  const [selectedUtilityId, setSelectedUtilityId] = useState('pso-oklahoma');
+
+  // Get selected utility profile
+  const selectedUtilityProfile = useMemo(() => {
+    return getUtilityById(selectedUtilityId);
+  }, [selectedUtilityId]);
 
   // Calculate trajectories (memoized for performance)
   const trajectories = useMemo(() => {
@@ -65,11 +72,31 @@ export const CalculatorProvider = ({ children }) => {
     });
   }, []);
 
+  const selectUtilityProfile = useCallback((utilityId) => {
+    const profile = getUtilityById(utilityId);
+    if (profile) {
+      setSelectedUtilityId(utilityId);
+      setUtility(prev => ({
+        ...prev,
+        residentialCustomers: profile.residentialCustomers,
+        averageMonthlyBill: profile.averageMonthlyBill,
+        averageMonthlyUsage: profile.averageMonthlyUsageKWh,
+        systemPeakMW: profile.systemPeakMW,
+      }));
+      setDataCenter(prev => ({
+        ...prev,
+        capacityMW: profile.defaultDataCenterMW,
+        onsiteGenerationMW: Math.round(profile.defaultDataCenterMW * 0.2),
+      }));
+    }
+  }, []);
+
   const resetToDefaults = useCallback(() => {
     setUtility(DEFAULT_UTILITY);
     setDataCenter(DEFAULT_DATA_CENTER);
     setSelectedScenarios(['baseline', 'unoptimized', 'flexible', 'dispatchable']);
     setProjectionYears(10);
+    setSelectedUtilityId('pso-oklahoma');
   }, []);
 
   // Context value
@@ -79,6 +106,8 @@ export const CalculatorProvider = ({ children }) => {
     dataCenter,
     selectedScenarios,
     projectionYears,
+    selectedUtilityId,
+    selectedUtilityProfile,
 
     // Computed
     trajectories,
@@ -91,7 +120,11 @@ export const CalculatorProvider = ({ children }) => {
     toggleScenario,
     setSelectedScenarios,
     setProjectionYears,
+    selectUtilityProfile,
     resetToDefaults,
+
+    // Data
+    utilityProfiles: UTILITY_PROFILES,
   };
 
   return (
