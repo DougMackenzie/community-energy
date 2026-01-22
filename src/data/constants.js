@@ -18,6 +18,7 @@
 // FLEX: 5 GW of data centers with flexibility (can curtail during peaks)
 // Both scenarios work within the SAME grid constraints
 
+// Based on EPRI DCFlex research (2024): 25% sustained reduction achievable
 export const SCENARIO_PARAMS = {
   firm: {
     capacityMW: 4000,          // 4 GW of firm data center capacity
@@ -26,10 +27,10 @@ export const SCENARIO_PARAMS = {
     description: 'Traditional firm load - adds directly to peak demand',
   },
   flex: {
-    capacityMW: 5000,          // 5 GW with flexibility (25% MORE capacity)
+    capacityMW: 5333,          // 5.3 GW with flexibility (33% MORE capacity with 25% curtailable)
     loadFactor: 0.95,          // 95% effective load factor (flex = higher efficiency)
-    peakCoincidence: 0.80,     // Only 80% at peak (20% curtailable)
-    curtailablePercent: 0.20,  // 20% can be curtailed during system peaks
+    peakCoincidence: 0.75,     // Only 75% at peak (25% curtailable - DCFlex validated)
+    curtailablePercent: 0.25,  // 25% can be curtailed during system peaks
     description: 'Flexible load - higher capacity without adding to peak',
   },
 };
@@ -115,10 +116,11 @@ export const DEFAULT_DATA_CENTER = {
   firmLoadFactor: 0.80,              // 80% LF when operating as firm
   firmPeakCoincidence: 1.0,          // 100% adds to peak
 
-  // Flexible load characteristics
+  // Flexible load characteristics (based on EPRI DCFlex 2024 research)
+  // DCFlex Phoenix demo achieved 25% sustained reduction, up to 40%
   flexLoadFactor: 0.95,              // 95% LF when operating flexibly
-  flexPeakCoincidence: 0.80,         // Only 80% at peak
-  flexibleLoadPercent: 0.32,         // 32% of load can shift (training, batch)
+  flexPeakCoincidence: 0.75,         // Only 75% at peak (25% curtailable - DCFlex validated)
+  flexibleLoadPercent: 0.35,         // 35% of load can shift (training, batch) - conservative vs 90% preemptible
 
   // Dispatchable generation (Scenario 4)
   onsiteGenerationMW: 400,           // MW of onsite generation (20% of capacity)
@@ -205,46 +207,45 @@ export const TIME_PARAMS = {
 // WORKLOAD FLEXIBILITY BREAKDOWN
 // ============================================
 
+// Based on EPRI DCFlex research (2024): 90% of workloads can be preempted,
+// 25-40% power reduction achievable during peak events
+// Sources: IEEE Spectrum, arXiv:2507.00909, Latitude Media/Databricks
 export const WORKLOAD_TYPES = {
   training: {
     name: 'AI Training',
-    percentOfLoad: 0.35,
-    flexibility: 0.40,
-    description: 'Large model training jobs that can be scheduled flexibly',
+    percentOfLoad: 0.30,
+    flexibility: 0.60,    // DCFlex: training is highly deferrable
+    description: 'Large model training jobs - deferrable to off-peak hours',
   },
-  batchInference: {
-    name: 'Batch Inference',
-    percentOfLoad: 0.20,
-    flexibility: 0.80,
-    description: 'Non-real-time inference jobs that can queue',
+  batchProcessing: {
+    name: 'Batch Processing',
+    percentOfLoad: 0.25,
+    flexibility: 0.80,    // DCFlex: ~90% of batch workloads preemptible
+    description: 'Non-real-time batch jobs - highly shiftable',
   },
   realtimeInference: {
     name: 'Real-time Inference',
-    percentOfLoad: 0.25,
-    flexibility: 0.05,
-    description: 'Latency-sensitive requests requiring immediate response',
+    percentOfLoad: 0.35,
+    flexibility: 0.10,    // DCFlex Flex 0 tier: strict SLA requirements
+    description: 'Latency-sensitive requests - must respond instantly',
   },
-  cooling: {
-    name: 'Cooling Systems',
-    percentOfLoad: 0.15,
-    flexibility: 0.30,
-    description: 'HVAC and cooling with thermal mass for short-term flexibility',
-  },
-  other: {
-    name: 'Support Systems',
-    percentOfLoad: 0.05,
-    flexibility: 0.10,
-    description: 'Lighting, security, networking equipment',
+  coreInfrastructure: {
+    name: 'Core Infrastructure',
+    percentOfLoad: 0.10,
+    flexibility: 0.05,    // Always-on systems
+    description: 'Networking, storage, cooling controls - always on',
   },
 };
 
 // Calculate aggregate flexibility from workload mix
+// With updated values: 0.30*0.60 + 0.25*0.80 + 0.35*0.10 + 0.10*0.05 = 0.18 + 0.20 + 0.035 + 0.005 = ~42%
+// This is conservative vs DCFlex finding that 90% of workloads can be preempted
 export const calculateAggregateFlexibility = (workloadTypes = WORKLOAD_TYPES) => {
   let totalFlex = 0;
   Object.values(workloadTypes).forEach(w => {
     totalFlex += w.percentOfLoad * w.flexibility;
   });
-  return totalFlex; // ~32% for default mix
+  return totalFlex; // ~42% for default mix (conservative vs 90% preemptible finding)
 };
 
 // ============================================

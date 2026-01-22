@@ -343,14 +343,14 @@ The difference between a "firm load" data center (always on, no flexibility) and
         if flex_diff_display >= 0:
             st.warning(f"""
             **Flexible Load: With Demand Response**
-            - Can reduce power 20% during peaks
+            - Can reduce power 25% during peaks
             - Less infrastructure needed
             - Bill: **${summary['final_year_bills']['flexible']:.0f}/mo** (+${flex_diff_display:.2f} vs baseline)
             """)
         else:
             st.success(f"""
             **Flexible Load: With Demand Response**
-            - Can reduce power 20% during peaks
+            - Can reduce power 25% during peaks
             - Less infrastructure needed
             - Bill: **${summary['final_year_bills']['flexible']:.0f}/mo** (${flex_diff_display:.2f} vs baseline)
             """)
@@ -472,7 +472,7 @@ with tab4:
     st.markdown(f"""
     With demand response capability, the **{st.session_state.datacenter['capacity_mw']:,} MW** data center:
     - Operates at **95% load factor** (higher efficiency)
-    - Only **80%** at peak (20% curtailable)
+    - Only **75%** at peak (25% curtailable - validated by EPRI DCFlex 2024)
     - Provides capacity value through DR
     - Can reduce load during grid stress
     """)
@@ -487,7 +487,7 @@ with tab4:
     with col2:
         st.metric("vs Firm Load", f"Save ${flex_vs_firm:.2f}/mo")
     with col3:
-        curtailable = st.session_state.datacenter['capacity_mw'] * 0.2
+        curtailable = st.session_state.datacenter['capacity_mw'] * 0.25  # Updated to 25%
         st.metric("Curtailable Capacity", f"{curtailable:.0f} MW", "DR resource")
 
     st.success("""
@@ -545,10 +545,10 @@ with tab6:
         Monthly Impact = (Infrastructure Costs - DC Revenue Offset) × Residential Share / Customers / 12
         ```
 
-        **Key Insight - Firm vs Flexible:**
+        **Key Insight - Firm vs Flexible (based on EPRI DCFlex 2024 research):**
         - **Firm load:** 80% load factor, 100% contributes to peak demand
-        - **Flexible load:** 95% load factor, only 80% at peak (20% curtailable)
-        - Same grid can support 25% MORE flexible capacity than firm
+        - **Flexible load:** 95% load factor, only 75% at peak (25% curtailable - DCFlex validated)
+        - Same grid can support 33% MORE flexible capacity than firm
 
         **Revenue Offset:**
         - Demand charges: $9,050/MW-month (based on coincident peak)
@@ -669,9 +669,9 @@ with tab6:
         }
         st.table(nrel_data)
 
-        # LBNL Data
-        st.subheader("Lawrence Berkeley National Laboratory (LBNL)")
-        st.markdown("[Data Center Energy and Demand Response Research](https://eta.lbl.gov/publications/united-states-data-center-energy)")
+        # LBNL Data + EPRI DCFlex Research
+        st.subheader("LBNL & EPRI DCFlex Research")
+        st.markdown("[LBNL Data Center Energy](https://eta.lbl.gov/publications/united-states-data-center-energy) | [EPRI DCFlex](https://msites.epri.com/dcflex)")
         lbnl_data = {
             "Data Point": [
                 "Firm load factor",
@@ -683,13 +683,13 @@ with tab6:
                 f"{DEFAULT_DATA_CENTER['firm_load_factor']*100:.0f}%",
                 f"{DEFAULT_DATA_CENTER['flex_load_factor']*100:.0f}%",
                 f"{(1-DEFAULT_DATA_CENTER['flex_peak_coincidence'])*100:.0f}%",
-                "32%"
+                "42%"
             ],
             "How We Use It": [
                 "Energy consumption - firm scenario",
                 "Energy consumption - flex scenario",
-                "Peak demand reduction potential",
-                "Shiftable workload fraction"
+                "Peak demand reduction (DCFlex: 25% sustained, up to 40%)",
+                "Shiftable workload fraction (conservative vs 90% preemptible)"
             ]
         }
         st.table(lbnl_data)
@@ -811,7 +811,7 @@ with tab6:
     with st.expander("Workload Flexibility Model"):
         st.markdown("""
         Data center flexibility varies by workload type. Our model uses the following
-        breakdown based on industry research:
+        breakdown based on EPRI DCFlex research (2024):
 
         | Workload Type | % of Load | Flexibility | Notes |
         |---------------|-----------|-------------|-------|
@@ -820,8 +820,9 @@ with tab6:
         | Real-time Inference | 35% | 10% | Must respond instantly |
         | Core Infrastructure | 10% | 5% | Always-on systems |
 
-        **Aggregate Flexibility:** Based on this mix, approximately 32% of
+        **Aggregate Flexibility:** Based on this mix, approximately 42% of
         total facility load can be shifted to off-peak hours with minimal operational impact.
+        This is conservative compared to the DCFlex finding that ~90% of workloads can be preempted.
         """)
 
         st.success("""

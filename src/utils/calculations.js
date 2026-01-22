@@ -1,11 +1,11 @@
 /**
  * Community Energy Cost Calculator - Calculation Engine
  *
- * Based on the original research framework:
+ * Based on the original research framework + EPRI DCFlex 2024 validation:
  * - FIRM scenario: 4 GW of DC at 80% LF, 100% adds to peak
- * - FLEX scenario: 5 GW of DC at 95% LF, only 80% at peak
+ * - FLEX scenario: 5.3 GW of DC at 95% LF, only 75% at peak (25% curtailable)
  *
- * Key insight: With flexibility, MORE capacity fits on the same grid,
+ * Key insight: With flexibility, 33% MORE capacity fits on the same grid,
  * generating MORE revenue while requiring LESS infrastructure.
  *
  * IMPORTANT ECONOMIC REALITY:

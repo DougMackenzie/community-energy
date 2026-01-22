@@ -280,8 +280,8 @@ const HomePage = ({ onNavigate }) => {
               <div>
                 <h3 className="font-semibold text-gray-900">Flexible Load: With Demand Response</h3>
                 <p className="text-sm text-gray-600 mt-1">
-                  The data center can reduce power usage by 20% during peak times. This means less
-                  infrastructure investment is needed, and the facility actually helps stabilize the grid.
+                  The data center can reduce power usage by 25% during peak times (validated by EPRI DCFlex 2024).
+                  This means less infrastructure investment is needed, and the facility actually helps stabilize the grid.
                 </p>
                 <p className="text-xs text-gray-500 mt-2">
                   <strong>How it works:</strong> AI training and batch jobs can be shifted to off-peak hours

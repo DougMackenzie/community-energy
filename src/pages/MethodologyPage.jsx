@@ -74,7 +74,7 @@ const MethodologyPage = ({ onNavigate }) => {
         <ol className="list-decimal list-inside space-y-2 text-gray-600 mb-6">
           <li><strong>Baseline:</strong> Normal cost growth from infrastructure aging and inflation</li>
           <li><strong>Firm Load:</strong> Data center as firm load, adding 100% to peak demand</li>
-          <li><strong>Flexible Load:</strong> Data center with demand response capability (20% curtailable)</li>
+          <li><strong>Flexible Load:</strong> Data center with demand response capability (25% curtailable - DCFlex validated)</li>
           <li><strong>Flex + Generation:</strong> Demand response plus onsite generation</li>
         </ol>
         <p className="text-gray-600">
@@ -94,11 +94,11 @@ const MethodologyPage = ({ onNavigate }) => {
               <p>Monthly Impact = (Infrastructure Costs - DC Revenue Offset) × Residential Share / Customers / 12</p>
             </div>
 
-            <p className="mt-4"><strong>Key Insight - Firm vs Flexible:</strong></p>
+            <p className="mt-4"><strong>Key Insight - Firm vs Flexible (based on EPRI DCFlex 2024):</strong></p>
             <ul className="list-disc list-inside space-y-1 ml-4">
               <li><strong>Firm load:</strong> 80% load factor, 100% contributes to peak demand</li>
-              <li><strong>Flexible load:</strong> 95% load factor, only 80% at peak (20% curtailable)</li>
-              <li>Same grid can support 25% MORE flexible capacity than firm</li>
+              <li><strong>Flexible load:</strong> 95% load factor, only 75% at peak (25% curtailable - DCFlex validated)</li>
+              <li>Same grid can support 33% MORE flexible capacity than firm</li>
             </ul>
 
             <p className="mt-4"><strong>Revenue Offset:</strong></p>
@@ -511,8 +511,9 @@ const MethodologyPage = ({ onNavigate }) => {
 
             <div className="mt-4 p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Aggregate Flexibility:</strong> Based on this mix, approximately 32% of
+                <strong>Aggregate Flexibility:</strong> Based on this mix, approximately 42% of
                 total facility load can be shifted to off-peak hours with minimal operational impact.
+                This is conservative compared to the DCFlex finding that ~90% of workloads can be preempted.
               </p>
             </div>
 

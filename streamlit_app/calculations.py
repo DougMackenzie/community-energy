@@ -46,12 +46,15 @@ DEFAULT_UTILITY = {
     'base_residential_allocation': 0.40,
 }
 
+# Based on EPRI DCFlex research (2024): 25% sustained reduction achievable,
+# up to 40% while maintaining AI quality of service
+# Sources: IEEE Spectrum, arXiv:2507.00909, Latitude Media/Databricks
 DEFAULT_DATA_CENTER = {
     'capacity_mw': 2000,
     'firm_load_factor': 0.80,
     'firm_peak_coincidence': 1.0,
     'flex_load_factor': 0.95,
-    'flex_peak_coincidence': 0.80,
+    'flex_peak_coincidence': 0.75,  # 25% curtailable (DCFlex validated)
     'onsite_generation_mw': 400,
 }
 

@@ -133,11 +133,11 @@ const FlexiblePage = ({ onNavigate }) => {
           </div>
 
           <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-            <h3 className="font-semibold text-amber-900 mb-3">Why Flexibility Matters</h3>
+            <h3 className="font-semibold text-amber-900 mb-3">Why Flexibility Matters (EPRI DCFlex 2024)</h3>
             <p className="text-amber-800 text-sm mb-3">
               The grid is sized for peak demand, which only occurs ~100 hours/year. Flexible loads
-              can curtail 20% during these critical hours, meaning the SAME grid infrastructure
-              can support 25% MORE total data center capacity.
+              can curtail 25% during these critical hours (validated by DCFlex demonstration), meaning the SAME grid infrastructure
+              can support 33% MORE total data center capacity.
             </p>
             <div className="bg-white p-3 rounded border border-amber-200">
               <div className="grid grid-cols-2 gap-3 text-center">
@@ -149,7 +149,7 @@ const FlexiblePage = ({ onNavigate }) => {
                 <div>
                   <p className="text-xs text-gray-600">Flexible Load</p>
                   <p className="text-lg font-bold" style={{ color: SCENARIOS.flexible.color }}>95% LF</p>
-                  <p className="text-xs text-gray-500">80% at peak</p>
+                  <p className="text-xs text-gray-500">75% at peak</p>
                 </div>
               </div>
             </div>
