@@ -129,7 +129,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     averageMonthlyUsageKWh: 1100,
     market: { ...SPP_MARKET },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Meta proposed 2GW facility; PSO facing 31% power deficit by 2031 with 779MW of new large load requests',
+    dataCenterNotes: 'Proposed 2GW hyperscale facility; PSO facing 31% power deficit by 2031 with 779MW of new large load requests',
     defaultDataCenterMW: 2000,
     sources: ['PSO 2024 IRP Report', 'Oklahoma Corporation Commission filings', 'AEP annual reports']
   },
@@ -214,7 +214,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     averageMonthlyUsageKWh: 900,
     market: { ...REGULATED_MARKET },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Data centers requesting to triple peak demand; Switch and Novva planning 4,000 MW of AI data centers in Reno area',
+    dataCenterNotes: 'Data centers requesting to triple peak demand; 4,000+ MW of AI data center projects planned in Reno area',
     defaultDataCenterMW: 1500,
     sources: ['NV Energy company facts', 'Nevada PUC filings', 'Greenlink transmission project documents']
   },

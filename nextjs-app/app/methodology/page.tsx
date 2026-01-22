@@ -332,6 +332,270 @@ export default function MethodologyPage() {
                 </Section>
 
                 <Section
+                    id="market-structures"
+                    title="Market Structures & Cost Allocation Framework"
+                    expandedSection={expandedSection}
+                    toggleSection={toggleSection}
+                >
+                    <div className="space-y-6 text-gray-600">
+                        <p>
+                            Cost allocation to residential customers varies significantly based on the market structure
+                            in which a utility operates. Our model adjusts allocation factors based on five distinct market types.
+                        </p>
+
+                        {/* Regulated Markets */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+                                Regulated / Vertically Integrated Markets
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">
+                                Duke Energy Carolinas, Georgia Power, APS Arizona, NV Energy, Xcel Colorado
+                            </p>
+                            <table className="w-full text-sm">
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Base Residential Allocation</td>
+                                        <td className="text-right">40%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
+                                        <td className="text-right">40%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Utility Owns Generation</td>
+                                        <td className="text-right">Yes</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="mt-3 text-sm text-gray-500">
+                                <strong>Allocation Method:</strong> Infrastructure costs allocated through traditional rate base using
+                                cost-of-service methodology. State PUC sets rates based on embedded costs. Residential share based on
+                                weighted blend: 40% volumetric (kWh), 40% demand (peak contribution), 20% customer count.
+                            </p>
+                            <p className="mt-2 text-xs text-gray-400">
+                                Source:{' '}
+                                <a href="https://www.ferc.gov/industries-data/electric/electric-power-markets/cost-service-regulation"
+                                   target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                    FERC Cost of Service Regulation
+                                </a>
+                            </p>
+                        </div>
+
+                        {/* PJM Markets */}
+                        <div className="border border-amber-200 rounded-lg p-4 bg-amber-50">
+                            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-amber-500"></span>
+                                PJM Capacity Market
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">
+                                Dominion Virginia, AEP Ohio, AEP I&M, Appalachian Power
+                            </p>
+                            <table className="w-full text-sm">
+                                <tbody>
+                                    <tr className="border-b border-amber-100">
+                                        <td className="py-2 font-medium">Base Residential Allocation</td>
+                                        <td className="text-right">35%</td>
+                                    </tr>
+                                    <tr className="border-b border-amber-100">
+                                        <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
+                                        <td className="text-right">50%</td>
+                                    </tr>
+                                    <tr className="border-b border-amber-100">
+                                        <td className="py-2 font-medium">2024 Capacity Price</td>
+                                        <td className="text-right font-bold text-amber-700">$269.92/MW-day</td>
+                                    </tr>
+                                    <tr className="border-b border-amber-100">
+                                        <td className="py-2 font-medium">Price vs Historical</td>
+                                        <td className="text-right text-red-600">~10× increase</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="mt-3 text-sm text-gray-600">
+                                <strong>Allocation Method:</strong> PJM's Reliability Pricing Model (RPM) capacity auction cleared at
+                                $269.92/MW-day for 2025/26, a 10× increase attributed to 63% from data center load growth. Capacity costs
+                                flow through retail suppliers to customers. Our model increases residential allocation by up to 15% when
+                                capacity prices exceed $100/MW-day to reflect cost pressure spreading across customer classes.
+                            </p>
+                            <div className="mt-3 space-y-1 text-xs text-gray-400">
+                                <p>Sources:</p>
+                                <ul className="list-disc list-inside ml-2">
+                                    <li>
+                                        <a href="https://www.pjm.com/-/media/markets-ops/rpm/rpm-auction-info/2025-2026/2025-2026-base-residual-auction-report.ashx"
+                                           target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                            PJM 2025/26 Base Residual Auction Report (July 2024)
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.utilitydive.com/news/pjm-capacity-auction-price-data-centers/721147/"
+                                           target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                            Utility Dive: Data Centers Drive PJM Capacity Price Surge
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.gridstrategiesllc.com/research"
+                                           target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                            Grid Strategies LLC: Load Growth Analysis
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* ERCOT */}
+                        <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+                            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                                ERCOT Energy-Only Market
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">
+                                Texas Grid (ERCOT)
+                            </p>
+                            <table className="w-full text-sm">
+                                <tbody>
+                                    <tr className="border-b border-green-100">
+                                        <td className="py-2 font-medium">Base Residential Allocation</td>
+                                        <td className="text-right">30%</td>
+                                    </tr>
+                                    <tr className="border-b border-green-100">
+                                        <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
+                                        <td className="text-right">25%</td>
+                                    </tr>
+                                    <tr className="border-b border-green-100">
+                                        <td className="py-2 font-medium">Capacity Market</td>
+                                        <td className="text-right">None (energy-only)</td>
+                                    </tr>
+                                    <tr className="border-b border-green-100">
+                                        <td className="py-2 font-medium">Allocation Adjustment</td>
+                                        <td className="text-right">× 0.85 (lower)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="mt-3 text-sm text-gray-600">
+                                <strong>Allocation Method:</strong> ERCOT operates an energy-only market with no capacity payments.
+                                Large loads face wholesale price signals more directly through retail competition. Our model applies
+                                an 0.85× multiplier to residential allocation since infrastructure costs are more directly borne by
+                                the loads causing them. Transmission costs (ERCOT nodal pricing) still flow to ratepayers. Data centers
+                                account for 46% of projected load growth.
+                            </p>
+                            <div className="mt-3 space-y-1 text-xs text-gray-400">
+                                <p>Sources:</p>
+                                <ul className="list-disc list-inside ml-2">
+                                    <li>
+                                        <a href="https://www.ercot.com/gridmktinfo/dashboards/longterm"
+                                           target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                            ERCOT Long-Term Load Forecast
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.potomaceconomics.com/wp-content/uploads/2024/05/2023-State-of-the-Market-Report.pdf"
+                                           target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                            Potomac Economics: 2024 ERCOT State of the Market
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="https://www.puc.texas.gov/industry/electric/reports/"
+                                           target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                            Texas PUC Industry Reports
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* SPP */}
+                        <div className="border border-purple-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-purple-500"></span>
+                                SPP (Southwest Power Pool)
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">
+                                PSO Oklahoma, SWEPCO
+                            </p>
+                            <table className="w-full text-sm">
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Base Residential Allocation</td>
+                                        <td className="text-right">40%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
+                                        <td className="text-right">40%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Capacity Market</td>
+                                        <td className="text-right">None (bilateral)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="mt-3 text-sm text-gray-500">
+                                <strong>Allocation Method:</strong> SPP operates an energy market but no mandatory capacity market.
+                                Resource adequacy achieved through bilateral contracts. Many vertically integrated utilities operate within SPP.
+                                Cost allocation similar to traditional regulated markets.
+                            </p>
+                            <p className="mt-2 text-xs text-gray-400">
+                                Source:{' '}
+                                <a href="https://www.spp.org/markets-operations/"
+                                   target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                    SPP Markets & Operations
+                                </a>
+                            </p>
+                        </div>
+
+                        {/* MISO */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-gray-500"></span>
+                                MISO Capacity Market
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">
+                                (Reference market - lower capacity prices than PJM)
+                            </p>
+                            <table className="w-full text-sm">
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Base Residential Allocation</td>
+                                        <td className="text-right">38%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">2024 Capacity Price</td>
+                                        <td className="text-right">~$30/MW-day</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="mt-3 text-sm text-gray-500">
+                                MISO's Planning Resource Auction clears at significantly lower prices than PJM due to different
+                                market design and resource mix. Many vertically integrated utilities still operate within MISO.
+                            </p>
+                            <p className="mt-2 text-xs text-gray-400">
+                                Source:{' '}
+                                <a href="https://www.misoenergy.org/markets-and-operations/resource-adequacy/"
+                                   target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                    MISO Resource Adequacy
+                                </a>
+                            </p>
+                        </div>
+
+                        {/* Allocation Formula */}
+                        <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+                            <h4 className="font-semibold text-gray-900 mb-3">Market-Adjusted Allocation Formula</h4>
+                            <div className="bg-white p-4 rounded font-mono text-sm overflow-x-auto">
+                                <p className="mb-2">Adjusted Allocation = Base Allocation × Market Multiplier</p>
+                                <p className="text-gray-500 text-xs mt-3">Where Market Multiplier:</p>
+                                <ul className="text-xs text-gray-500 mt-1 space-y-1">
+                                    <li>• Regulated/SPP: 1.0 (no adjustment)</li>
+                                    <li>• PJM with high capacity prices (&gt;$100/MW-day): 1.0 to 1.15</li>
+                                    <li>• ERCOT: 0.85 (large loads face prices directly)</li>
+                                </ul>
+                            </div>
+                            <p className="mt-3 text-sm text-gray-600">
+                                Final allocation clamped to 20-55% range to maintain reasonable bounds regardless of market conditions.
+                            </p>
+                        </div>
+                    </div>
+                </Section>
+
+                <Section
                     id="limitations"
                     title="Limitations & Caveats"
                     expandedSection={expandedSection}

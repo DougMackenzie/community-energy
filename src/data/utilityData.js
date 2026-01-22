@@ -85,7 +85,7 @@ export const UTILITY_PROFILES = [
     averageMonthlyUsageKWh: 1100,
     market: { ...SPP_MARKET },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Meta proposed 2GW facility; PSO facing 31% power deficit by 2031',
+    dataCenterNotes: 'Proposed 2GW hyperscale facility; PSO facing 31% power deficit by 2031',
     defaultDataCenterMW: 2000,
   },
   {

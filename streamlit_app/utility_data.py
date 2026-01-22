@@ -85,7 +85,7 @@ UTILITY_PROFILES = [
         'avg_monthly_usage_kwh': 1100,
         'market': {**SPP_MARKET},
         'has_dc_activity': True,
-        'dc_notes': 'Meta proposed 2GW facility; PSO facing 31% power deficit by 2031',
+        'dc_notes': 'Proposed 2GW hyperscale facility; PSO facing 31% power deficit by 2031',
         'default_dc_mw': 2000,
     },
     {
