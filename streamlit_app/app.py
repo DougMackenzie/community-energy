@@ -76,6 +76,12 @@ def apply_utility_profile(utility_id):
         st.session_state.utility['system_peak_mw'] = profile['system_peak_mw']
         st.session_state.utility['avg_monthly_bill'] = profile['avg_monthly_bill']
         st.session_state.utility['avg_monthly_usage'] = profile['avg_monthly_usage_kwh']
+        # Market structure fields
+        st.session_state.utility['base_residential_allocation'] = profile['market']['base_residential_allocation']
+        st.session_state.utility['market_type'] = profile['market']['type']
+        st.session_state.utility['has_capacity_market'] = profile['market']['has_capacity_market']
+        st.session_state.utility['capacity_cost_pass_through'] = profile['market']['capacity_cost_pass_through']
+        st.session_state.utility['capacity_price_2024'] = profile['market'].get('capacity_price_2024')
         st.session_state.datacenter['capacity_mw'] = profile['default_dc_mw']
         st.session_state.datacenter['onsite_generation_mw'] = int(profile['default_dc_mw'] * 0.2)
         st.session_state.selected_utility_id = utility_id
@@ -114,7 +120,16 @@ with st.sidebar:
     # Show utility info
     selected_profile = get_utility_by_id(st.session_state.selected_utility_id)
     if selected_profile and selected_profile['id'] != 'custom':
-        st.info(f"**{selected_profile['residential_customers']:,}** residential customers in rate base")
+        market_type_labels = {
+            'regulated': 'Regulated (Vertically Integrated)',
+            'pjm': 'PJM Capacity Market',
+            'ercot': 'ERCOT Energy-Only',
+            'miso': 'MISO Capacity Market',
+            'spp': 'SPP Energy Market'
+        }
+        market_type = selected_profile['market']['type']
+        market_label = market_type_labels.get(market_type, market_type.upper())
+        st.info(f"**{selected_profile['residential_customers']:,}** residential customers\n\n**Market:** {market_label}")
         if selected_profile['has_dc_activity'] and selected_profile['dc_notes']:
             st.caption(f"_{selected_profile['dc_notes']}_")
 

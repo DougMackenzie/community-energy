@@ -82,6 +82,12 @@ export const CalculatorProvider = ({ children }) => {
         averageMonthlyBill: profile.averageMonthlyBill,
         averageMonthlyUsage: profile.averageMonthlyUsageKWh,
         systemPeakMW: profile.systemPeakMW,
+        // Market structure fields - use market-specific allocation
+        baseResidentialAllocation: profile.market.baseResidentialAllocation,
+        marketType: profile.market.type,
+        hasCapacityMarket: profile.market.hasCapacityMarket,
+        capacityCostPassThrough: profile.market.capacityCostPassThrough,
+        capacityPrice2024: profile.market.capacityPrice2024,
       }));
       setDataCenter(prev => ({
         ...prev,

@@ -92,13 +92,19 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
         const profile = getUtilityById(utilityId);
         if (profile) {
             setSelectedUtilityId(utilityId);
-            // Auto-populate utility values from profile
+            // Auto-populate utility values from profile including market structure
             setUtility({
                 ...utility,
                 residentialCustomers: profile.residentialCustomers,
                 averageMonthlyBill: profile.averageMonthlyBill,
                 averageMonthlyUsage: profile.averageMonthlyUsageKWh,
                 systemPeakMW: profile.systemPeakMW,
+                // Market structure fields - use market-specific allocation
+                baseResidentialAllocation: profile.market.baseResidentialAllocation,
+                marketType: profile.market.type,
+                hasCapacityMarket: profile.market.hasCapacityMarket,
+                capacityCostPassThrough: profile.market.capacityCostPassThrough,
+                capacityPrice2024: profile.market.capacityPrice2024,
             });
             // Auto-populate data center capacity
             setDataCenter((prev) => ({

@@ -149,7 +149,8 @@ const calculateNetResidentialImpact = (
     residentialCustomers: number,
     residentialAllocation: number,
     includeCapacityCredit: boolean = false,
-    onsiteGenMW: number = 0
+    onsiteGenMW: number = 0,
+    utility?: Utility
 ) => {
     const effectivePeakMW = dcCapacityMW * peakCoincidence - onsiteGenMW;
     const transmissionCost = Math.max(0, effectivePeakMW) * INFRASTRUCTURE_COSTS.transmissionCostPerMW;
@@ -158,14 +159,35 @@ const calculateNetResidentialImpact = (
     const annualizedInfraCost = totalInfraCost / 20;
 
     const demandChargeAnnual = DC_RATE_STRUCTURE.demandChargePerMWMonth * 12;
-    const netCapacityCostPerMW = Math.max(0, INFRASTRUCTURE_COSTS.capacityCostPerMWYear - demandChargeAnnual);
+
+    // Market-specific capacity cost calculation
+    let baseCapacityCost = INFRASTRUCTURE_COSTS.capacityCostPerMWYear;
+    let capacityCostPassThrough = utility?.capacityCostPassThrough ?? 0.40;
+
+    // In capacity markets (PJM), use actual 2024 capacity price if available
+    if (utility?.hasCapacityMarket && utility?.capacityPrice2024) {
+        // Convert $/MW-day to $/MW-year
+        const capacityPriceAnnual = utility.capacityPrice2024 * 365;
+        // Blend the capacity cost with market price based on pass-through rate
+        baseCapacityCost = INFRASTRUCTURE_COSTS.capacityCostPerMWYear * 0.5 +
+                          capacityPriceAnnual * capacityCostPassThrough * 0.5;
+    }
+
+    // In energy-only markets (ERCOT), capacity costs are lower (no capacity market)
+    if (utility?.marketType === 'ercot') {
+        baseCapacityCost = INFRASTRUCTURE_COSTS.capacityCostPerMWYear * 0.60;
+    }
+
+    const netCapacityCostPerMW = Math.max(0, baseCapacityCost - demandChargeAnnual);
     let capacityCostOrCredit = Math.max(0, effectivePeakMW) * netCapacityCostPerMW;
 
     let capacityCredit = 0;
     if (includeCapacityCredit) {
         const curtailableMW = dcCapacityMW * (1 - peakCoincidence);
-        const drCreditValue = curtailableMW * INFRASTRUCTURE_COSTS.capacityCostPerMWYear * 0.8;
-        const genCreditValue = onsiteGenMW * INFRASTRUCTURE_COSTS.capacityCostPerMWYear * 0.95;
+        // Capacity credits are more valuable in capacity markets
+        const creditMultiplier = utility?.hasCapacityMarket ? 0.90 : 0.80;
+        const drCreditValue = curtailableMW * baseCapacityCost * creditMultiplier;
+        const genCreditValue = onsiteGenMW * baseCapacityCost * 0.95;
         capacityCredit = drCreditValue + genCreditValue;
         capacityCostOrCredit = capacityCostOrCredit - capacityCredit;
     }
@@ -173,12 +195,25 @@ const calculateNetResidentialImpact = (
     const dcRevenue = calculateDCRevenueOffset(dcCapacityMW, loadFactor, peakCoincidence);
     const grossAnnualInfraCost = annualizedInfraCost + capacityCostOrCredit;
 
-    const energyMarginFlowThrough = 0.85;
+    // Energy-only markets have more direct price signals, so energy margin benefit is higher
+    const energyMarginFlowThrough = utility?.marketType === 'ercot' ? 0.90 : 0.85;
     const fixedCostSpreadingBenefit = dcRevenue.demandRevenue * 0.15;
     const revenueOffset = (dcRevenue.energyMargin * energyMarginFlowThrough) + fixedCostSpreadingBenefit;
 
     const netAnnualImpact = grossAnnualInfraCost - revenueOffset;
-    const residentialImpact = netAnnualImpact * residentialAllocation;
+
+    // Apply market-adjusted residential allocation
+    let adjustedAllocation = residentialAllocation;
+    if (utility?.marketType === 'ercot') {
+        // ERCOT: Large loads face market prices more directly, lower allocation to residential
+        adjustedAllocation = residentialAllocation * 0.85;
+    } else if (utility?.hasCapacityMarket && utility?.capacityPrice2024 && utility.capacityPrice2024 > 100) {
+        // High capacity market prices increase allocation as costs spread
+        const priceMultiplier = Math.min(1.15, 1 + (utility.capacityPrice2024 - 100) / 1000);
+        adjustedAllocation = residentialAllocation * priceMultiplier;
+    }
+
+    const residentialImpact = netAnnualImpact * adjustedAllocation;
     const perCustomerMonthly = residentialImpact / residentialCustomers / 12;
 
     return {
@@ -195,6 +230,8 @@ const calculateNetResidentialImpact = (
             capacityCostOrCredit,
             revenueOffset,
             energyMarginFlowThrough,
+            marketType: utility?.marketType ?? 'regulated',
+            adjustedAllocation,
         },
     };
 };
@@ -275,7 +312,8 @@ export const calculateUnoptimizedTrajectory = (
                 utility.residentialCustomers,
                 currentAllocation,
                 false,
-                0
+                0,
+                utility
             );
 
             yearMetrics = yearImpact.metrics;
@@ -350,7 +388,8 @@ export const calculateFlexibleTrajectory = (
                 utility.residentialCustomers,
                 currentAllocation,
                 true,
-                0
+                0,
+                utility
             );
 
             yearMetrics = yearImpact.metrics;
@@ -428,7 +467,8 @@ export const calculateDispatchableTrajectory = (
                 utility.residentialCustomers,
                 currentAllocation,
                 true,
-                onsiteGenMW
+                onsiteGenMW,
+                utility
             );
 
             yearMetrics = {

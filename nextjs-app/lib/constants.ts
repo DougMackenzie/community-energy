@@ -16,6 +16,8 @@ export interface ScenarioParams {
     description: string;
 }
 
+export type MarketType = 'regulated' | 'pjm' | 'ercot' | 'miso' | 'caiso' | 'spp';
+
 export interface Utility {
     name: string;
     residentialCustomers: number;
@@ -28,6 +30,11 @@ export interface Utility {
     systemPeakMW: number;
     baseResidentialAllocation: number;
     allocationDeclineRate: number;
+    // Market structure fields (optional, default to regulated)
+    marketType?: MarketType;
+    hasCapacityMarket?: boolean;
+    capacityCostPassThrough?: number;
+    capacityPrice2024?: number;
 }
 
 export interface DataCenter {

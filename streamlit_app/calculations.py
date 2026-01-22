@@ -174,7 +174,8 @@ def calculate_net_residential_impact(
     residential_customers: int,
     residential_allocation: float,
     include_capacity_credit: bool = False,
-    onsite_gen_mw: float = 0
+    onsite_gen_mw: float = 0,
+    utility: Dict = None
 ) -> Dict:
     """Calculate net impact on residential bills from data center load."""
 
@@ -187,16 +188,35 @@ def calculate_net_residential_impact(
     total_infra_cost = transmission_cost + distribution_cost
     annualized_infra_cost = total_infra_cost / 20
 
+    # Market-specific capacity cost calculation
+    base_capacity_cost = INFRASTRUCTURE_COSTS['capacity_cost_per_mw_year']
+    capacity_cost_pass_through = utility.get('capacity_cost_pass_through', 0.40) if utility else 0.40
+    market_type = utility.get('market_type', 'regulated') if utility else 'regulated'
+
+    # In capacity markets (PJM), use actual 2024 capacity price if available
+    if utility and utility.get('has_capacity_market') and utility.get('capacity_price_2024'):
+        # Convert $/MW-day to $/MW-year
+        capacity_price_annual = utility['capacity_price_2024'] * 365
+        # Blend the capacity cost with market price
+        base_capacity_cost = (INFRASTRUCTURE_COSTS['capacity_cost_per_mw_year'] * 0.5 +
+                             capacity_price_annual * capacity_cost_pass_through * 0.5)
+
+    # In energy-only markets (ERCOT), capacity costs are lower
+    if market_type == 'ercot':
+        base_capacity_cost = INFRASTRUCTURE_COSTS['capacity_cost_per_mw_year'] * 0.60
+
     # Capacity costs
     demand_charge_annual = DC_RATE_STRUCTURE['demand_charge_per_mw_month'] * 12
-    net_capacity_cost_per_mw = max(0, INFRASTRUCTURE_COSTS['capacity_cost_per_mw_year'] - demand_charge_annual)
+    net_capacity_cost_per_mw = max(0, base_capacity_cost - demand_charge_annual)
     capacity_cost_or_credit = max(0, effective_peak_mw) * net_capacity_cost_per_mw
 
     # DR and generation credits
     if include_capacity_credit:
         curtailable_mw = dc_capacity_mw * (1 - peak_coincidence)
-        dr_credit = curtailable_mw * INFRASTRUCTURE_COSTS['capacity_cost_per_mw_year'] * 0.8
-        gen_credit = onsite_gen_mw * INFRASTRUCTURE_COSTS['capacity_cost_per_mw_year'] * 0.95
+        # Capacity credits are more valuable in capacity markets
+        credit_multiplier = 0.90 if (utility and utility.get('has_capacity_market')) else 0.80
+        dr_credit = curtailable_mw * base_capacity_cost * credit_multiplier
+        gen_credit = onsite_gen_mw * base_capacity_cost * 0.95
         capacity_cost_or_credit = capacity_cost_or_credit - (dr_credit + gen_credit)
 
     # Revenue offset
@@ -204,14 +224,25 @@ def calculate_net_residential_impact(
 
     gross_annual_infra_cost = annualized_infra_cost + capacity_cost_or_credit
 
-    # Conservative flow-through
-    energy_margin_flow_through = 0.85
+    # Energy-only markets have more direct price signals
+    energy_margin_flow_through = 0.90 if market_type == 'ercot' else 0.85
     fixed_cost_spreading_benefit = dc_revenue['demand_revenue'] * 0.15
     revenue_offset = (dc_revenue['energy_margin'] * energy_margin_flow_through) + fixed_cost_spreading_benefit
 
     # Net impact
     net_annual_impact = gross_annual_infra_cost - revenue_offset
-    residential_impact = net_annual_impact * residential_allocation
+
+    # Apply market-adjusted residential allocation
+    adjusted_allocation = residential_allocation
+    if market_type == 'ercot':
+        # ERCOT: Large loads face market prices more directly
+        adjusted_allocation = residential_allocation * 0.85
+    elif utility and utility.get('has_capacity_market') and utility.get('capacity_price_2024', 0) > 100:
+        # High capacity market prices increase allocation
+        price_multiplier = min(1.15, 1 + (utility['capacity_price_2024'] - 100) / 1000)
+        adjusted_allocation = residential_allocation * price_multiplier
+
+    residential_impact = net_annual_impact * adjusted_allocation
     per_customer_monthly = residential_impact / residential_customers / 12
 
     return {
@@ -219,6 +250,8 @@ def calculate_net_residential_impact(
         'gross_cost': gross_annual_infra_cost,
         'revenue_offset': revenue_offset,
         'net_impact': net_annual_impact,
+        'market_type': market_type,
+        'adjusted_allocation': adjusted_allocation,
     }
 
 
@@ -293,7 +326,8 @@ def calculate_unoptimized_trajectory(
                 utility['residential_customers'],
                 allocation_result['allocation'],
                 False,
-                0
+                0,
+                utility
             )
 
             dc_impact = impact_result['per_customer_monthly'] * phase_in
@@ -348,7 +382,8 @@ def calculate_flexible_trajectory(
                 utility['residential_customers'],
                 allocation_result['allocation'],
                 True,  # Include capacity credit
-                0
+                0,
+                utility
             )
 
             dc_impact = impact_result['per_customer_monthly'] * phase_in
@@ -406,7 +441,8 @@ def calculate_dispatchable_trajectory(
                 utility['residential_customers'],
                 allocation_result['allocation'],
                 True,
-                onsite_gen
+                onsite_gen,
+                utility
             )
 
             dc_impact = impact_result['per_customer_monthly'] * phase_in
