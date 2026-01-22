@@ -516,10 +516,50 @@ const MethodologyPage = ({ onNavigate }) => {
               </p>
             </div>
 
-            <p className="mt-4 text-sm text-gray-500">
-              Sources: Google DeepMind carbon-aware computing research, Microsoft sustainability reports,
-              academic literature on data center demand response.
-            </p>
+            <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+              <h4 className="font-semibold text-green-900 mb-2">Field Demonstration Results</h4>
+              <p className="text-sm text-green-800 mb-2">
+                The EPRI DCFlex demonstration at Oracle's Phoenix data center (2024) achieved:
+              </p>
+              <ul className="list-disc list-inside text-sm text-green-800 space-y-1">
+                <li><strong>25% sustained power reduction</strong> during 3-hour peak grid events</li>
+                <li><strong>Up to 40% reduction</strong> demonstrated while maintaining AI quality of service</li>
+                <li><strong>~90% of workloads</strong> on representative clusters can be preempted (paused/delayed)</li>
+              </ul>
+            </div>
+
+            <div className="mt-4 space-y-2">
+              <p className="text-sm font-medium text-gray-700">Data Sources:</p>
+              <ul className="list-disc list-inside text-sm text-gray-500 space-y-1">
+                <li>
+                  <a href="https://spectrum.ieee.org/dcflex-data-center-flexibility" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    IEEE Spectrum: Big Tech Tests Data Center Flexibility (2024)
+                  </a>
+                </li>
+                <li>
+                  <a href="https://arxiv.org/html/2507.00909v1" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    arXiv: Turning AI Data Centers into Grid-Interactive Assets - Phoenix Field Demonstration
+                  </a>
+                </li>
+                <li>
+                  <a href="https://www.latitudemedia.com/news/catalyst-the-mechanics-of-data-center-flexibility/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    Latitude Media: The Mechanics of Data Center Flexibility (2024)
+                  </a>
+                  {' '}- includes Databricks 90% preemptible workload finding
+                </li>
+                <li>
+                  <a href="https://cloud.google.com/blog/products/infrastructure/using-demand-response-to-reduce-data-center-power-consumption" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    Google Cloud: Using Demand Response to Reduce Data Center Power Consumption
+                  </a>
+                </li>
+                <li>
+                  <a href="https://msites.epri.com/dcflex" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    EPRI DCFlex Initiative
+                  </a>
+                  {' '}- 45+ industry collaborators including Google, Meta, Microsoft, NVIDIA
+                </li>
+              </ul>
+            </div>
           </div>
         </Section>
 

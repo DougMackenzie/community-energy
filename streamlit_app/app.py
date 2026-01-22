@@ -696,7 +696,11 @@ with tab6:
 
         # Industry Research
         st.subheader("Industry Research & Academic Literature")
-        st.markdown("Google DeepMind, Microsoft Sustainability Reports, IEEE Publications")
+        st.markdown("""
+        Sources: [EPRI DCFlex Initiative](https://msites.epri.com/dcflex),
+        [IEEE Spectrum (2024)](https://spectrum.ieee.org/dcflex-data-center-flexibility),
+        [Latitude Media / Databricks Research](https://www.latitudemedia.com/news/catalyst-the-mechanics-of-data-center-flexibility/)
+        """)
         industry_data = {
             "Workload Type": [
                 "AI Training",
@@ -711,13 +715,19 @@ with tab6:
                 "5%"
             ],
             "Source": [
-                "Google/Microsoft sustainability research",
-                "Google/Microsoft sustainability research",
-                "Google/Microsoft sustainability research",
-                "Google/Microsoft sustainability research"
+                "EPRI DCFlex / arXiv Phoenix demonstration",
+                "EPRI DCFlex / Databricks ~90% preemptible",
+                "DCFlex Flex 0 tier (strict SLA)",
+                "Industry baseline assumption"
             ]
         }
         st.table(industry_data)
+
+        st.info("""
+        **Key Finding:** The EPRI DCFlex Phoenix demonstration (2024) showed that ~90% of workloads
+        on a representative Databricks cluster could be preempted, and 25-40% power reduction
+        was achievable during peak events while maintaining AI quality of service.
+        """)
 
     with st.expander("Residential Allocation (Calculated)"):
         st.markdown("""
@@ -812,9 +822,24 @@ with tab6:
 
         **Aggregate Flexibility:** Based on this mix, approximately 32% of
         total facility load can be shifted to off-peak hours with minimal operational impact.
+        """)
 
-        *Sources: Google DeepMind carbon-aware computing research, Microsoft sustainability reports,
-        academic literature on data center demand response.*
+        st.success("""
+        **Field Demonstration Results (EPRI DCFlex, 2024)**
+
+        The EPRI DCFlex demonstration at Oracle's Phoenix data center achieved:
+        - **25% sustained power reduction** during 3-hour peak grid events
+        - **Up to 40% reduction** demonstrated while maintaining AI quality of service
+        - **~90% of workloads** on representative clusters can be preempted (paused/delayed)
+        """)
+
+        st.markdown("""
+        **Data Sources:**
+        - [IEEE Spectrum: Big Tech Tests Data Center Flexibility (2024)](https://spectrum.ieee.org/dcflex-data-center-flexibility)
+        - [arXiv: Turning AI Data Centers into Grid-Interactive Assets - Phoenix Field Demonstration](https://arxiv.org/html/2507.00909v1)
+        - [Latitude Media: The Mechanics of Data Center Flexibility](https://www.latitudemedia.com/news/catalyst-the-mechanics-of-data-center-flexibility/) - includes Databricks 90% preemptible workload finding
+        - [Google Cloud: Using Demand Response to Reduce Data Center Power Consumption](https://cloud.google.com/blog/products/infrastructure/using-demand-response-to-reduce-data-center-power-consumption)
+        - [EPRI DCFlex Initiative](https://msites.epri.com/dcflex) - 45+ industry collaborators including Google, Meta, Microsoft, NVIDIA
         """)
 
     with st.expander("Limitations & Caveats"):
