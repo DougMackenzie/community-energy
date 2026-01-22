@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import TrajectoryChart from '@/components/TrajectoryChart';
 import SummaryCards from '@/components/SummaryCards';
 import { useCalculator } from '@/hooks/useCalculator';
@@ -487,6 +488,27 @@ export default function CalculatorPage() {
                 </div>
             </div>
 
+            {/* Energy View Link */}
+            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-200 p-6">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h3 className="font-semibold text-indigo-900">Visualize Grid Impact</h3>
+                        <p className="text-sm text-indigo-700">
+                            See hourly load profiles and load duration curves for each scenario
+                        </p>
+                    </div>
+                    <Link
+                        href="/energy-view"
+                        className="px-5 py-2.5 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 font-medium flex items-center gap-2"
+                    >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        Energy View
+                    </Link>
+                </div>
+            </div>
+
             {/* Export/share options */}
             <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <div className="flex flex-wrap items-center justify-between gap-4">
@@ -497,12 +519,12 @@ export default function CalculatorPage() {
                         </p>
                     </div>
                     <div className="flex gap-3">
-                        <a
+                        <Link
                             href="/methodology"
                             className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
                         >
                             View Methodology
-                        </a>
+                        </Link>
                         <button
                             className="px-4 py-2 text-white bg-primary-600 rounded-lg hover:bg-primary-700"
                             onClick={() => {

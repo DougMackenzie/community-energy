@@ -20,6 +20,7 @@ const Navigation = () => {
     const navLinks = [
         { href: '/', label: 'Home' },
         { href: '/calculator', label: 'Calculator' },
+        { href: '/energy-view', label: 'Energy View' },
         { href: '/methodology', label: 'Methodology' },
     ];
 
