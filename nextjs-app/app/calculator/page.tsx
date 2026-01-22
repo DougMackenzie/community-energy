@@ -279,7 +279,7 @@ export default function CalculatorPage() {
                                 <div className="mt-4">
                                     <SliderField
                                         label="Peak Coincidence (Flex)"
-                                        value={dataCenter.flexPeakCoincidence || 0.8}
+                                        value={dataCenter.flexPeakCoincidence || 0.75}
                                         onChange={(v) => updateDataCenter({ flexPeakCoincidence: v })}
                                         min={0.6}
                                         max={0.95}

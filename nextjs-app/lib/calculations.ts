@@ -361,7 +361,7 @@ export const calculateFlexibleTrajectory = (
     const baseline = calculateBaselineTrajectory(utility, years);
 
     const flexLF = dataCenter.flexLoadFactor || 0.95;
-    const flexPeakCoincidence = dataCenter.flexPeakCoincidence || 0.80;
+    const flexPeakCoincidence = dataCenter.flexPeakCoincidence || 0.75;
 
     for (let year = 0; year <= years; year++) {
         let dcImpact = 0;
@@ -438,7 +438,7 @@ export const calculateDispatchableTrajectory = (
     const baseline = calculateBaselineTrajectory(utility, years);
 
     const flexLF = dataCenter.flexLoadFactor || 0.95;
-    const flexPeakCoincidence = dataCenter.flexPeakCoincidence || 0.80;
+    const flexPeakCoincidence = dataCenter.flexPeakCoincidence || 0.75;
     const onsiteGenMW = dataCenter.onsiteGenerationMW || dataCenter.capacityMW * 0.2;
 
     for (let year = 0; year <= years; year++) {

@@ -109,13 +109,15 @@ function generatePeakDayProfile(
 }
 
 /**
- * Generate annual load duration curve (8760 hours sorted by load)
+ * Generate annual load duration curve (8760 hours sorted by BASE GRID load)
  *
- * Creates synthetic annual profile with:
- * - Seasonal variation (summer peak, winter secondary, spring/fall lower)
- * - Daily variation (peak afternoon, low overnight)
- * - Weekend reduction
- * - Random weather-driven variation
+ * A proper load duration curve:
+ * 1. Generates 8760 hours of base grid load with seasonal/daily variation
+ * 2. Sorts BASE GRID values from highest to lowest (creates smooth monotonic curve)
+ * 3. For each sorted position, calculates DC service based on headroom
+ *
+ * This ensures the gray base grid area is a smooth decreasing curve,
+ * with DC layers stacked on top based on available headroom.
  */
 function generateLoadDurationCurve(
     systemPeakMW: number,
@@ -130,17 +132,7 @@ function generateLoadDurationCurve(
     const dcFirmBaseline = dcCapacityMW * firmLoadFactor;
     const gridCapacity = systemPeakMW + dcFirmBaseline;
 
-    // Generate all 8760 hours with realistic load patterns
-    const hourlyData: {
-        baseGrid: number;
-        dcServed: number;
-        firmDC: number;
-        flexBonus: number;
-        shiftedWorkload: number;
-        totalLoad: number;
-    }[] = [];
-
-    // Daily shape (same as peak day)
+    // Daily shape (same as peak day - based on ERCOT/PJM patterns)
     const dailyShape = [
         0.62, 0.58, 0.55, 0.53, 0.52, 0.54,
         0.60, 0.68, 0.76, 0.84, 0.90, 0.94,
@@ -148,30 +140,32 @@ function generateLoadDurationCurve(
         0.90, 0.82, 0.75, 0.70, 0.66, 0.64,
     ];
 
-    // Use seeded random for consistency
+    // Use seeded random for consistency across renders
     let seed = 12345;
     const seededRandom = () => {
         seed = (seed * 1103515245 + 12345) & 0x7fffffff;
         return seed / 0x7fffffff;
     };
 
+    // Step 1: Generate all 8760 hours of BASE GRID load
+    const baseGridValues: number[] = [];
+
     for (let h = 0; h < hours; h++) {
         const dayOfYear = Math.floor(h / 24);
         const hourOfDay = h % 24;
 
-        // Seasonal factor: peak in late June/July, secondary peak in winter
-        // Summer peak around day 180 (late June)
+        // Seasonal factor: summer peak around day 180 (late June)
         const dayAngle = (dayOfYear - 180) * Math.PI / 182.5;
-        const summerFactor = Math.cos(dayAngle); // 1.0 in summer, -1.0 in winter
+        const summerFactor = Math.cos(dayAngle);
 
-        // Winter has secondary peak (heating), spring/fall are lowest
-        // Creates ~0.65-1.0 range with summer peak
+        // Winter has secondary peak, spring/fall lowest
+        // Range: ~0.65-1.0 with summer peak
         const seasonalFactor = 0.75 + 0.25 * Math.max(summerFactor, summerFactor * 0.3 + 0.2);
 
         // Daily shape factor
         const dailyFactor = dailyShape[hourOfDay];
 
-        // Weekend reduction (about 12% lower)
+        // Weekend reduction (~12% lower)
         const dayOfWeek = dayOfYear % 7;
         const weekendFactor = (dayOfWeek === 5 || dayOfWeek === 6) ? 0.88 : 1.0;
 
@@ -180,30 +174,14 @@ function generateLoadDurationCurve(
 
         // Combined load factor
         const loadFactor = seasonalFactor * dailyFactor * weekendFactor * randomFactor;
-        const baseGrid = systemPeakMW * loadFactor;
-
-        // Calculate DC service for this hour
-        const headroomForDC = Math.max(0, gridCapacity - baseGrid);
-        const dcServed = Math.min(dcMaxWants, headroomForDC);
-        const shiftedWorkload = Math.max(0, dcMaxWants - headroomForDC);
-
-        const firmDC = Math.min(dcFirmBaseline, dcServed);
-        const flexBonus = Math.max(0, dcServed - dcFirmBaseline);
-
-        hourlyData.push({
-            baseGrid,
-            dcServed,
-            firmDC,
-            flexBonus,
-            shiftedWorkload,
-            totalLoad: baseGrid + dcServed,
-        });
+        baseGridValues.push(systemPeakMW * loadFactor);
     }
 
-    // Sort by total load descending to create duration curve
-    const sorted = [...hourlyData].sort((a, b) => b.totalLoad - a.totalLoad);
+    // Step 2: Sort BASE GRID values from highest to lowest
+    // This creates the smooth monotonically decreasing load duration curve
+    const sortedBaseGrid = [...baseGridValues].sort((a, b) => b - a);
 
-    // Sample at intervals for smooth curve (200 points)
+    // Step 3: Sample at intervals and calculate DC for each point
     const samples = 200;
     const result = [];
 
@@ -211,15 +189,27 @@ function generateLoadDurationCurve(
         const idx = Math.floor((i / samples) * hours);
         const hourNumber = Math.round((i / samples) * hours);
 
+        // Get the sorted base grid value at this position
+        const baseGrid = sortedBaseGrid[idx];
+
+        // Calculate DC service based on headroom at this base grid level
+        const headroomForDC = Math.max(0, gridCapacity - baseGrid);
+        const dcServed = Math.min(dcMaxWants, headroomForDC);
+        const shiftedWorkload = Math.max(0, dcMaxWants - headroomForDC);
+
+        // Break down DC into firm baseline vs flex bonus
+        const firmDC = Math.min(dcFirmBaseline, dcServed);
+        const flexBonus = Math.max(0, dcServed - dcFirmBaseline);
+
         result.push({
             hourNumber,
             percentile: (i / samples) * 100,
-            baseGrid: sorted[idx].baseGrid,
-            firmDC: sorted[idx].firmDC,
-            flexBonus: sorted[idx].flexBonus,
-            shiftedWorkload: sorted[idx].shiftedWorkload,
+            baseGrid,
+            firmDC,
+            flexBonus,
+            shiftedWorkload,
             gridCapacity,
-            dcServed: sorted[idx].dcServed,
+            dcServed,
         });
     }
 
