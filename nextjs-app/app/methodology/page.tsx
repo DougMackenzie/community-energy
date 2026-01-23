@@ -7,6 +7,7 @@ import {
     WORKLOAD_TYPES,
     DEFAULT_UTILITY,
     DEFAULT_DATA_CENTER,
+    DC_RATE_STRUCTURE,
     formatCurrency,
 } from '@/lib/constants';
 
@@ -50,14 +51,6 @@ export default function MethodologyPage() {
 
     const toggleSection = (section: string) => {
         setExpandedSection(expandedSection === section ? null : section);
-    };
-
-    const DC_RATE_STRUCTURE = {
-        coincidentPeakChargePerMWMonth: 5430,
-        nonCoincidentPeakChargePerMWMonth: 3620,
-        demandChargePerMWMonth: 9050,
-        energyMarginPerMWh: 4.88,
-        ercot4CPTransmissionRate: 5.50,
     };
 
     return (
@@ -451,18 +444,32 @@ export default function MethodologyPage() {
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
-                                        <td className="py-2">Demand charge rate</td>
-                                        <td className="text-right font-medium">$9,050/MW-mo</td>
+                                        <td className="py-2">Total demand charge rate</td>
+                                        <td className="text-right font-medium">${DC_RATE_STRUCTURE.demandChargePerMWMonth.toLocaleString()}/MW-mo</td>
                                         <td className="pl-4 text-xs">
                                             <a href="https://www.psoklahoma.com/company/about/rates/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                                 PSO Rate Schedules - Large Power & Light (LPL) Tariff
                                             </a>
-                                            <span className="block text-gray-400"><span className="px-1 bg-amber-100 text-amber-800 rounded">Representative value</span> from PSO large customer tariff</span>
+                                            <span className="block text-gray-400"><span className="px-1 bg-amber-100 text-amber-800 rounded">Representative value</span> derived from PSO peak ($7.05/kW) + max ($2.47/kW) demand charges</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">- Coincident peak portion</td>
+                                        <td className="text-right font-medium">${DC_RATE_STRUCTURE.coincidentPeakChargePerMWMonth.toLocaleString()}/MW-mo</td>
+                                        <td className="pl-4 text-xs text-gray-500">
+                                            ~60% of total - based on usage during system peak hours
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">- Non-coincident peak portion</td>
+                                        <td className="text-right font-medium">${DC_RATE_STRUCTURE.nonCoincidentPeakChargePerMWMonth.toLocaleString()}/MW-mo</td>
+                                        <td className="pl-4 text-xs text-gray-500">
+                                            ~40% of total - based on customer's own monthly peak
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2">Energy margin (utility spread)</td>
-                                        <td className="text-right font-medium">$4.88/MWh</td>
+                                        <td className="text-right font-medium">${DC_RATE_STRUCTURE.energyMarginPerMWh}/MWh</td>
                                         <td className="pl-4 text-xs">
                                             <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium">Model Assumption</span>
                                             <span className="block text-gray-400 mt-1">Utility's wholesale-to-retail spread on energy sales. Industry typical range $3-8/MWh.</span>
@@ -856,7 +863,7 @@ export default function MethodologyPage() {
                                     </tr>
                                     <tr className="border-b border-green-100">
                                         <td className="py-2 font-medium">4CP Transmission Rate</td>
-                                        <td className="text-right font-bold text-green-700">~$5.50/kW-mo</td>
+                                        <td className="text-right font-bold text-green-700">~${DC_RATE_STRUCTURE.ercot4CPTransmissionRate}/kW-mo</td>
                                         <td className="pl-4 text-xs">
                                             <a href="https://www.ercot.com/services/rq/re/4cp" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                                 ERCOT 4CP Program
@@ -1112,6 +1119,64 @@ export default function MethodologyPage() {
                                     <strong>Flexibility Benefit:</strong> A 1,000 MW data center curtailing from 100% to 75% during on-peak
                                     hours saves approximately <strong>$21M/year</strong> in peak demand charges (250 MW × $7,050/MW × 12 months).
                                     The ratchet provision further rewards consistent flexible operation.
+                                </p>
+                            </div>
+
+                            {/* PSO Riders */}
+                            <div className="mt-4 border-t border-gray-200 pt-4">
+                                <h5 className="font-semibold text-gray-800 mb-2">PSO Applicable Riders (Service Level 1 - Transmission)</h5>
+                                <p className="text-xs text-gray-500 mb-3">
+                                    In addition to base demand and energy charges, PSO applies several riders that significantly affect the all-in rate.
+                                    Source:{' '}
+                                    <a href="https://www.psoklahoma.com/lib/docs/ratesandtariffs/Oklahoma/PSOLargeCommercialandIndustrialFeb2025.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                        PSO Tariff Book (Feb 2025)
+                                    </a>
+                                </p>
+                                <table className="w-full text-xs">
+                                    <thead>
+                                        <tr className="border-b border-gray-200">
+                                            <th className="text-left py-1 font-medium">Rider</th>
+                                            <th className="text-right py-1 font-medium">Rate</th>
+                                            <th className="text-left py-1 pl-3 font-medium">Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr className="border-b border-gray-100">
+                                            <td className="py-1">FCA (Fuel Cost Adjustment)</td>
+                                            <td className="text-right">$0.0194/kWh</td>
+                                            <td className="pl-3 text-gray-500">Passthrough - no ratepayer impact analysis</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-100">
+                                            <td className="py-1">SPPTC (SPP Transmission)</td>
+                                            <td className="text-right">$0.18/kW</td>
+                                            <td className="pl-3 text-gray-500">Demand-based</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-100">
+                                            <td className="py-1">RRR (Renewable Resources)</td>
+                                            <td className="text-right">$1.95/kW</td>
+                                            <td className="pl-3 text-gray-500">Demand-based</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-100">
+                                            <td className="py-1">DRR (Dispatchable Resource)</td>
+                                            <td className="text-right">$1.73/kW</td>
+                                            <td className="pl-3 text-gray-500">Demand-based</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-100">
+                                            <td className="py-1">DSM (Demand-Side Mgmt)</td>
+                                            <td className="text-right">$0.0065/kWh</td>
+                                            <td className="pl-3 text-gray-500">High-volume opt-out available</td>
+                                        </tr>
+                                        <tr className="border-b border-gray-100">
+                                            <td className="py-1">TCR (Tax Change)</td>
+                                            <td className="text-right">2.614%</td>
+                                            <td className="pl-3 text-gray-500">Applied to base charges</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p className="mt-2 text-xs text-gray-600">
+                                    <strong>All-in rate estimate:</strong> ~$43-45/MWh at published tariff rates for transmission-level service,
+                                    including base charges plus applicable riders. The base energy charge ($1.71/MWh) is small compared to
+                                    demand charges and riders spread over consumed energy.
                                 </p>
                             </div>
                         </div>

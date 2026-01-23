@@ -289,19 +289,25 @@ def main():
             "Data Point": [
                 "Base residential allocation",
                 "Allocation weighting method",
-                "Demand charge rate",
+                f"Total demand charge rate",
+                "- Coincident peak (CP) portion",
+                "- Non-coincident peak (NCP) portion",
                 "Energy margin (utility spread)"
             ],
             "Value": [
                 f"{DEFAULT_UTILITY_DISPLAY['baseResidentialAllocation']*100:.0f}%",
                 "40/40/20",
-                "$9,050/MW-mo",
-                "$4.88/MWh"
+                f"${DC_RATE_STRUCTURE['demand_charge_per_mw_month']:,}/MW-mo",
+                f"${DC_RATE_STRUCTURE['coincident_peak_charge_per_mw_month']:,}/MW-mo",
+                f"${DC_RATE_STRUCTURE['non_coincident_peak_charge_per_mw_month']:,}/MW-mo",
+                f"${DC_RATE_STRUCTURE['energy_margin_per_mwh']}/MWh"
             ],
             "Source": [
                 "[RAP Cost Allocation Manual](https://www.raponline.org/wp-content/uploads/2023/09/rap-lazar-chernick-marcus-lebel-electric-cost-allocation-new-era-2020-january.pdf) - Typical 35-45%",
                 "**Model Assumption** - 40% volumetric, 40% demand, 20% customer count",
-                "[PSO Rate Schedules](https://www.psoklahoma.com/company/about/rates/) - **Representative value**",
+                "[PSO Rate Schedules](https://www.psoklahoma.com/company/about/rates/) - Peak ($7.05/kW) + Max ($2.47/kW)",
+                "~60% of total - based on usage during system peak hours",
+                "~40% of total - based on customer's own monthly peak",
                 "**Model Assumption** - Industry typical $3-8/MWh"
             ]
         }
@@ -483,6 +489,24 @@ def main():
             ]
         }
         st.table(spp_data)
+
+        st.markdown("#### PSO LPL Tariff Riders (Service Level 1 - Transmission)")
+        st.caption("In addition to base demand/energy charges, PSO applies several riders affecting the all-in rate")
+        pso_riders = {
+            "Rider": ["FCA (Fuel Cost Adjustment)", "SPPTC (SPP Transmission)", "RRR (Renewable Resources)",
+                     "DRR (Dispatchable Resource)", "DSM (Demand-Side Mgmt)", "TCR (Tax Change)"],
+            "Rate": ["$0.0194/kWh", "$0.18/kW", "$1.95/kW", "$1.73/kW", "$0.0065/kWh", "2.614%"],
+            "Notes": ["Passthrough - no ratepayer impact", "Demand-based", "Demand-based",
+                     "Demand-based", "High-volume opt-out available", "Applied to base charges"]
+        }
+        st.table(pso_riders)
+        st.info("""
+        **All-in rate estimate:** ~$43-45/MWh at published tariff rates for transmission-level service,
+        including base charges plus applicable riders. The base energy charge ($1.71/MWh) is small
+        compared to demand charges and riders spread over consumed energy.
+
+        Source: [PSO Tariff Book (Feb 2025)](https://www.psoklahoma.com/lib/docs/ratesandtariffs/Oklahoma/PSOLargeCommercialandIndustrialFeb2025.pdf)
+        """)
 
         st.markdown("### Market-Adjusted Allocation Formula")
         st.code("""
