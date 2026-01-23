@@ -1019,6 +1019,168 @@ export default function MethodologyPage() {
                 </Section>
 
                 <Section
+                    id="tariff-structures"
+                    title="Utility-Specific Tariff Structures"
+                    expandedSection={expandedSection}
+                    toggleSection={toggleSection}
+                >
+                    <div className="space-y-6 text-gray-600">
+                        <p>
+                            Demand charge structures vary significantly between utilities. Our model uses actual tariff data
+                            from major utilities to calculate more accurate demand charge revenue and flexibility benefits.
+                        </p>
+
+                        <p className="text-sm bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <strong>Why this matters:</strong> The benefit of flexible operation depends heavily on the tariff structure.
+                            Utilities with TOU (time-of-use) peak charges or coincident peak-based rates offer greater benefits
+                            to data centers that can curtail during peak periods.
+                        </p>
+
+                        {/* Tariff Types Overview */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-3">Demand Charge Structure Types</h4>
+                            <div className="space-y-4">
+                                <div className="border-l-4 border-blue-500 pl-4">
+                                    <p className="font-semibold text-gray-900">TOU Peak + NCP (PSO, Dominion)</p>
+                                    <p className="text-sm text-gray-600 mt-1">
+                                        Separate charges: <strong>Peak Demand</strong> based on usage during on-peak hours (e.g., 2pm-9pm summer)
+                                        and <strong>Maximum Demand</strong> based on any-time peak. Flexible loads can dramatically reduce
+                                        peak demand charges by curtailing during on-peak windows.
+                                    </p>
+                                </div>
+                                <div className="border-l-4 border-amber-500 pl-4">
+                                    <p className="font-semibold text-gray-900">Coincident Peak (Duke, Georgia Power)</p>
+                                    <p className="text-sm text-gray-600 mt-1">
+                                        Charges based on contribution during <strong>system coincident peak</strong> hours.
+                                        Often includes annual ratchets (e.g., 70% of annual maximum). Benefit depends on
+                                        ability to predict and avoid system peaks.
+                                    </p>
+                                </div>
+                                <div className="border-l-4 border-green-500 pl-4">
+                                    <p className="font-semibold text-gray-900">4 Coincident Peak / 4CP (ERCOT)</p>
+                                    <p className="text-sm text-gray-600 mt-1">
+                                        Transmission costs allocated based on load during <strong>4 specific peak hours per year</strong>
+                                        (one per season). <strong>Huge incentive</strong> for flexible loads—curtailing just 4 hours
+                                        can reduce transmission costs by 25%+.
+                                    </p>
+                                </div>
+                                <div className="border-l-4 border-purple-500 pl-4">
+                                    <p className="font-semibold text-gray-900">1CP/5CP (AEP Ohio/PJM)</p>
+                                    <p className="text-sm text-gray-600 mt-1">
+                                        <strong>1CP</strong> for transmission (single annual peak) plus <strong>5CP</strong> for capacity
+                                        allocation (5 summer peaks). PJM market overlay adds capacity costs. Flexible loads that
+                                        can predict CP hours gain significant advantage.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* PSO Example */}
+                        <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                            <h4 className="font-semibold text-gray-900 mb-2">
+                                Example: PSO Large Power & Light (LPL) Tariff
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">Schedule 242/244/246, effective 1/30/2025</p>
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Charge Type</th>
+                                        <th className="text-right py-2 font-medium">Rate</th>
+                                        <th className="text-left py-2 pl-4 font-medium">Application</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Peak Demand Charge</td>
+                                        <td className="text-right font-bold text-blue-700">$7.05/kW</td>
+                                        <td className="pl-4 text-xs text-gray-600">On-peak hours: 2pm-9pm Mon-Fri, June 1 - Sept 30</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Maximum Demand Charge</td>
+                                        <td className="text-right">$2.47/kW</td>
+                                        <td className="pl-4 text-xs text-gray-600">Non-coincident peak (any time highest 15-min avg)</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Ratchet Provision</td>
+                                        <td className="text-right">90%</td>
+                                        <td className="pl-4 text-xs text-gray-600">Peak demand floor = 90% of highest in past 11 months</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div className="mt-3 p-3 bg-green-50 rounded border border-green-200">
+                                <p className="text-sm text-green-900">
+                                    <strong>Flexibility Benefit:</strong> A 1,000 MW data center curtailing from 100% to 75% during on-peak
+                                    hours saves approximately <strong>$21M/year</strong> in peak demand charges (250 MW × $7,050/MW × 12 months).
+                                    The ratchet provision further rewards consistent flexible operation.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Flexibility Multipliers */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-3">Flexibility Benefit by Utility</h4>
+                            <p className="text-sm text-gray-600 mb-3">
+                                Our model applies utility-specific flexibility benefit multipliers based on tariff structure:
+                            </p>
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Utility/Type</th>
+                                        <th className="text-right py-2 font-medium">Multiplier</th>
+                                        <th className="text-left py-2 pl-4 font-medium text-xs">Rationale</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">ERCOT (4CP)</td>
+                                        <td className="text-right font-bold text-green-600">1.8×</td>
+                                        <td className="pl-4 text-xs text-gray-600">Curtail 4 hours/year = major transmission savings</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Dominion Virginia</td>
+                                        <td className="text-right font-bold text-green-600">1.6×</td>
+                                        <td className="pl-4 text-xs text-gray-600">Large on-peak vs off-peak differential ($8.77 vs $0.51)</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">AEP Ohio (1CP/5CP)</td>
+                                        <td className="text-right">1.5×</td>
+                                        <td className="pl-4 text-xs text-gray-600">CP avoidance reduces transmission + capacity</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">PSO Oklahoma</td>
+                                        <td className="text-right">1.4×</td>
+                                        <td className="pl-4 text-xs text-gray-600">Peak demand charge {'>'} max demand charge</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Georgia Power</td>
+                                        <td className="text-right">1.3×</td>
+                                        <td className="pl-4 text-xs text-gray-600">Summer peak avoidance affects 12-month ratchet</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Duke Carolinas</td>
+                                        <td className="text-right">1.2×</td>
+                                        <td className="pl-4 text-xs text-gray-600">CP-based with moderate benefit from avoidance</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Generic Regulated</td>
+                                        <td className="text-right text-gray-500">1.0×</td>
+                                        <td className="pl-4 text-xs text-gray-600">Baseline - standard CP/NCP split</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <p className="text-sm text-amber-900">
+                                <strong>Note:</strong> These tariff rates are from publicly available utility rate schedules as of early 2025.
+                                Rates change through regulatory proceedings and fuel cost adjustments. Always verify current rates
+                                with the specific utility for actual project planning.
+                            </p>
+                        </div>
+                    </div>
+                </Section>
+
+                <Section
                     id="limitations"
                     title="Limitations & Caveats"
                     expandedSection={expandedSection}

@@ -59,8 +59,10 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
     }, [selectedUtilityId]);
 
     const trajectories = useMemo(() => {
-        return generateAllTrajectories(utility, dataCenter, projectionYears);
-    }, [utility, dataCenter, projectionYears]);
+        // Pass the tariff from the selected utility profile for utility-specific demand charge calculations
+        const tariff = selectedUtilityProfile?.tariff;
+        return generateAllTrajectories(utility, dataCenter, projectionYears, tariff);
+    }, [utility, dataCenter, projectionYears, selectedUtilityProfile]);
 
     const chartData = useMemo(() => {
         return formatTrajectoriesForChart(trajectories);

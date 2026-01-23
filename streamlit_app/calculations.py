@@ -83,6 +83,111 @@ TIME_PARAMS = {
     'projection_years': 10,
 }
 
+# ============================================
+# TARIFF STRUCTURE PRESETS
+# Based on actual utility rate schedules
+# ============================================
+
+# Demand charge structure types
+DEMAND_CHARGE_TYPES = {
+    'TOU_PEAK_NCP': 'Time-of-use peak demand + Non-coincident peak',
+    'COINCIDENT_PEAK': 'Based on contribution to system peak',
+    'CP_1_5': '1CP transmission + 5CP capacity (PJM)',
+    'CP_4': 'Four coincident peak (ERCOT)',
+    'ROLLING_RATCHET': 'NCP with rolling ratchet',
+}
+
+# PSO Large Power & Light (LPL) - Schedule 242/244/246
+PSO_TARIFF = {
+    'demand_charge_type': 'TOU_PEAK_NCP',
+    'peak_demand_charge': 7050,  # $7.05/kW at Transmission level
+    'max_demand_charge': 2470,   # $2.47/kW at Transmission level
+    'energy_charge': 1.708,      # $0.001708/kWh at Transmission level
+    'ratchet_percent': 0.90,
+    'ratchet_months': 11,
+    'on_peak_definition': '2pm-9pm Mon-Fri, June 1 - September 30',
+    'flexibility_benefit_multiplier': 1.4,
+    'tariff_source': 'PSO LPL Schedule 242/244/246, effective 1/30/2025',
+}
+
+# Dominion Virginia GS-4 (Large General Service)
+DOMINION_TARIFF = {
+    'demand_charge_type': 'TOU_PEAK_NCP',
+    'peak_demand_charge': 8769,  # $8.769/kW on-peak (transmission voltage)
+    'max_demand_charge': 515,    # $0.515/kW off-peak
+    'energy_charge': 27.0,
+    'ratchet_percent': 0.90,
+    'ratchet_months': 11,
+    'on_peak_definition': 'Seasonal TOU periods defined by Dominion',
+    'flexibility_benefit_multiplier': 1.6,
+    'tariff_source': 'Dominion Virginia GS-4 Schedule, effective 1/1/2025',
+}
+
+# Duke Energy Carolinas LGS (Large General Service)
+DUKE_TARIFF = {
+    'demand_charge_type': 'COINCIDENT_PEAK',
+    'peak_demand_charge': 5200,
+    'max_demand_charge': 3500,   # Distribution component
+    'energy_charge': 35.0,
+    'ratchet_percent': 0.70,
+    'ratchet_months': 12,
+    'on_peak_definition': 'System coincident peak hours',
+    'flexibility_benefit_multiplier': 1.2,
+    'tariff_source': 'Duke Energy Carolinas LGS Schedule',
+}
+
+# Georgia Power PLL-18 (Power and Light Large)
+GEORGIA_POWER_TARIFF = {
+    'demand_charge_type': 'ROLLING_RATCHET',
+    'peak_demand_charge': 13270,  # $13.27/kW of billing demand
+    'max_demand_charge': 0,       # Included in peak (rolling max)
+    'energy_charge': 14.27,
+    'ratchet_percent': 0.95,
+    'ratchet_months': 12,
+    'on_peak_definition': 'Summer months weighted at 95%, Winter at 60%',
+    'flexibility_benefit_multiplier': 1.3,
+    'tariff_source': 'Georgia Power PLL-18 Schedule, 2025',
+}
+
+# AEP Ohio GS-4 with PJM market overlay
+AEP_OHIO_TARIFF = {
+    'demand_charge_type': 'CP_1_5',
+    'peak_demand_charge': 6500,   # Base demand + transmission
+    'max_demand_charge': 2000,    # Distribution
+    'energy_charge': 45.0,
+    'ratchet_percent': 0.85,
+    'ratchet_months': 12,
+    'on_peak_definition': '1CP for transmission, 5CP for PJM capacity',
+    'flexibility_benefit_multiplier': 1.5,
+    'tariff_source': 'AEP Ohio GS-4 + PJM capacity charges',
+}
+
+# ERCOT - 4CP transmission allocation
+ERCOT_TARIFF = {
+    'demand_charge_type': 'CP_4',
+    'peak_demand_charge': 5500,   # 4CP-based transmission (~$5.50/kW-month)
+    'max_demand_charge': 1500,    # Distribution/local charges
+    'energy_charge': 50.0,
+    'ratchet_percent': None,
+    'ratchet_months': 0,
+    'on_peak_definition': '4 highest system peak hours per year (one per season)',
+    'flexibility_benefit_multiplier': 1.8,
+    'tariff_source': 'ERCOT 4CP transmission allocation methodology',
+}
+
+# Generic regulated utility tariff
+GENERIC_TARIFF = {
+    'demand_charge_type': 'COINCIDENT_PEAK',
+    'peak_demand_charge': 5430,
+    'max_demand_charge': 3620,
+    'energy_charge': 30.0,
+    'ratchet_percent': 0.80,
+    'ratchet_months': 12,
+    'on_peak_definition': 'Utility-defined peak periods',
+    'flexibility_benefit_multiplier': 1.0,
+    'tariff_source': 'Generic regulated utility assumptions',
+}
+
 
 # ============================================
 # RESIDENTIAL ALLOCATION MODEL
@@ -153,6 +258,101 @@ def calculate_residential_allocation(
 
 
 # ============================================
+# TARIFF-BASED DEMAND CHARGE CALCULATIONS
+# ============================================
+
+def calculate_tariff_based_demand_charges(
+    dc_capacity_mw: float,
+    load_factor: float,
+    peak_coincidence: float,
+    tariff: Dict
+) -> Dict:
+    """
+    Calculate demand charges and revenue based on utility-specific tariff structure.
+
+    Different utilities have very different demand charge structures:
+    - TOU_PEAK_NCP: PSO/Dominion style - separate peak (TOU) and max (NCP) charges
+    - COINCIDENT_PEAK: Duke style - based on system coincident peak
+    - CP_1_5: AEP Ohio/PJM style - 1CP transmission + 5CP capacity
+    - CP_4: ERCOT style - 4 coincident peaks determine transmission costs
+    - ROLLING_RATCHET: Georgia Power style - 12-month rolling maximum
+    """
+    is_flexible = peak_coincidence < 1.0
+    annual_mwh = dc_capacity_mw * load_factor * 8760
+    demand_type = tariff.get('demand_charge_type', 'COINCIDENT_PEAK')
+
+    if demand_type == 'TOU_PEAK_NCP':
+        # PSO/Dominion style: Peak demand based on on-peak usage, Max based on any-time peak
+        peak_demand_mw = dc_capacity_mw * peak_coincidence
+        max_demand_mw = dc_capacity_mw  # NCP is based on installed capacity
+
+        # Apply ratchet if defined
+        if tariff.get('ratchet_percent') and tariff.get('ratchet_months'):
+            ratchet_multiplier = 1.0 if is_flexible else 1.05
+            peak_demand_mw *= ratchet_multiplier
+
+    elif demand_type == 'COINCIDENT_PEAK':
+        # Duke style: Both charges based on coincident peak contribution
+        peak_demand_mw = dc_capacity_mw * peak_coincidence
+        max_demand_mw = dc_capacity_mw * peak_coincidence * 0.85
+
+        if tariff.get('ratchet_percent'):
+            peak_demand_mw = max(peak_demand_mw, dc_capacity_mw * tariff['ratchet_percent'])
+
+    elif demand_type == 'CP_1_5':
+        # AEP Ohio/PJM style: 1CP for transmission, 5CP for capacity
+        cp_avoidance_multiplier = 0.65 if is_flexible else 1.0
+        peak_demand_mw = dc_capacity_mw * peak_coincidence * cp_avoidance_multiplier
+        max_demand_mw = dc_capacity_mw * 0.3
+
+    elif demand_type == 'CP_4':
+        # ERCOT style: 4 coincident peaks determine transmission costs
+        four_cp_avoidance = 0.50 if is_flexible else 1.0
+        peak_demand_mw = dc_capacity_mw * peak_coincidence * four_cp_avoidance
+        max_demand_mw = dc_capacity_mw * 0.25
+
+    elif demand_type == 'ROLLING_RATCHET':
+        # Georgia Power style: 12-month rolling maximum
+        peak_demand_mw = dc_capacity_mw * peak_coincidence
+        max_demand_mw = 0
+
+        if tariff.get('ratchet_percent'):
+            summer_multiplier = 0.85 if is_flexible else 1.0
+            peak_demand_mw *= (1 + (tariff['ratchet_percent'] - 1) * summer_multiplier)
+
+    else:
+        # Fallback to simple CP/NCP split
+        peak_demand_mw = dc_capacity_mw * peak_coincidence
+        max_demand_mw = dc_capacity_mw
+
+    # Calculate annual revenues
+    peak_demand_revenue = peak_demand_mw * tariff['peak_demand_charge'] * 12
+    max_demand_revenue = max_demand_mw * tariff['max_demand_charge'] * 12
+    total_demand_revenue = peak_demand_revenue + max_demand_revenue
+    energy_revenue = annual_mwh * tariff['energy_charge']
+    total_revenue = total_demand_revenue + energy_revenue
+
+    # Calculate flexibility benefit (savings vs firm load)
+    firm_peak_revenue = dc_capacity_mw * tariff['peak_demand_charge'] * 12
+    firm_max_revenue = dc_capacity_mw * tariff['max_demand_charge'] * 12
+    firm_total_demand = firm_peak_revenue + firm_max_revenue
+    flexibility_benefit = (firm_total_demand - total_demand_revenue) if is_flexible else 0
+
+    return {
+        'peak_demand_revenue': peak_demand_revenue,
+        'max_demand_revenue': max_demand_revenue,
+        'total_demand_revenue': total_demand_revenue,
+        'energy_revenue': energy_revenue,
+        'total_revenue': total_revenue,
+        'flexibility_benefit': flexibility_benefit,
+        'peak_demand_mw': peak_demand_mw,
+        'max_demand_mw': max_demand_mw,
+        'annual_mwh': annual_mwh,
+        'tariff_type': demand_type,
+    }
+
+
+# ============================================
 # CORE ECONOMIC MODEL
 # ============================================
 
@@ -209,7 +409,8 @@ def calculate_net_residential_impact(
     residential_allocation: float,
     include_capacity_credit: bool = False,
     onsite_gen_mw: float = 0,
-    utility: Dict = None
+    utility: Dict = None,
+    tariff: Dict = None
 ) -> Dict:
     """
     Calculate net impact on residential bills from data center load.
@@ -262,17 +463,40 @@ def calculate_net_residential_impact(
         base_capacity_cost = INFRASTRUCTURE_COSTS['capacity_cost_per_mw_year'] * 0.50
 
     # ============================================
-    # DEMAND CHARGE REVENUE - Split CP/NCP
+    # DEMAND CHARGE REVENUE - Tariff-specific or generic
     # ============================================
-    dc_revenue = calculate_dc_revenue_offset(
-        dc_capacity_mw, load_factor, peak_coincidence,
-        effective_capacity_mw=dc_capacity_mw,
-        market_type=market_type
-    )
+    tariff_based_revenue = None
+    flexibility_benefit_from_tariff = 0
+
+    if tariff:
+        # Use utility-specific tariff calculations
+        tariff_based_revenue = calculate_tariff_based_demand_charges(
+            dc_capacity_mw, load_factor, peak_coincidence, tariff
+        )
+        flexibility_benefit_from_tariff = tariff_based_revenue['flexibility_benefit']
+
+        # Create compatible dc_revenue structure
+        dc_revenue = {
+            'cp_demand_revenue': tariff_based_revenue['peak_demand_revenue'],
+            'ncp_demand_revenue': tariff_based_revenue['max_demand_revenue'],
+            'demand_revenue': tariff_based_revenue['total_demand_revenue'],
+            'energy_margin': tariff_based_revenue['energy_revenue'],
+            'per_year': tariff_based_revenue['total_revenue'],
+        }
+    else:
+        # Use generic split demand charge calculation
+        dc_revenue = calculate_dc_revenue_offset(
+            dc_capacity_mw, load_factor, peak_coincidence,
+            effective_capacity_mw=dc_capacity_mw,
+            market_type=market_type
+        )
 
     # Net capacity cost after CP demand charge offset
-    cp_demand_charge_annual = DC_RATE_STRUCTURE['coincident_peak_charge_per_mw_month'] * 12
-    net_capacity_cost_per_mw = max(0, base_capacity_cost - cp_demand_charge_annual)
+    if tariff:
+        peak_demand_charge_annual = tariff['peak_demand_charge'] * 12
+    else:
+        peak_demand_charge_annual = DC_RATE_STRUCTURE['coincident_peak_charge_per_mw_month'] * 12
+    net_capacity_cost_per_mw = max(0, base_capacity_cost - peak_demand_charge_annual)
     capacity_cost_or_credit = max(0, effective_peak_mw) * net_capacity_cost_per_mw
 
     # ============================================
@@ -295,6 +519,12 @@ def calculate_net_residential_impact(
     energy_margin_flow_through = 0.90 if market_type == 'ercot' else 0.85
     ncp_demand_benefit = dc_revenue['ncp_demand_revenue'] * 0.20
     revenue_offset = (dc_revenue['energy_margin'] * energy_margin_flow_through) + ncp_demand_benefit
+
+    # Apply tariff-specific flexibility benefit if using tariff-based calculations
+    if tariff and is_flexible and flexibility_benefit_from_tariff > 0:
+        flex_multiplier = tariff.get('flexibility_benefit_multiplier', 1.0)
+        scaled_flex_benefit = flexibility_benefit_from_tariff * flex_multiplier * 0.15
+        revenue_offset += scaled_flex_benefit
 
     net_annual_impact = gross_annual_infra_cost - revenue_offset
 
@@ -363,7 +593,8 @@ def calculate_baseline_trajectory(
 def calculate_unoptimized_trajectory(
     utility: Dict,
     datacenter: Dict,
-    years: int = 10
+    years: int = 10,
+    tariff: Dict = None
 ) -> Dict:
     """Calculate trajectory for firm load scenario."""
     base_year = TIME_PARAMS['base_year']
@@ -396,7 +627,8 @@ def calculate_unoptimized_trajectory(
                 allocation_result['allocation'],
                 False,
                 0,
-                utility
+                utility,
+                tariff
             )
 
             dc_impact = impact_result['per_customer_monthly'] * phase_in
@@ -419,7 +651,8 @@ def calculate_unoptimized_trajectory(
 def calculate_flexible_trajectory(
     utility: Dict,
     datacenter: Dict,
-    years: int = 10
+    years: int = 10,
+    tariff: Dict = None
 ) -> Dict:
     """Calculate trajectory for flexible load scenario."""
     base_year = TIME_PARAMS['base_year']
@@ -452,7 +685,8 @@ def calculate_flexible_trajectory(
                 allocation_result['allocation'],
                 True,  # Include capacity credit
                 0,
-                utility
+                utility,
+                tariff
             )
 
             dc_impact = impact_result['per_customer_monthly'] * phase_in
@@ -474,7 +708,8 @@ def calculate_flexible_trajectory(
 def calculate_dispatchable_trajectory(
     utility: Dict,
     datacenter: Dict,
-    years: int = 10
+    years: int = 10,
+    tariff: Dict = None
 ) -> Dict:
     """Calculate trajectory for flexible + generation scenario."""
     base_year = TIME_PARAMS['base_year']
@@ -511,7 +746,8 @@ def calculate_dispatchable_trajectory(
                 allocation_result['allocation'],
                 True,
                 onsite_gen,
-                utility
+                utility,
+                tariff
             )
 
             dc_impact = impact_result['per_customer_monthly'] * phase_in
@@ -534,16 +770,16 @@ def calculate_dispatchable_trajectory(
 # COMBINED FUNCTIONS
 # ============================================
 
-def generate_all_trajectories(utility: Dict, datacenter: Dict, years: int = None) -> Dict:
+def generate_all_trajectories(utility: Dict, datacenter: Dict, years: int = None, tariff: Dict = None) -> Dict:
     """Generate all four scenario trajectories."""
     if years is None:
         years = TIME_PARAMS.get('projection_years', 10)
 
     return {
         'baseline': calculate_baseline_trajectory(utility, years),
-        'unoptimized': calculate_unoptimized_trajectory(utility, datacenter, years),
-        'flexible': calculate_flexible_trajectory(utility, datacenter, years),
-        'dispatchable': calculate_dispatchable_trajectory(utility, datacenter, years),
+        'unoptimized': calculate_unoptimized_trajectory(utility, datacenter, years, tariff),
+        'flexible': calculate_flexible_trajectory(utility, datacenter, years, tariff),
+        'dispatchable': calculate_dispatchable_trajectory(utility, datacenter, years, tariff),
     }
 
 

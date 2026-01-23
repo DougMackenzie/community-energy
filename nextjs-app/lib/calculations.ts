@@ -1,6 +1,6 @@
 /**
  * Community Energy Cost Calculator - Calculation Engine (TypeScript)
- * 
+ *
  * Core calculation logic migrated from React app with TypeScript types
  */
 
@@ -14,6 +14,150 @@ import {
     type Utility,
     type DataCenter,
 } from './constants';
+
+import {
+    type TariffStructure,
+    type DemandChargeStructure,
+} from './utilityData';
+
+// ============================================
+// TARIFF-BASED DEMAND CHARGE CALCULATIONS
+// ============================================
+
+/**
+ * Calculate demand charges and revenue based on utility-specific tariff structure
+ *
+ * Different utilities have very different demand charge structures:
+ * - TOU_PEAK_NCP: PSO/Dominion style - separate peak (TOU) and max (NCP) charges
+ * - COINCIDENT_PEAK: Duke style - based on system coincident peak
+ * - CP_1_5: AEP Ohio/PJM style - 1CP transmission + 5CP capacity
+ * - CP_4: ERCOT style - 4 coincident peaks determine transmission costs
+ * - ROLLING_RATCHET: Georgia Power style - 12-month rolling maximum
+ *
+ * @param dcCapacityMW - Data center interconnection capacity
+ * @param loadFactor - Average load factor (0-1)
+ * @param peakCoincidence - Fraction of capacity during system peaks (0-1)
+ * @param tariff - Utility-specific tariff structure
+ * @returns Demand charge revenue and breakdown
+ */
+export function calculateTariffBasedDemandCharges(
+    dcCapacityMW: number,
+    loadFactor: number,
+    peakCoincidence: number,
+    tariff: TariffStructure
+): {
+    peakDemandRevenue: number;
+    maxDemandRevenue: number;
+    totalDemandRevenue: number;
+    energyRevenue: number;
+    totalRevenue: number;
+    flexibilityBenefit: number; // How much a flexible DC saves vs firm on demand charges
+    breakdown: {
+        peakDemandMW: number;
+        maxDemandMW: number;
+        annualMWh: number;
+        tariffType: DemandChargeStructure;
+    };
+} {
+    const isFlexible = peakCoincidence < 1.0;
+    const annualMWh = dcCapacityMW * loadFactor * 8760;
+
+    let peakDemandMW: number;
+    let maxDemandMW: number;
+
+    switch (tariff.demandChargeType) {
+        case 'TOU_PEAK_NCP':
+            // PSO/Dominion style: Peak demand based on on-peak usage, Max based on any-time peak
+            // Flexible DCs can reduce peak demand by curtailing during on-peak hours
+            peakDemandMW = dcCapacityMW * peakCoincidence;
+            maxDemandMW = dcCapacityMW; // NCP is based on installed capacity
+
+            // Apply ratchet if defined (e.g., 90% of highest peak in past 11 months)
+            if (tariff.ratchetPercent && tariff.ratchetMonths) {
+                // For firm load, ratchet keeps them paying high all year
+                // For flexible load, ratchet is set at their lower curtailed level
+                // This is a simplification - actual ratchet depends on operational history
+                const ratchetMultiplier = isFlexible ? 1.0 : 1.05; // Firm pays slightly more due to ratchet
+                peakDemandMW *= ratchetMultiplier;
+            }
+            break;
+
+        case 'COINCIDENT_PEAK':
+            // Duke style: Both charges based on coincident peak contribution
+            peakDemandMW = dcCapacityMW * peakCoincidence;
+            maxDemandMW = dcCapacityMW * peakCoincidence * 0.85; // Distribution portion lower
+
+            // Annual ratchet
+            if (tariff.ratchetPercent) {
+                // Ratchet applies to both firm and flexible, but flexible has lower base
+                peakDemandMW = Math.max(peakDemandMW, dcCapacityMW * tariff.ratchetPercent);
+            }
+            break;
+
+        case 'CP_1_5':
+            // AEP Ohio/PJM style: 1CP for transmission, 5CP for capacity
+            // Flexible load that can predict and curtail during CPs gets major benefit
+            const cpAvoidanceMultiplier = isFlexible ? 0.65 : 1.0; // Flexible avoids ~35% of CP
+            peakDemandMW = dcCapacityMW * peakCoincidence * cpAvoidanceMultiplier;
+            maxDemandMW = dcCapacityMW * 0.3; // Distribution is smaller portion
+            break;
+
+        case 'CP_4':
+            // ERCOT style: 4 coincident peaks determine transmission costs
+            // HUGE benefit for flexible loads - curtail 4 hours = major savings
+            const fourCPAvoidance = isFlexible ? 0.50 : 1.0; // Flexible avoids ~50% by curtailing during 4CP
+            peakDemandMW = dcCapacityMW * peakCoincidence * fourCPAvoidance;
+            maxDemandMW = dcCapacityMW * 0.25; // Distribution/local charges
+            break;
+
+        case 'ROLLING_RATCHET':
+            // Georgia Power style: 12-month rolling maximum
+            // Summer peak affects billing for entire year
+            peakDemandMW = dcCapacityMW * peakCoincidence;
+            maxDemandMW = 0; // Included in peak demand (single charge with ratchet)
+
+            // 95% summer ratchet means one high summer month affects whole year
+            if (tariff.ratchetPercent) {
+                const summerMultiplier = isFlexible ? 0.85 : 1.0;
+                peakDemandMW *= (1 + (tariff.ratchetPercent - 1) * summerMultiplier);
+            }
+            break;
+
+        default:
+            // Fallback to simple CP/NCP split
+            peakDemandMW = dcCapacityMW * peakCoincidence;
+            maxDemandMW = dcCapacityMW;
+    }
+
+    // Calculate annual revenues
+    const peakDemandRevenue = peakDemandMW * tariff.peakDemandCharge * 12;
+    const maxDemandRevenue = maxDemandMW * tariff.maxDemandCharge * 12;
+    const totalDemandRevenue = peakDemandRevenue + maxDemandRevenue;
+    const energyRevenue = annualMWh * tariff.energyCharge;
+    const totalRevenue = totalDemandRevenue + energyRevenue;
+
+    // Calculate flexibility benefit (savings vs firm load)
+    const firmPeakDemandMW = dcCapacityMW; // Firm load at full capacity
+    const firmPeakRevenue = firmPeakDemandMW * tariff.peakDemandCharge * 12;
+    const firmMaxRevenue = dcCapacityMW * tariff.maxDemandCharge * 12;
+    const firmTotalDemand = firmPeakRevenue + firmMaxRevenue;
+    const flexibilityBenefit = isFlexible ? (firmTotalDemand - totalDemandRevenue) : 0;
+
+    return {
+        peakDemandRevenue,
+        maxDemandRevenue,
+        totalDemandRevenue,
+        energyRevenue,
+        totalRevenue,
+        flexibilityBenefit,
+        breakdown: {
+            peakDemandMW,
+            maxDemandMW,
+            annualMWh,
+            tariffType: tariff.demandChargeType,
+        },
+    };
+}
 
 // ============================================
 // TYPE DEFINITIONS
@@ -146,9 +290,10 @@ const calculateResidentialAllocation = (
  * Calculate net residential impact with improved demand charge modeling
  *
  * Key improvements:
- * 1. Split demand charges into CP (coincident peak) and NCP (non-coincident peak)
- * 2. ERCOT 4CP transmission allocation - huge benefit for flexible loads
- * 3. Flexible DCs can install more capacity for same grid impact
+ * 1. Utility-specific tariff structures (TOU, CP, 4CP, ratchets)
+ * 2. Split demand charges into CP (coincident peak) and NCP (non-coincident peak)
+ * 3. ERCOT 4CP transmission allocation - huge benefit for flexible loads
+ * 4. Flexible DCs can install more capacity for same grid impact
  */
 const calculateNetResidentialImpact = (
     dcCapacityMW: number,
@@ -158,7 +303,8 @@ const calculateNetResidentialImpact = (
     residentialAllocation: number,
     includeCapacityCredit: boolean = false,
     onsiteGenMW: number = 0,
-    utility?: Utility
+    utility?: Utility,
+    tariff?: TariffStructure
 ) => {
     // For flexible DCs (peakCoincidence < 1.0), they can install more capacity
     // because each MW only adds (peakCoincidence) MW to system peak
@@ -223,19 +369,52 @@ const calculateNetResidentialImpact = (
     }
 
     // ============================================
-    // DEMAND CHARGE REVENUE - Split CP/NCP
+    // DEMAND CHARGE REVENUE - Tariff-specific or generic
     // ============================================
-    // Use the new split demand charge calculation
-    const dcRevenue = calculateDCRevenueOffset(dcCapacityMW, loadFactor, peakCoincidence, 1, {
-        effectiveCapacityMW: dcCapacityMW, // Same capacity for both scenarios
-        marketType: utility?.marketType,
-    });
+    let dcRevenue: ReturnType<typeof calculateDCRevenueOffset>;
+    let tariffBasedRevenue: ReturnType<typeof calculateTariffBasedDemandCharges> | null = null;
+    let flexibilityBenefitFromTariff = 0;
+
+    if (tariff) {
+        // Use utility-specific tariff calculations
+        tariffBasedRevenue = calculateTariffBasedDemandCharges(
+            dcCapacityMW,
+            loadFactor,
+            peakCoincidence,
+            tariff
+        );
+        flexibilityBenefitFromTariff = tariffBasedRevenue.flexibilityBenefit;
+
+        // Create compatible dcRevenue object for rest of calculation
+        dcRevenue = {
+            cpDemandRevenue: tariffBasedRevenue.peakDemandRevenue,
+            ncpDemandRevenue: tariffBasedRevenue.maxDemandRevenue,
+            demandRevenue: tariffBasedRevenue.totalDemandRevenue,
+            energyMargin: tariffBasedRevenue.energyRevenue,
+            total: tariffBasedRevenue.totalRevenue,
+            perYear: tariffBasedRevenue.totalRevenue,
+            breakdown: {
+                coincidentPeakMW: tariffBasedRevenue.breakdown.peakDemandMW,
+                ncpPeakMW: tariffBasedRevenue.breakdown.maxDemandMW,
+                annualMWh: tariffBasedRevenue.breakdown.annualMWh,
+                cpChargeRate: tariff.peakDemandCharge,
+                ncpChargeRate: tariff.maxDemandCharge,
+            },
+        };
+    } else {
+        // Use generic split demand charge calculation
+        dcRevenue = calculateDCRevenueOffset(dcCapacityMW, loadFactor, peakCoincidence, 1, {
+            effectiveCapacityMW: dcCapacityMW,
+            marketType: utility?.marketType,
+        });
+    }
 
     // Net capacity cost after demand charge offset
-    // CP demand charges offset CP-related capacity costs
-    // NCP demand charges provide additional revenue
-    const cpDemandChargeAnnual = DC_RATE_STRUCTURE.coincidentPeakChargePerMWMonth * 12;
-    const netCapacityCostPerMW = Math.max(0, baseCapacityCost - cpDemandChargeAnnual);
+    // Peak/CP demand charges offset CP-related capacity costs
+    const peakDemandChargeAnnual = tariff
+        ? tariff.peakDemandCharge * 12
+        : DC_RATE_STRUCTURE.coincidentPeakChargePerMWMonth * 12;
+    const netCapacityCostPerMW = Math.max(0, baseCapacityCost - peakDemandChargeAnnual);
     let capacityCostOrCredit = Math.max(0, effectivePeakMW) * netCapacityCostPerMW;
 
     // ============================================
@@ -260,12 +439,22 @@ const calculateNetResidentialImpact = (
     // Energy margin flows through to benefit ratepayers
     const energyMarginFlowThrough = utility?.marketType === 'ercot' ? 0.90 : 0.85;
 
-    // NCP demand charges provide fixed cost spreading benefit
+    // NCP/Max demand charges provide fixed cost spreading benefit
     // (The DC is paying toward system costs regardless of when they use power)
     const ncpDemandBenefit = dcRevenue.ncpDemandRevenue * 0.20;
 
     // Total revenue offset
-    const revenueOffset = (dcRevenue.energyMargin * energyMarginFlowThrough) + ncpDemandBenefit;
+    let revenueOffset = (dcRevenue.energyMargin * energyMarginFlowThrough) + ncpDemandBenefit;
+
+    // Apply tariff-specific flexibility benefit if using tariff-based calculations
+    // This captures the savings from avoiding peak demand charges in TOU tariffs
+    if (tariff && isFlexible && flexibilityBenefitFromTariff > 0) {
+        // The flexibility benefit represents reduced demand charges paid by DC
+        // This is a cost the DC avoids, which reduces the total cost impact
+        // Apply the tariff's flexibility benefit multiplier to scale the benefit appropriately
+        const scaledFlexBenefit = flexibilityBenefitFromTariff * tariff.flexibilityBenefitMultiplier * 0.15;
+        revenueOffset += scaledFlexBenefit;
+    }
 
     const netAnnualImpact = grossAnnualInfraCost - revenueOffset;
 
@@ -354,7 +543,8 @@ export const calculateBaselineTrajectory = (
 export const calculateUnoptimizedTrajectory = (
     utility: Utility = DEFAULT_UTILITY,
     dataCenter: DataCenter = DEFAULT_DATA_CENTER,
-    years: number = TIME_PARAMS.projectionYears
+    years: number = TIME_PARAMS.projectionYears,
+    tariff?: TariffStructure
 ): TrajectoryPoint[] => {
     const trajectory: TrajectoryPoint[] = [];
     const baseYear = TIME_PARAMS.baseYear;
@@ -389,7 +579,8 @@ export const calculateUnoptimizedTrajectory = (
                 currentAllocation,
                 false,
                 0,
-                utility
+                utility,
+                tariff
             );
 
             yearMetrics = yearImpact.metrics;
@@ -430,7 +621,8 @@ export const calculateUnoptimizedTrajectory = (
 export const calculateFlexibleTrajectory = (
     utility: Utility = DEFAULT_UTILITY,
     dataCenter: DataCenter = DEFAULT_DATA_CENTER,
-    years: number = TIME_PARAMS.projectionYears
+    years: number = TIME_PARAMS.projectionYears,
+    tariff?: TariffStructure
 ): TrajectoryPoint[] => {
     const trajectory: TrajectoryPoint[] = [];
     const baseYear = TIME_PARAMS.baseYear;
@@ -465,7 +657,8 @@ export const calculateFlexibleTrajectory = (
                 currentAllocation,
                 true,
                 0,
-                utility
+                utility,
+                tariff
             );
 
             yearMetrics = yearImpact.metrics;
@@ -507,7 +700,8 @@ export const calculateFlexibleTrajectory = (
 export const calculateDispatchableTrajectory = (
     utility: Utility = DEFAULT_UTILITY,
     dataCenter: DataCenter = DEFAULT_DATA_CENTER,
-    years: number = TIME_PARAMS.projectionYears
+    years: number = TIME_PARAMS.projectionYears,
+    tariff?: TariffStructure
 ): TrajectoryPoint[] => {
     const trajectory: TrajectoryPoint[] = [];
     const baseYear = TIME_PARAMS.baseYear;
@@ -544,7 +738,8 @@ export const calculateDispatchableTrajectory = (
                 currentAllocation,
                 true,
                 onsiteGenMW,
-                utility
+                utility,
+                tariff
             );
 
             yearMetrics = {
@@ -595,13 +790,14 @@ export const calculateDispatchableTrajectory = (
 export const generateAllTrajectories = (
     utility: Utility = DEFAULT_UTILITY,
     dataCenter: DataCenter = DEFAULT_DATA_CENTER,
-    years: number = TIME_PARAMS.projectionYears
+    years: number = TIME_PARAMS.projectionYears,
+    tariff?: TariffStructure
 ) => {
     return {
         baseline: calculateBaselineTrajectory(utility, years),
-        unoptimized: calculateUnoptimizedTrajectory(utility, dataCenter, years),
-        flexible: calculateFlexibleTrajectory(utility, dataCenter, years),
-        dispatchable: calculateDispatchableTrajectory(utility, dataCenter, years),
+        unoptimized: calculateUnoptimizedTrajectory(utility, dataCenter, years, tariff),
+        flexible: calculateFlexibleTrajectory(utility, dataCenter, years, tariff),
+        dispatchable: calculateDispatchableTrajectory(utility, dataCenter, years, tariff),
     };
 };
 

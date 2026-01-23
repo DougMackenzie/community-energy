@@ -17,6 +17,57 @@
 
 export type MarketType = 'regulated' | 'pjm' | 'ercot' | 'miso' | 'caiso' | 'spp';
 
+/**
+ * Demand charge structure types based on actual utility tariffs
+ *
+ * TOU_PEAK_NCP: Time-of-use peak demand + Non-coincident peak (e.g., PSO, Dominion)
+ *   - Peak Demand: Based on usage during defined on-peak hours
+ *   - Maximum Demand: Based on highest usage any time (NCP)
+ *   - Often includes ratchet provisions
+ *
+ * COINCIDENT_PEAK: Based on contribution to system peak (e.g., Duke)
+ *   - Billing demand tied to usage during system coincident peak
+ *   - May include annual ratchet
+ *
+ * CP_1_5: 1CP transmission + 5CP capacity (PJM markets)
+ *   - Transmission: Based on single annual coincident peak
+ *   - Capacity: Based on 5 summer coincident peaks
+ *
+ * CP_4: Four coincident peak (ERCOT)
+ *   - Transmission costs allocated based on 4 seasonal peak hours
+ *   - Huge incentive to curtail during these specific hours
+ *
+ * ROLLING_RATCHET: NCP with rolling ratchet (e.g., Georgia Power)
+ *   - Monthly billing but with 12-month rolling maximum
+ *   - Summer peak affects billing for full year
+ */
+export type DemandChargeStructure = 'TOU_PEAK_NCP' | 'COINCIDENT_PEAK' | 'CP_1_5' | 'CP_4' | 'ROLLING_RATCHET';
+
+export interface TariffStructure {
+  // Type of demand charge structure
+  demandChargeType: DemandChargeStructure;
+  // Peak/On-Peak Demand Charge ($/MW-month)
+  // For TOU: charged during on-peak hours
+  // For CP: charged based on coincident peak contribution
+  peakDemandCharge: number;
+  // Maximum/NCP Demand Charge ($/MW-month)
+  // Charged based on customer's own highest usage any time
+  maxDemandCharge: number;
+  // Energy charge ($/MWh) - for reference
+  energyCharge: number;
+  // Ratchet percentage (e.g., 0.90 = 90% of highest peak in preceding months)
+  ratchetPercent?: number;
+  // How many months the ratchet applies
+  ratchetMonths?: number;
+  // On-peak period definition (for TOU tariffs)
+  onPeakDefinition?: string;
+  // Whether flexible load benefits from this tariff structure
+  // Higher = more benefit from curtailing during peaks
+  flexibilityBenefitMultiplier: number;
+  // Notes about tariff source
+  tariffSource: string;
+}
+
 export interface MarketStructure {
   type: MarketType;
   hasCapacityMarket: boolean;
@@ -50,6 +101,8 @@ export interface UtilityProfile {
   averageMonthlyUsageKWh: number;
   // Market structure
   market: MarketStructure;
+  // Tariff structure for large power customers
+  tariff: TariffStructure;
   // Data center context
   hasDataCenterActivity: boolean;
   dataCenterNotes?: string;
@@ -112,6 +165,129 @@ const SPP_MARKET: MarketStructure = {
   notes: 'Southwest Power Pool. Energy market but no mandatory capacity market. Many vertically integrated utilities. Resource adequacy through bilateral contracts.'
 };
 
+// ============================================
+// TARIFF STRUCTURE PRESETS
+// Based on actual utility rate schedules
+// ============================================
+
+/**
+ * PSO Large Power & Light (LPL) - Schedule 242/244/246
+ * Source: PSO Tariff effective 1/30/2025
+ * Key: TOU Peak demand + Maximum demand with 90% ratchet
+ */
+const PSO_TARIFF: TariffStructure = {
+  demandChargeType: 'TOU_PEAK_NCP',
+  peakDemandCharge: 7050, // $7.05/kW at Transmission level
+  maxDemandCharge: 2470, // $2.47/kW at Transmission level
+  energyCharge: 1.708, // $0.001708/kWh at Transmission level
+  ratchetPercent: 0.90,
+  ratchetMonths: 11,
+  onPeakDefinition: '2pm-9pm Mon-Fri, June 1 - September 30',
+  flexibilityBenefitMultiplier: 1.4, // High benefit - peak charge >> max charge
+  tariffSource: 'PSO LPL Schedule 242/244/246, effective 1/30/2025',
+};
+
+/**
+ * Dominion Virginia GS-4 (Large General Service)
+ * Source: Dominion Energy Virginia tariff schedules
+ * Key: TOU On-Peak vs Off-Peak demand with large differential
+ */
+const DOMINION_TARIFF: TariffStructure = {
+  demandChargeType: 'TOU_PEAK_NCP',
+  peakDemandCharge: 8769, // $8.769/kW on-peak (transmission voltage)
+  maxDemandCharge: 515, // $0.515/kW off-peak
+  energyCharge: 27.0, // ~$0.027/kWh
+  ratchetPercent: 0.90, // Off-peak billed only for demand exceeding 90% of on-peak
+  ratchetMonths: 11,
+  onPeakDefinition: 'Seasonal TOU periods defined by Dominion',
+  flexibilityBenefitMultiplier: 1.6, // Very high benefit - $8.25/kW on-peak avoidance
+  tariffSource: 'Dominion Virginia GS-4 Schedule, effective 1/1/2025',
+};
+
+/**
+ * Duke Energy Carolinas LGS (Large General Service)
+ * Source: Duke Energy Carolinas rate schedules
+ * Key: Coincident peak method with 70% annual ratchet
+ */
+const DUKE_TARIFF: TariffStructure = {
+  demandChargeType: 'COINCIDENT_PEAK',
+  peakDemandCharge: 5200, // Based on CP contribution
+  maxDemandCharge: 3500, // Distribution component
+  energyCharge: 35.0, // ~$0.035/kWh blended
+  ratchetPercent: 0.70, // 70% of annual max
+  ratchetMonths: 12,
+  onPeakDefinition: 'System coincident peak hours',
+  flexibilityBenefitMultiplier: 1.2, // Moderate benefit from CP avoidance
+  tariffSource: 'Duke Energy Carolinas LGS Schedule',
+};
+
+/**
+ * Georgia Power PLL-18 (Power and Light Large)
+ * Source: Georgia Power tariff schedules 2025
+ * Key: 12-month rolling ratchet with summer/winter weighting
+ */
+const GEORGIA_POWER_TARIFF: TariffStructure = {
+  demandChargeType: 'ROLLING_RATCHET',
+  peakDemandCharge: 13270, // $13.27/kW of billing demand
+  maxDemandCharge: 0, // Included in peak demand (rolling max)
+  energyCharge: 14.27, // Mid-tier rate
+  ratchetPercent: 0.95, // 95% of summer average
+  ratchetMonths: 12,
+  onPeakDefinition: 'Summer months weighted at 95%, Winter at 60%',
+  flexibilityBenefitMultiplier: 1.3, // High impact from summer peak avoidance
+  tariffSource: 'Georgia Power PLL-18 Schedule, 2025',
+};
+
+/**
+ * AEP Ohio GS-4 with PJM market overlay
+ * Source: AEP Ohio tariff book + PJM capacity
+ * Key: 1CP transmission pilot + 5CP capacity allocation
+ */
+const AEP_OHIO_TARIFF: TariffStructure = {
+  demandChargeType: 'CP_1_5',
+  peakDemandCharge: 6500, // Base demand + transmission
+  maxDemandCharge: 2000, // Distribution
+  energyCharge: 45.0, // Including various riders
+  ratchetPercent: 0.85, // 85% contract minimum for new DC tariff
+  ratchetMonths: 12,
+  onPeakDefinition: '1CP for transmission, 5CP for PJM capacity',
+  flexibilityBenefitMultiplier: 1.5, // Massive benefit from CP avoidance
+  tariffSource: 'AEP Ohio GS-4 + PJM capacity charges',
+};
+
+/**
+ * ERCOT - 4CP transmission allocation
+ * Source: ERCOT transmission cost allocation methodology
+ * Key: Transmission costs based on 4 coincident peak hours per year
+ */
+const ERCOT_TARIFF: TariffStructure = {
+  demandChargeType: 'CP_4',
+  peakDemandCharge: 5500, // 4CP-based transmission (~$5.50/kW-month)
+  maxDemandCharge: 1500, // Distribution/local charges
+  energyCharge: 50.0, // Varies by retailer, competitive market
+  ratchetPercent: undefined, // No ratchet - pure 4CP
+  ratchetMonths: 0,
+  onPeakDefinition: '4 highest system peak hours per year (one per season)',
+  flexibilityBenefitMultiplier: 1.8, // Huge benefit - curtail 4 hours = major savings
+  tariffSource: 'ERCOT 4CP transmission allocation methodology',
+};
+
+/**
+ * Generic regulated utility tariff
+ * For utilities without specific tariff data
+ */
+const GENERIC_REGULATED_TARIFF: TariffStructure = {
+  demandChargeType: 'COINCIDENT_PEAK',
+  peakDemandCharge: 5430, // ~60% of total
+  maxDemandCharge: 3620, // ~40% of total
+  energyCharge: 30.0,
+  ratchetPercent: 0.80,
+  ratchetMonths: 12,
+  onPeakDefinition: 'Utility-defined peak periods',
+  flexibilityBenefitMultiplier: 1.0, // Baseline
+  tariffSource: 'Generic regulated utility assumptions',
+};
+
 export const UTILITY_PROFILES: UtilityProfile[] = [
   // ============================================
   // REGULATED / VERTICALLY INTEGRATED UTILITIES
@@ -128,10 +304,11 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     averageMonthlyBill: 130,
     averageMonthlyUsageKWh: 1100,
     market: { ...SPP_MARKET },
+    tariff: { ...PSO_TARIFF },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Multiple large data center proposals; PSO facing 31% power deficit by 2031 with 779MW of new large load requests',
     defaultDataCenterMW: 1000,
-    sources: ['PSO 2024 IRP Report', 'Oklahoma Corporation Commission filings', 'AEP annual reports']
+    sources: ['PSO 2024 IRP Report', 'Oklahoma Corporation Commission filings', 'AEP annual reports', 'PSO LPL Schedule 242/244/246']
   },
   {
     id: 'duke-carolinas',
@@ -145,6 +322,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     averageMonthlyBill: 135,
     averageMonthlyUsageKWh: 1000,
     market: { ...REGULATED_MARKET },
+    tariff: { ...DUKE_TARIFF },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Growing data center presence in Charlotte metro area',
     defaultDataCenterMW: 1000,
@@ -162,6 +340,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     averageMonthlyBill: 132,
     averageMonthlyUsageKWh: 1000,
     market: { ...REGULATED_MARKET },
+    tariff: { ...DUKE_TARIFF },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Serves Raleigh area with growing tech sector',
     defaultDataCenterMW: 800,
@@ -179,6 +358,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     averageMonthlyBill: 153,
     averageMonthlyUsageKWh: 1150,
     market: { ...REGULATED_MARKET },
+    tariff: { ...GEORGIA_POWER_TARIFF },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Projecting 8,200 MW of load growth by 2030, including significant data center demand in Atlanta metro',
     defaultDataCenterMW: 1200,
@@ -196,6 +376,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     averageMonthlyBill: 140,
     averageMonthlyUsageKWh: 1050,
     market: { ...REGULATED_MARKET },
+    tariff: { ...GENERIC_REGULATED_TARIFF },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Phoenix metro data center growth; projecting 40% peak demand growth to 13,000 MW by 2031',
     defaultDataCenterMW: 800,
@@ -213,6 +394,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     averageMonthlyBill: 125,
     averageMonthlyUsageKWh: 900,
     market: { ...REGULATED_MARKET },
+    tariff: { ...GENERIC_REGULATED_TARIFF },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Data centers requesting to triple peak demand; 4,000+ MW of AI data center projects planned in Reno area',
     defaultDataCenterMW: 1500,
@@ -230,6 +412,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     averageMonthlyBill: 105,
     averageMonthlyUsageKWh: 700,
     market: { ...REGULATED_MARKET },
+    tariff: { ...GENERIC_REGULATED_TARIFF },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Data centers expected to drive 2/3 of new demand; 19% peak increase projected by 2031',
     defaultDataCenterMW: 600,
@@ -254,6 +437,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
       ...PJM_MARKET,
       notes: 'AEP Ohio operates in PJM. Ohio is a deregulated retail market but AEP still owns transmission. 2024 PJM capacity price surge significantly impacts costs.'
     },
+    tariff: { ...AEP_OHIO_TARIFF },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Ohio seeing significant data center growth; AEP proposed new rate class for data centers to PUCO',
     defaultDataCenterMW: 1000,
@@ -276,6 +460,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
       baseResidentialAllocation: 0.38,
       notes: 'I&M operates in PJM but remains vertically integrated with owned generation including Cook Nuclear Plant. Hybrid market structure.'
     },
+    tariff: { ...AEP_OHIO_TARIFF }, // Similar PJM structure
     hasDataCenterActivity: true,
     dataCenterNotes: 'Northeast Indiana and Fort Wayne area seeing industrial and data center growth',
     defaultDataCenterMW: 500,
@@ -298,6 +483,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
       baseResidentialAllocation: 0.40,
       notes: 'Appalachian Power operates in PJM but WV remains traditionally regulated. Virginia portion affected by data center growth in Northern Virginia spillover.'
     },
+    tariff: { ...AEP_OHIO_TARIFF }, // PJM-based
     hasDataCenterActivity: true,
     dataCenterNotes: 'Virginia portion seeing data center interest as Northern Virginia capacity constrained',
     defaultDataCenterMW: 600,
@@ -318,6 +504,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
       ...SPP_MARKET,
       notes: 'SWEPCO operates in SPP (energy market, no capacity market). Vertically integrated with state PUC regulation in AR, LA, and TX panhandle.'
     },
+    tariff: { ...PSO_TARIFF }, // SPP-style similar to PSO
     hasDataCenterActivity: false,
     dataCenterNotes: 'Less data center activity than other AEP territories',
     defaultDataCenterMW: 400,
@@ -344,6 +531,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
       baseResidentialAllocation: 0.35,
       notes: 'Dominion operates in PJM but Virginia remains traditionally regulated. Data center capital of the world - 9GW DC peak forecast in 10 years. PJM capacity costs flow through but state regulates retail rates.'
     },
+    tariff: { ...DOMINION_TARIFF },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Data center capital of the world; 933MW connected in 2023, forecasting 9GW DC peak in 10 years (25% system increase)',
     defaultDataCenterMW: 1500,
@@ -368,6 +556,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
       ...ERCOT_MARKET,
       notes: 'Energy-only market with no capacity payments. 46% of projected load growth from data centers. Lower baseline capacity costs but transmission costs still flow to ratepayers. Retail choice allows competitive pricing.'
     },
+    tariff: { ...ERCOT_TARIFF },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Data centers account for 46% of projected load growth; demand projected to grow from 87 GW to 145 GW by 2031. 230GW of large load interconnection requests.',
     defaultDataCenterMW: 3000,
@@ -389,6 +578,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     averageMonthlyBill: 144,
     averageMonthlyUsageKWh: 865,
     market: { ...REGULATED_MARKET },
+    tariff: { ...GENERIC_REGULATED_TARIFF },
     hasDataCenterActivity: false,
     dataCenterNotes: 'Enter your own utility parameters',
     defaultDataCenterMW: 1000,
