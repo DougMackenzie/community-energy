@@ -73,6 +73,7 @@ DC_RATE_STRUCTURE = {
 TIME_PARAMS = {
     'base_year': 2025,
     'general_inflation': 0.025,
+    'projection_years': 10,
 }
 
 
@@ -458,6 +459,23 @@ def calculate_dispatchable_trajectory(
         'years': years_list,
         'monthly_bills': monthly_bills,
         'scenario': 'dispatchable',
+    }
+
+
+# ============================================
+# COMBINED FUNCTIONS
+# ============================================
+
+def generate_all_trajectories(utility: Dict, datacenter: Dict, years: int = None) -> Dict:
+    """Generate all four scenario trajectories."""
+    if years is None:
+        years = TIME_PARAMS.get('projection_years', 10)
+
+    return {
+        'baseline': calculate_baseline_trajectory(utility, years),
+        'unoptimized': calculate_unoptimized_trajectory(utility, datacenter, years),
+        'flexible': calculate_flexible_trajectory(utility, datacenter, years),
+        'dispatchable': calculate_dispatchable_trajectory(utility, datacenter, years),
     }
 
 
