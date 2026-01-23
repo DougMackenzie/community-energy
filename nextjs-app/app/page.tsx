@@ -53,6 +53,50 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Data Center Growth Context */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 text-white">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-8">
+            <div className="flex-1">
+              <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
+                The Data Center Boom Is Real
+              </h2>
+              <p className="text-slate-300 leading-relaxed mb-4">
+                Data centers are projected to grow from approximately <strong className="text-white">50 GW</strong> today
+                to <strong className="text-white">60-130+ GW by 2030</strong> in the United States alone.
+                For context, <strong className="text-white">1 GW is roughly the output of a nuclear power plant</strong>.
+              </p>
+              <p className="text-slate-300 leading-relaxed">
+                This means data centers could grow from <strong className="text-white">~4% to 7-12%</strong> of
+                total U.S. electricity consumption within the next decade—a 2-3x increase that every utility
+                in the country is planning for.
+              </p>
+            </div>
+            <div className="flex-shrink-0 w-full lg:w-auto">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/10 rounded-xl p-4 text-center backdrop-blur-sm">
+                  <p className="text-3xl md:text-4xl font-bold text-blue-400">~4%</p>
+                  <p className="text-xs text-slate-400 mt-1">of US electricity<br/>today (2024)</p>
+                </div>
+                <div className="bg-white/10 rounded-xl p-4 text-center backdrop-blur-sm">
+                  <p className="text-3xl md:text-4xl font-bold text-amber-400">7-12%</p>
+                  <p className="text-xs text-slate-400 mt-1">projected share<br/>by 2030</p>
+                </div>
+                <div className="bg-white/10 rounded-xl p-4 text-center backdrop-blur-sm col-span-2">
+                  <p className="text-3xl md:text-4xl font-bold text-green-400">60-130+ GW</p>
+                  <p className="text-xs text-slate-400 mt-1">projected data center capacity by 2030</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-slate-500 mt-6 border-t border-slate-700 pt-4">
+            Sources: <a href="https://eta.lbl.gov/publications/2024-lbnl-data-center-energy-usage-report" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white underline">Lawrence Berkeley National Laboratory (LBNL) 2024 Report</a>,
+            <a href="https://www.energy.gov/articles/doe-releases-new-report-evaluating-increase-electricity-demand-data-centers" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white underline ml-1">U.S. Department of Energy</a>,
+            <a href="https://gridstrategiesllc.com/wp-content/uploads/National-Load-Growth-Report-2024.pdf" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-white underline ml-1">Grid Strategies National Load Growth Report</a>
+          </p>
+        </div>
+      </section>
+
       {/* Bottom Line Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 animate-slide-up">
         <div className="card">
@@ -117,6 +161,120 @@ export default function HomePage() {
             </div>
           </div>
 
+        </div>
+      </section>
+
+      {/* Energy Bill Breakdown Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="card">
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-gray-900 mb-2 text-center">
+            What Your Energy Bill Includes
+          </h2>
+          <p className="text-gray-600 text-center mb-8 max-w-2xl mx-auto">
+            Understanding where your money goes helps you see how new large loads like data centers affect costs.
+          </p>
+
+          {/* Stacked Bar Chart */}
+          <div className="mb-6">
+            <div className="flex rounded-xl overflow-hidden h-14 shadow-inner">
+              {/* Generation/Supply - 50% */}
+              <div className="bg-blue-500 flex items-center justify-center text-white text-xs font-semibold px-2" style={{ width: '50%' }}>
+                <span className="hidden sm:inline">Generation/Supply</span>
+                <span className="sm:hidden">Gen</span>
+                <span className="ml-1 opacity-75">50%</span>
+              </div>
+              {/* Transmission - 12% */}
+              <div className="bg-amber-500 flex items-center justify-center text-white text-xs font-semibold" style={{ width: '12%' }}>
+                <span className="hidden md:inline">Trans</span>
+                <span className="opacity-75 ml-0.5">12%</span>
+              </div>
+              {/* Distribution - 25% */}
+              <div className="bg-orange-500 flex items-center justify-center text-white text-xs font-semibold" style={{ width: '25%' }}>
+                <span className="hidden sm:inline">Distribution</span>
+                <span className="sm:hidden">Dist</span>
+                <span className="ml-1 opacity-75">25%</span>
+              </div>
+              {/* Capacity - 5% */}
+              <div className="bg-purple-500 flex items-center justify-center text-white text-xs font-semibold" style={{ width: '5%' }}>
+                <span className="hidden lg:inline opacity-75">5%</span>
+              </div>
+              {/* Other - 8% */}
+              <div className="bg-gray-400 flex items-center justify-center text-white text-xs font-semibold" style={{ width: '8%' }}>
+                <span className="opacity-75">8%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Legend */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-blue-500 flex-shrink-0"></div>
+              <span className="text-sm text-gray-700">Generation/Supply</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-amber-500 flex-shrink-0"></div>
+              <span className="text-sm text-gray-700">Transmission</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-orange-500 flex-shrink-0"></div>
+              <span className="text-sm text-gray-700">Distribution</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-purple-500 flex-shrink-0"></div>
+              <span className="text-sm text-gray-700">Capacity</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-gray-400 flex-shrink-0"></div>
+              <span className="text-sm text-gray-700">Taxes & Fees</span>
+            </div>
+          </div>
+
+          {/* Impact Highlight */}
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-6">
+            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+              <svg className="w-5 h-5 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 8v4M12 16h.01" />
+              </svg>
+              How Data Centers Affect Your Bill
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm font-medium text-amber-800 mb-2">Components Impacted by Large New Loads:</p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2 text-sm text-gray-700">
+                    <div className="w-3 h-3 rounded bg-amber-500"></div>
+                    <strong>Transmission</strong> — New lines & substations needed
+                  </li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700">
+                    <div className="w-3 h-3 rounded bg-orange-500"></div>
+                    <strong>Distribution</strong> — Local grid upgrades
+                  </li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700">
+                    <div className="w-3 h-3 rounded bg-purple-500"></div>
+                    <strong>Capacity</strong> — More power plants/storage required
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-green-800 mb-2">Components Less Directly Affected:</p>
+                <ul className="space-y-2">
+                  <li className="flex items-center gap-2 text-sm text-gray-700">
+                    <div className="w-3 h-3 rounded bg-blue-500"></div>
+                    <strong>Generation/Supply</strong> — Fuel costs are passthrough
+                  </li>
+                  <li className="flex items-center gap-2 text-sm text-gray-700">
+                    <div className="w-3 h-3 rounded bg-gray-400"></div>
+                    <strong>Taxes & Fees</strong> — Percentage-based, scales proportionally
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-4 pt-3 border-t border-amber-200">
+              Note: Actual bill composition varies by utility, state, and market structure. These are representative averages.
+              See <a href="https://www.eia.gov/tools/faqs/faq.php?id=947&t=3" target="_blank" rel="noopener noreferrer" className="text-amber-700 hover:underline">EIA data on electricity cost components</a>.
+            </p>
+          </div>
         </div>
       </section>
 
