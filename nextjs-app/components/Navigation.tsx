@@ -21,6 +21,7 @@ const Navigation = () => {
         { href: '/', label: 'Home' },
         { href: '/calculator', label: 'Calculator' },
         { href: '/energy-view', label: 'Energy View' },
+        { href: '/learn-more', label: 'Learn More' },
         { href: '/methodology', label: 'Methodology' },
     ];
 
