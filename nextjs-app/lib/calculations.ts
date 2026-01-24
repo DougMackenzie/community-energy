@@ -10,6 +10,7 @@ import {
     INFRASTRUCTURE_COSTS,
     TIME_PARAMS,
     DC_RATE_STRUCTURE,
+    SUPPLY_CURVE,
     calculateDCRevenueOffset,
     type Utility,
     type DataCenter,
@@ -19,6 +20,147 @@ import {
     type TariffStructure,
     type DemandChargeStructure,
 } from './utilityData';
+
+// ============================================
+// ENDOGENOUS CAPACITY PRICING
+// Models "Hockey Stick" dynamics in capacity markets
+// ============================================
+
+export interface CapacityPriceResult {
+    // Capacity price before DC addition ($/MW-day)
+    oldPrice: number;
+    // Capacity price after DC addition ($/MW-day)
+    newPrice: number;
+    // Reserve margin before DC
+    oldReserveMargin: number;
+    // Reserve margin after DC
+    newReserveMargin: number;
+    // Whether system is in scarcity condition
+    isScarcity: boolean;
+    // Whether system is in critical condition
+    isCritical: boolean;
+    // Price increase caused by DC ($/MW-day)
+    priceIncrease: number;
+    // Annual socialized cost impact on existing customers ($)
+    socializedCostImpact: number;
+    // Breakdown for transparency
+    breakdown: {
+        systemPeakMW: number;
+        totalCapacityMW: number;
+        dcPeakContributionMW: number;
+        newSystemPeakMW: number;
+        conePrice: number;
+    };
+}
+
+/**
+ * Interpolate capacity price from supply curve based on reserve margin
+ * Uses linear interpolation between defined slope points
+ */
+function interpolateCapacityPrice(reserveMargin: number): number {
+    const { slopes, costOfNewEntry } = SUPPLY_CURVE;
+
+    // Clamp reserve margin to curve bounds
+    const clampedMargin = Math.max(0, Math.min(slopes[0].margin, reserveMargin));
+
+    // Find the two slope points to interpolate between
+    for (let i = 0; i < slopes.length - 1; i++) {
+        const upper = slopes[i];
+        const lower = slopes[i + 1];
+
+        if (clampedMargin <= upper.margin && clampedMargin >= lower.margin) {
+            // Linear interpolation between these two points
+            const marginRange = upper.margin - lower.margin;
+            const priceRange = lower.priceMultiplier - upper.priceMultiplier;
+            const marginPosition = (upper.margin - clampedMargin) / marginRange;
+            const interpolatedMultiplier = upper.priceMultiplier + (priceRange * marginPosition);
+            return costOfNewEntry * interpolatedMultiplier;
+        }
+    }
+
+    // If below lowest defined margin, use exponential spike
+    if (clampedMargin < slopes[slopes.length - 1].margin) {
+        const lowestSlope = slopes[slopes.length - 1];
+        // Exponential increase as margin approaches zero
+        const scarcityFactor = 1 + Math.pow((lowestSlope.margin - clampedMargin) / lowestSlope.margin, 2) * 2;
+        return costOfNewEntry * lowestSlope.priceMultiplier * scarcityFactor;
+    }
+
+    // If above highest defined margin, use lowest multiplier
+    return costOfNewEntry * slopes[0].priceMultiplier;
+}
+
+/**
+ * Calculate dynamic capacity price based on reserve margin impact from DC addition
+ *
+ * This models the "PJM Effect" where:
+ * 1. Large loads consume the reserve margin
+ * 2. Reduced reserve margin triggers capacity price spikes via the supply curve
+ * 3. Higher capacity prices are paid by ALL load (socialization)
+ * 4. Existing ratepayers bear the cost increase on their existing load
+ *
+ * @param utility - Utility with current capacity and peak data
+ * @param dcPeakContributionMW - Data center's peak contribution to system
+ * @returns Capacity price result with old/new prices and socialized impact
+ */
+export function calculateDynamicCapacityPrice(
+    utility: Utility,
+    dcPeakContributionMW: number
+): CapacityPriceResult {
+    const systemPeakMW = utility.systemPeakMW;
+
+    // Calculate total generation capacity
+    // If not specified, estimate from reserve margin (default 15%)
+    const currentReserveMargin = utility.currentReserveMargin ?? 0.15;
+    const totalCapacityMW = utility.totalGenerationCapacityMW ??
+        (systemPeakMW * (1 + currentReserveMargin));
+
+    // Calculate old reserve margin
+    const oldReserveMargin = (totalCapacityMW - systemPeakMW) / systemPeakMW;
+
+    // Calculate new system peak with DC
+    const newSystemPeakMW = systemPeakMW + dcPeakContributionMW;
+
+    // Calculate new reserve margin
+    // Reserve Margin = (Total Capacity - Peak Load) / Peak Load
+    const newReserveMargin = (totalCapacityMW - newSystemPeakMW) / newSystemPeakMW;
+
+    // Interpolate prices from supply curve
+    const oldPrice = interpolateCapacityPrice(oldReserveMargin);
+    const newPrice = interpolateCapacityPrice(Math.max(0, newReserveMargin));
+
+    const priceIncrease = newPrice - oldPrice;
+
+    // Check scarcity conditions
+    const isScarcity = newReserveMargin < SUPPLY_CURVE.scarcityThreshold;
+    const isCritical = newReserveMargin < SUPPLY_CURVE.criticalThreshold;
+
+    // Calculate socialized cost impact on existing customers
+    // This is the key "PJM Effect" - existing load now pays higher prices
+    // Existing residential MW * (NewPrice - OldPrice) * 365 days
+    const residentialPeakShare = 0.35; // ~35% of peak is residential
+    const existingResidentialPeakMW = systemPeakMW * residentialPeakShare;
+    const dailyPriceIncrease = priceIncrease; // Already in $/MW-day
+    const annualSocializedCost = existingResidentialPeakMW * dailyPriceIncrease * 365;
+
+    return {
+        oldPrice,
+        newPrice,
+        oldReserveMargin,
+        newReserveMargin,
+        isScarcity,
+        isCritical,
+        priceIncrease,
+        socializedCostImpact: annualSocializedCost,
+        breakdown: {
+            systemPeakMW,
+            totalCapacityMW,
+            dcPeakContributionMW,
+            newSystemPeakMW,
+            conePrice: SUPPLY_CURVE.costOfNewEntry,
+        },
+    };
+}
 
 // ============================================
 // TARIFF-BASED DEMAND CHARGE CALCULATIONS
@@ -352,12 +494,31 @@ const calculateNetResidentialImpact = (
     const annualizedInfraCost = annualizedTransmissionCost + annualizedDistributionCost;
 
     // ============================================
-    // CAPACITY COSTS - Market-specific
+    // CAPACITY COSTS - Market-specific with ENDOGENOUS PRICING
     // ============================================
     let baseCapacityCost = INFRASTRUCTURE_COSTS.capacityCostPerMWYear;
     const capacityCostPassThrough = utility?.capacityCostPassThrough ?? 0.40;
 
-    if (utility?.hasCapacityMarket && utility?.capacityPrice2024) {
+    // Endogenous capacity pricing variables
+    let capacityPriceResult: CapacityPriceResult | null = null;
+    let socializedCapacityCost = 0; // The "PJM Effect" cost impact
+
+    if (utility?.hasCapacityMarket) {
+        // Calculate dynamic capacity price based on reserve margin impact
+        capacityPriceResult = calculateDynamicCapacityPrice(utility, effectivePeakMW);
+
+        // The DC pays the new capacity price for its own load
+        const dcCapacityPriceAnnual = capacityPriceResult.newPrice * 365;
+        baseCapacityCost = INFRASTRUCTURE_COSTS.capacityCostPerMWYear * 0.3 +
+                          dcCapacityPriceAnnual * capacityCostPassThrough * 0.7;
+
+        // CRITICAL: Calculate the socialized cost impact on existing ratepayers
+        // This is the "Hockey Stick" effect - ALL load pays the higher price
+        // The DC's addition to system peak causes prices to rise for everyone
+        socializedCapacityCost = capacityPriceResult.socializedCostImpact * capacityCostPassThrough;
+
+    } else if (utility?.capacityPrice2024) {
+        // Fallback to static pricing if no endogenous calculation
         const capacityPriceAnnual = utility.capacityPrice2024 * 365;
         baseCapacityCost = INFRASTRUCTURE_COSTS.capacityCostPerMWYear * 0.5 +
                           capacityPriceAnnual * capacityCostPassThrough * 0.5;
@@ -366,6 +527,7 @@ const calculateNetResidentialImpact = (
     if (utility?.marketType === 'ercot') {
         // No capacity market in ERCOT, but still need some generation adequacy costs
         baseCapacityCost = INFRASTRUCTURE_COSTS.capacityCostPerMWYear * 0.50;
+        socializedCapacityCost = 0; // No socialization in energy-only market
     }
 
     // ============================================
@@ -473,7 +635,11 @@ const calculateNetResidentialImpact = (
         adjustedAllocation = residentialAllocation * priceMultiplier;
     }
 
-    const residentialImpact = netAnnualImpact * adjustedAllocation;
+    // Add socialized capacity cost to the residential impact
+    // This is the "PJM Effect" - the price increase caused by the DC
+    // is paid by ALL existing customers on their existing load
+    const baseResidentialImpact = netAnnualImpact * adjustedAllocation;
+    const residentialImpact = baseResidentialImpact + socializedCapacityCost;
     const perCustomerMonthly = residentialImpact / residentialCustomers / 12;
 
     return {
@@ -482,6 +648,9 @@ const calculateNetResidentialImpact = (
         grossCost: grossAnnualInfraCost,
         revenueOffset,
         netImpact: netAnnualImpact,
+        // Endogenous capacity pricing results
+        capacityPriceResult: capacityPriceResult ?? undefined,
+        socializedCapacityCost,
         metrics: {
             effectivePeakMW: Math.max(0, effectivePeakMW),
             transmissionCost: annualizedTransmissionCost,
@@ -497,6 +666,14 @@ const calculateNetResidentialImpact = (
             marketType: utility?.marketType ?? 'regulated',
             adjustedAllocation,
             isFlexible,
+            // Endogenous pricing metrics
+            oldCapacityPrice: capacityPriceResult?.oldPrice,
+            newCapacityPrice: capacityPriceResult?.newPrice,
+            oldReserveMargin: capacityPriceResult?.oldReserveMargin,
+            newReserveMargin: capacityPriceResult?.newReserveMargin,
+            isScarcity: capacityPriceResult?.isScarcity ?? false,
+            isCritical: capacityPriceResult?.isCritical ?? false,
+            socializedCapacityCost,
         },
     };
 };

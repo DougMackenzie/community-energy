@@ -5,8 +5,94 @@ import Link from 'next/link';
 import TrajectoryChart from '@/components/TrajectoryChart';
 import SummaryCards from '@/components/SummaryCards';
 import { useCalculator } from '@/hooks/useCalculator';
-import { formatCurrency, formatMW } from '@/lib/constants';
+import { formatCurrency, formatMW, SUPPLY_CURVE } from '@/lib/constants';
 import { getUtilitiesGroupedByState } from '@/lib/utilityData';
+import { calculateDynamicCapacityPrice, type CapacityPriceResult } from '@/lib/calculations';
+
+// Reserve Margin Indicator - Shows "Hockey Stick" scarcity warning
+interface ReserveMarginIndicatorProps {
+    utility: {
+        systemPeakMW: number;
+        totalGenerationCapacityMW?: number;
+        currentReserveMargin?: number;
+        hasCapacityMarket?: boolean;
+        capacityCostPassThrough?: number;
+    };
+    dcCapacityMW: number;
+    peakCoincidence: number;
+}
+
+const ReserveMarginIndicator = ({ utility, dcCapacityMW, peakCoincidence }: ReserveMarginIndicatorProps) => {
+    // Calculate the impact on reserve margin
+    const dcPeakContribution = dcCapacityMW * peakCoincidence;
+    const capacityPriceResult = calculateDynamicCapacityPrice(
+        utility as Parameters<typeof calculateDynamicCapacityPrice>[0],
+        dcPeakContribution
+    );
+
+    const { oldReserveMargin, newReserveMargin, isScarcity, isCritical, oldPrice, newPrice, priceIncrease } = capacityPriceResult;
+
+    // Determine warning level
+    let bgColor = 'bg-green-50';
+    let borderColor = 'border-green-200';
+    let textColor = 'text-green-800';
+    let iconColor = 'text-green-600';
+    let statusText = 'Adequate Reserve Margin';
+
+    if (isCritical) {
+        bgColor = 'bg-red-50';
+        borderColor = 'border-red-300';
+        textColor = 'text-red-900';
+        iconColor = 'text-red-600';
+        statusText = 'CRITICAL: System Reliability at Risk';
+    } else if (isScarcity) {
+        bgColor = 'bg-amber-50';
+        borderColor = 'border-amber-300';
+        textColor = 'text-amber-900';
+        iconColor = 'text-amber-600';
+        statusText = 'System Scarcity Triggered';
+    } else if (newReserveMargin < 0.15) {
+        bgColor = 'bg-yellow-50';
+        borderColor = 'border-yellow-300';
+        textColor = 'text-yellow-900';
+        iconColor = 'text-yellow-600';
+        statusText = 'Reserve Margin Below Target';
+    }
+
+    const formatPercent = (val: number) => `${(val * 100).toFixed(1)}%`;
+    const formatPrice = (val: number) => `$${val.toFixed(0)}/MW-day`;
+
+    return (
+        <div className={`mt-3 p-3 rounded-lg border ${bgColor} ${borderColor}`}>
+            <div className="flex items-start gap-2">
+                {/* Warning Icon */}
+                {(isScarcity || isCritical) ? (
+                    <svg className={`w-5 h-5 ${iconColor} flex-shrink-0 mt-0.5`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                ) : (
+                    <svg className={`w-5 h-5 ${iconColor} flex-shrink-0 mt-0.5`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                )}
+                <div className="flex-1">
+                    <div className={`font-semibold text-sm ${textColor}`}>{statusText}</div>
+                    <div className="text-xs text-gray-600 mt-1 space-y-0.5">
+                        <p>Reserve Margin: {formatPercent(oldReserveMargin)} → <span className={isScarcity ? 'font-bold text-red-700' : ''}>{formatPercent(newReserveMargin)}</span></p>
+                        <p>Capacity Price: {formatPrice(oldPrice)} → <span className={priceIncrease > 50 ? 'font-bold text-amber-700' : ''}>{formatPrice(newPrice)}</span>
+                            {priceIncrease > 0 && <span className="text-red-600"> (+{formatPrice(priceIncrease)})</span>}
+                        </p>
+                    </div>
+                    {(isScarcity || isCritical) && (
+                        <div className={`mt-2 text-xs ${textColor} bg-white/50 p-2 rounded`}>
+                            <strong>Hockey Stick Effect:</strong> This DC size consumes reserve margin, triggering a capacity price spike that affects <em>all</em> ratepayers.
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
 
 // Input field component
 interface InputFieldProps {
@@ -161,6 +247,15 @@ export default function CalculatorPage() {
                                     <p className="text-blue-600 italic">{selectedUtilityProfile.dataCenterNotes}</p>
                                 )}
                             </div>
+                        )}
+
+                        {/* Scarcity Warning - Hockey Stick Indicator */}
+                        {utility.hasCapacityMarket && utility.totalGenerationCapacityMW && (
+                            <ReserveMarginIndicator
+                                utility={utility}
+                                dcCapacityMW={dataCenter.capacityMW}
+                                peakCoincidence={dataCenter.firmPeakCoincidence}
+                            />
                         )}
                     </div>
 

@@ -96,6 +96,11 @@ export interface UtilityProfile {
   totalCustomers: number;
   // System characteristics
   systemPeakMW: number;
+  // Capacity data for endogenous pricing
+  // Total generation capacity available (MW) - for reserve margin calculation
+  totalGenerationCapacityMW?: number;
+  // Current reserve margin ((capacity - peak) / peak)
+  currentReserveMargin?: number;
   // Billing data
   averageMonthlyBill: number;
   averageMonthlyUsageKWh: number;
@@ -716,6 +721,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     residentialCustomers: 3400000,
     totalCustomers: 3800000,
     systemPeakMW: 13200,
+    // NYC transmission constrained - limited capacity headroom
+    totalGenerationCapacityMW: 14520, // ~10% reserve margin
+    currentReserveMargin: 0.10,
     averageMonthlyBill: 165,
     averageMonthlyUsageKWh: 600,
     market: { ...NYISO_MARKET, notes: 'ConEd operates in NYISO. NYC transmission constraints drive high capacity costs. Limited data center development due to space and cost.' },
@@ -734,6 +742,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     residentialCustomers: 1700000,
     totalCustomers: 1950000,
     systemPeakMW: 6800,
+    // Upstate NY has more capacity headroom
+    totalGenerationCapacityMW: 8160, // ~20% reserve margin
+    currentReserveMargin: 0.20,
     averageMonthlyBill: 125,
     averageMonthlyUsageKWh: 650,
     market: { ...NYISO_MARKET },
@@ -752,6 +763,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     residentialCustomers: 880000,
     totalCustomers: 1000000,
     systemPeakMW: 3200,
+    // Central NY moderate capacity
+    totalGenerationCapacityMW: 3680, // ~15% reserve margin
+    currentReserveMargin: 0.15,
     averageMonthlyBill: 138,
     averageMonthlyUsageKWh: 700,
     market: { ...NYISO_MARKET },
@@ -810,6 +824,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     residentialCustomers: 1200000,
     totalCustomers: 1500000,
     systemPeakMW: 12000,
+    // Capacity for endogenous pricing - PJM currently facing tight margins
+    totalGenerationCapacityMW: 13200, // ~10% reserve margin due to retirements
+    currentReserveMargin: 0.10, // PJM facing capacity shortfall
     averageMonthlyBill: 135,
     averageMonthlyUsageKWh: 900,
     market: {
@@ -936,6 +953,10 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     residentialCustomers: 2500000,
     totalCustomers: 2800000,
     systemPeakMW: 18000,
+    // Capacity for endogenous pricing - Dominion facing extreme DC growth
+    // 9GW DC forecast will consume most reserve margin
+    totalGenerationCapacityMW: 20700, // ~15% reserve margin currently
+    currentReserveMargin: 0.15,
     averageMonthlyBill: 145,
     averageMonthlyUsageKWh: 1050,
     market: {

@@ -107,6 +107,9 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
                 hasCapacityMarket: profile.market.hasCapacityMarket,
                 capacityCostPassThrough: profile.market.capacityCostPassThrough,
                 capacityPrice2024: profile.market.capacityPrice2024,
+                // Endogenous capacity pricing fields
+                totalGenerationCapacityMW: profile.totalGenerationCapacityMW,
+                currentReserveMargin: profile.currentReserveMargin,
             });
             // Auto-populate data center capacity
             setDataCenter((prev) => ({

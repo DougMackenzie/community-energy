@@ -35,6 +35,11 @@ export interface Utility {
     hasCapacityMarket?: boolean;
     capacityCostPassThrough?: number;
     capacityPrice2024?: number;
+    // Capacity market endogenous pricing fields
+    // Total generation capacity available to serve load (MW)
+    totalGenerationCapacityMW?: number;
+    // Current reserve margin before DC addition ((capacity - peak) / peak)
+    currentReserveMargin?: number;
 }
 
 export interface DataCenter {
@@ -66,6 +71,37 @@ export interface WorkloadType {
     flexibility: number;
     description: string;
 }
+
+// ============================================
+// SUPPLY CURVE FOR ENDOGENOUS CAPACITY PRICING
+// Models "Hockey Stick" dynamics where large loads consume reserve margin
+// and trigger exponential price spikes (the "PJM Effect")
+// ============================================
+
+export interface SupplyCurveSlope {
+    margin: number;         // Reserve margin threshold
+    priceMultiplier: number; // Multiplier applied to CONE at this margin
+}
+
+export const SUPPLY_CURVE = {
+    // Simplified PJM-style Variable Resource Requirement (VRR) Curve
+    targetReserveMargin: 0.15,  // 15% target reserve margin
+    costOfNewEntry: 280,        // $/MW-day (CONE) - Cost of New Entry
+    // Price multipliers at different reserve margin levels
+    // As reserve margin decreases, capacity prices spike non-linearly
+    slopes: [
+        { margin: 0.25, priceMultiplier: 0.05 },  // Very abundant: ~$14/MW-day
+        { margin: 0.20, priceMultiplier: 0.10 },  // Abundant: ~$28/MW-day
+        { margin: 0.15, priceMultiplier: 1.00 },  // Target: ~$280/MW-day (CONE)
+        { margin: 0.10, priceMultiplier: 1.50 },  // Scarcity: ~$420/MW-day
+        { margin: 0.05, priceMultiplier: 2.50 },  // Severe scarcity: ~$700/MW-day
+        { margin: 0.00, priceMultiplier: 4.00 },  // Emergency: ~$1,120/MW-day
+    ] as SupplyCurveSlope[],
+    // Scarcity threshold - below this margin, prices spike dramatically
+    scarcityThreshold: 0.10,
+    // Critical threshold - below this, system reliability is at risk
+    criticalThreshold: 0.05,
+};
 
 // ============================================
 // SCENARIO PARAMETERS
@@ -103,6 +139,9 @@ export const DEFAULT_UTILITY: Utility = {
     systemPeakMW: 4000,
     baseResidentialAllocation: 0.40,
     allocationDeclineRate: 0.02,
+    // Capacity for endogenous pricing - 15% reserve margin by default
+    totalGenerationCapacityMW: 4600, // 4000 MW peak * 1.15 reserve
+    currentReserveMargin: 0.15,
 };
 
 export const DC_RATE_STRUCTURE = {
