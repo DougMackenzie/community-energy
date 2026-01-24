@@ -442,33 +442,33 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* The Real Risk Section */}
-        <div className="card mb-8 border-2 border-red-200 bg-gradient-to-br from-red-50 to-orange-50 px-8 py-6">
+        {/* Building It Right Section */}
+        <div className="card mb-8 border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 px-8 py-6">
           <div className="flex items-start gap-4 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center flex-shrink-0">
-              <svg className="w-7 h-7 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
+              <svg className="w-7 h-7 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
             <div>
-              <h2 className="font-display text-2xl font-bold text-gray-900 mb-1">The Real Risk: Overbuilding</h2>
-              <p className="text-gray-600">The biggest risk isn't data centers showing up—it's your utility building infrastructure for demand that never arrives.</p>
+              <h2 className="font-display text-2xl font-bold text-gray-900 mb-1">The Key: Building It Right</h2>
+              <p className="text-gray-600">The AI revolution is coming. The question is whether it's built in a way that protects—or burdens—existing ratepayers.</p>
             </div>
           </div>
 
           {/* The 1,000 GW callout */}
-          <div className="bg-white rounded-xl p-6 mb-6 border border-red-200">
+          <div className="bg-white rounded-xl p-6 mb-6 border border-blue-200">
             <div className="flex flex-col md:flex-row md:items-center gap-6">
               <div className="text-center md:text-left flex-shrink-0">
-                <p className="text-4xl md:text-5xl font-bold text-red-600">1,000 GW</p>
+                <p className="text-4xl md:text-5xl font-bold text-blue-600">1,000 GW</p>
                 <p className="text-sm text-gray-500 mt-1">requested from U.S. utilities</p>
               </div>
               <div className="flex-1 text-gray-700">
                 <p className="mb-2">
-                  Companies have requested <strong>20 times more power</strong> than will realistically be built by 2030.
+                  This massive demand means we're <strong>supply constrained</strong>—there isn't enough power to meet all requests.
                 </p>
                 <p className="text-sm text-gray-600">
-                  If utilities build for all these requests, <strong>you could end up paying</strong> for power plants and transmission lines that sit unused.
+                  That's why <strong>how</strong> this infrastructure gets built matters. With coordinated planning, large loads can actually benefit everyone.
                 </p>
               </div>
             </div>
@@ -476,18 +476,18 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-2 gap-8">
             <div>
-              <h4 className="font-semibold text-red-800 mb-3">Why This Matters to You</h4>
+              <h4 className="font-semibold text-blue-800 mb-3">Why This Matters to You</h4>
               <p className="text-gray-700 mb-4">
-                When utilities build for demand that never comes, those costs don't disappear—<strong>they get added to your bill</strong>.
+                Done right, large industrial loads can actually put <strong>downward pressure on your rates</strong>:
               </p>
               <ul className="space-y-3 text-gray-600">
                 <li className="flex items-start gap-3">
-                  <span className="text-red-500 mt-0.5">•</span>
-                  <span>Many data center projects in planning queues will never be built</span>
+                  <span className="text-blue-600 mt-0.5">•</span>
+                  <span>More customers sharing fixed infrastructure costs</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <span className="text-red-500 mt-0.5">•</span>
-                  <span>Each gigawatt of unused capacity costs <strong>$1-2 billion</strong></span>
+                  <span className="text-blue-600 mt-0.5">•</span>
+                  <span>Higher grid utilization = more efficient use of existing assets</span>
                 </li>
               </ul>
             </div>
@@ -495,24 +495,24 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold text-green-800 mb-3">How Smart Design Protects You</h4>
               <p className="text-gray-700 mb-4">
-                Data centers with <strong>flexible operations</strong> reduce the risk of overbuilding:
+                Data centers with <strong>flexible operations</strong> maximize benefits and minimize risks:
               </p>
               <ul className="space-y-3 text-gray-600">
                 <li className="flex items-start gap-3">
                   <span className="text-green-600 mt-0.5">✓</span>
-                  <span>They can adjust power use based on what's actually available</span>
+                  <span>Flexibility provides insurance if local supply and demand don't align</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-green-600 mt-0.5">✓</span>
-                  <span>On-site generation means less strain on the grid</span>
+                  <span>On-site generation reduces strain on the shared grid</span>
                 </li>
               </ul>
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-red-200 flex flex-wrap items-center justify-between gap-4">
+          <div className="mt-6 pt-4 border-t border-blue-200 flex flex-wrap items-center justify-between gap-4">
             <p className="text-xs text-gray-500">
-              <Link href="/methodology#risk-framework" className="text-red-700 hover:underline font-medium">
+              <Link href="/methodology#risk-framework" className="text-blue-700 hover:underline font-medium">
                 See detailed analysis and sources →
               </Link>
             </p>
