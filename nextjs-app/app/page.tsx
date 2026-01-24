@@ -510,7 +510,13 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-blue-200 flex flex-wrap items-center justify-between gap-4">
+          {/* Risk Context Statement */}
+          <div className="mt-6 pt-4 border-t border-blue-200">
+            <p className="text-sm text-gray-600 mb-3">
+              <strong className="text-gray-700">What about overbuilding risk?</strong> The theoretical risk is that utilities build infrastructure for demand that never materializes.
+              But given current power deficits and multi-year interconnection backlogs, this is unlikely over the next 5-10 years.
+              Requiring <strong>flexible load agreements and hybrid models</strong> provides additional insurance against localized mismatches.
+            </p>
             <p className="text-xs text-gray-500">
               <Link href="/methodology#risk-framework" className="text-blue-700 hover:underline font-medium">
                 See detailed analysis and sources →

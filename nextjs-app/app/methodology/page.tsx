@@ -1341,10 +1341,17 @@ export default function MethodologyPage() {
                                     </tr>
                                 </tbody>
                             </table>
-                            <p className="mt-3 text-xs text-gray-500">
-                                Source: <a href="https://www.eia.gov/tools/faqs/faq.php?id=947&t=3" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                    EIA data on electricity cost components
-                                </a>. Percentages are representative averages; actual composition varies significantly by utility, state, and market structure.
+                            <div className="mt-3 p-2 bg-amber-50 border border-amber-200 rounded text-xs">
+                                <span className="font-semibold text-amber-800">Model Assumption:</span>
+                                <span className="text-gray-600"> Percentages are representative estimates based on industry analysis. EIA reports that delivery costs
+                                    (transmission + distribution) rose from 31% to 46% of total costs between 2006-2016, with production declining from 69% to 54%.
+                                    The specific component breakdown above is derived from utility rate structures and varies significantly by utility, state, and market structure.
+                                </span>
+                            </div>
+                            <p className="mt-2 text-xs text-gray-500">
+                                Reference: <a href="https://www.eia.gov/todayinenergy/detail.php?id=32812" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                    EIA - Electricity prices reflect rising delivery costs (2017)
+                                </a>
                             </p>
                         </div>
 
@@ -1407,8 +1414,9 @@ export default function MethodologyPage() {
                 >
                     <div className="space-y-6 text-gray-600">
                         <p>
-                            A key insight of this model: <strong>the primary risk to residential ratepayers isn't that data centers arrive—it's
-                            that utilities build infrastructure for load that never materializes</strong>.
+                            A theoretical risk to residential ratepayers is that utilities build infrastructure for load that never materializes.
+                            However, <strong>current supply constraints make this unlikely</strong>—the real opportunity is ensuring
+                            infrastructure is built optimally through coordinated planning and flexible load agreements.
                         </p>
 
                         {/* The Core Thesis */}
@@ -1502,9 +1510,47 @@ export default function MethodologyPage() {
                             </ul>
                         </div>
 
+                        {/* Supply Constraint Reality */}
+                        <div className="border-2 border-blue-200 rounded-lg p-4 bg-blue-50">
+                            <h4 className="font-semibold text-blue-900 mb-3">The Supply Constraint Reality: Why Overbuild Is Unlikely</h4>
+                            <p className="text-sm text-gray-700 mb-3">
+                                While the stranded asset risk is real in theory, <strong>current market conditions suggest we are supply-constrained
+                                for the foreseeable future</strong>. The U.S. faces a structural power deficit that makes widespread overbuilding unlikely:
+                            </p>
+                            <ul className="space-y-2 text-sm text-gray-700 mb-4">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-blue-600">•</span>
+                                    <span>Grid interconnection queues have 5-10 year backlogs in many regions</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-blue-600">•</span>
+                                    <span>Equipment supply chains (transformers, switchgear) are stretched to 3-4 year lead times</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-blue-600">•</span>
+                                    <span>Permitting timelines for new generation and transmission continue to extend</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-blue-600">•</span>
+                                    <span>Demand growth from electrification, EVs, and reshoring adds to baseline load</span>
+                                </li>
+                            </ul>
+                            <p className="text-sm text-gray-700">
+                                Given these constraints, the more likely outcome is that <strong>infrastructure built for data centers will be
+                                fully utilized</strong>—if not by the original requester, then by other growing loads. The key is ensuring
+                                proper planning coordination so that infrastructure investments align with actual demand trajectories.
+                            </p>
+                            <div className="mt-3 p-2 bg-white border border-blue-200 rounded text-xs">
+                                <span className="font-semibold text-blue-800">Model View:</span>
+                                <span className="text-gray-600"> We project that supply constraints make widespread stranded assets unlikely over the next 5-10 years,
+                                    but flexibility and hybrid models still provide valuable insurance for localized mismatches.
+                                </span>
+                            </div>
+                        </div>
+
                         {/* Why Flexibility Mitigates Risk */}
                         <div className="border border-green-200 rounded-lg p-4 bg-green-50">
-                            <h4 className="font-semibold text-green-900 mb-3">Why Flexible & Hybrid Models Reduce This Risk</h4>
+                            <h4 className="font-semibold text-green-900 mb-3">Why Flexible & Hybrid Models Still Matter</h4>
                             <p className="text-sm text-gray-700 mb-3">
                                 Flexible data centers and hybrid power models don't just reduce peak demand charges—they fundamentally
                                 reduce the risk of overbuilding by creating more predictable, higher-utilization load profiles:
@@ -1572,12 +1618,14 @@ export default function MethodologyPage() {
                         {/* Model Implication */}
                         <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
                             <h4 className="font-semibold text-indigo-900 mb-2">Implication for This Model</h4>
+                            <p className="text-sm text-indigo-800 mb-2">
+                                Our model assumes the projected data center load <em>does</em> materialize—which current supply constraints
+                                suggest is the most likely scenario. Done right, large industrial loads can put <strong>downward pressure on rates</strong>
+                                by spreading fixed costs across more kWh and improving grid utilization.
+                            </p>
                             <p className="text-sm text-indigo-800">
-                                Our model assumes the projected data center load <em>does</em> materialize. In practice, the risk to
-                                residential ratepayers may be <strong>higher than shown</strong> if load doesn't arrive as planned,
-                                or <strong>lower than shown</strong> if flexible operation requirements and proper cost allocation
-                                mechanisms are in place. The "optimized" scenario assumes both full load materialization AND flexible
-                                operation—representing the best-case outcome for ratepayers.
+                                The "optimized" scenario assumes both full load materialization AND flexible operation—representing the best-case
+                                outcome where data centers benefit both themselves and existing ratepayers through coordinated planning.
                             </p>
                         </div>
                     </div>
