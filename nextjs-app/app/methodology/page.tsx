@@ -8,6 +8,7 @@ import {
     DEFAULT_UTILITY,
     DEFAULT_DATA_CENTER,
     DC_RATE_STRUCTURE,
+    SUPPLY_CURVE,
     formatCurrency,
 } from '@/lib/constants';
 
@@ -1051,6 +1052,297 @@ export default function MethodologyPage() {
                                 </a>{' '}
                                 for discussion of allocation bounds in utility ratemaking.
                             </p>
+                        </div>
+                    </div>
+                </Section>
+
+                <Section
+                    id="endogenous-pricing"
+                    title="Endogenous Capacity Pricing (Hockey Stick Dynamics)"
+                    expandedSection={expandedSection}
+                    toggleSection={toggleSection}
+                >
+                    <div className="space-y-6 text-gray-600">
+                        <p>
+                            In organized capacity markets (PJM, NYISO, MISO), capacity prices aren't fixed—they respond
+                            dynamically to reserve margin conditions. When massive new loads consume available reserves,
+                            prices can spike non-linearly. Our model captures this <strong>"Hockey Stick" effect</strong>.
+                        </p>
+
+                        {/* The PJM Effect */}
+                        <div className="border-2 border-red-200 rounded-lg p-5 bg-red-50">
+                            <h4 className="font-semibold text-red-900 mb-3 flex items-center gap-2">
+                                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                                The "PJM Effect" - Price Socialization
+                            </h4>
+                            <p className="text-sm text-gray-700 mb-3">
+                                When a large data center adds to system peak, it doesn't just pay higher capacity prices for its own load—
+                                the capacity price increase affects <strong>all existing load</strong>. This "socialized" cost impact
+                                is a key mechanism by which data center growth can affect residential bills in capacity markets.
+                            </p>
+                            <div className="grid md:grid-cols-2 gap-4 mt-4">
+                                <div className="bg-white rounded-lg p-3">
+                                    <p className="font-semibold text-red-800 text-sm mb-1">PJM 2025/26 Auction</p>
+                                    <p className="text-2xl font-bold text-red-600">$269.92/MW-day</p>
+                                    <p className="text-xs text-gray-600">Cleared at 10× previous year prices</p>
+                                </div>
+                                <div className="bg-white rounded-lg p-3">
+                                    <p className="font-semibold text-red-800 text-sm mb-1">Data Center Attribution</p>
+                                    <p className="text-2xl font-bold text-red-600">63%</p>
+                                    <p className="text-xs text-gray-600">Of price increase attributed to DC load growth</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Supply Curve Explanation */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-3">Variable Resource Requirement (VRR) Curve</h4>
+                            <p className="text-sm text-gray-600 mb-3">
+                                Capacity markets use a "Variable Resource Requirement" curve that sets prices based on reserve margin.
+                                Our model uses a simplified VRR curve inspired by PJM's methodology:
+                            </p>
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Reserve Margin</th>
+                                        <th className="text-right py-2 font-medium">Price Multiplier</th>
+                                        <th className="text-right py-2 font-medium">Capacity Price</th>
+                                        <th className="text-left py-2 pl-4 font-medium text-xs">Condition</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {SUPPLY_CURVE.slopes.map((slope, idx) => (
+                                        <tr key={idx} className={`border-b border-gray-100 ${slope.margin < SUPPLY_CURVE.scarcityThreshold ? 'bg-amber-50' : ''} ${slope.margin < SUPPLY_CURVE.criticalThreshold ? 'bg-red-50' : ''}`}>
+                                            <td className="py-2">{(slope.margin * 100).toFixed(0)}%</td>
+                                            <td className="text-right">{slope.priceMultiplier.toFixed(2)}×</td>
+                                            <td className="text-right font-medium">${(SUPPLY_CURVE.costOfNewEntry * slope.priceMultiplier).toFixed(0)}/MW-day</td>
+                                            <td className="pl-4 text-xs text-gray-600">
+                                                {slope.margin >= 0.20 ? 'Abundant' :
+                                                 slope.margin >= 0.15 ? 'Target (CONE)' :
+                                                 slope.margin >= 0.10 ? 'Scarcity' :
+                                                 slope.margin >= 0.05 ? 'Severe scarcity' : 'Emergency'}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                            <div className="mt-3 p-2 bg-gray-100 rounded text-xs">
+                                <strong>CONE (Cost of New Entry):</strong> ${SUPPLY_CURVE.costOfNewEntry}/MW-day — the reference price
+                                at which new generation becomes economically viable. This is the anchor point of the VRR curve.
+                            </div>
+                        </div>
+
+                        {/* Mathematical Formulation */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-3">Reserve Margin Calculation</h4>
+                            <div className="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-x-auto space-y-2">
+                                <p><strong>Reserve Margin = (Total Capacity − Peak Load) / Peak Load</strong></p>
+                                <p className="text-gray-500 mt-2">Example for AEP Ohio:</p>
+                                <p>Old Reserve Margin = (13,200 MW − 12,000 MW) / 12,000 MW = <strong>10%</strong></p>
+                                <p className="mt-2">After 1,000 MW data center (100% peak coincidence):</p>
+                                <p>New Peak = 12,000 MW + 1,000 MW = 13,000 MW</p>
+                                <p>New Reserve Margin = (13,200 MW − 13,000 MW) / 13,000 MW = <strong>1.5%</strong></p>
+                                <p className="text-red-600 mt-2">Result: Reserve margin drops from 10% to 1.5% → Capacity prices spike</p>
+                            </div>
+                        </div>
+
+                        {/* Socialized Cost Calculation */}
+                        <div className="border border-amber-200 rounded-lg p-4 bg-amber-50">
+                            <h4 className="font-semibold text-amber-900 mb-3">Socialized Cost Impact Formula</h4>
+                            <p className="text-sm text-gray-700 mb-3">
+                                When the data center causes capacity prices to rise, existing customers pay the higher
+                                price on their <strong>existing load</strong>. This is the "socialization" effect:
+                            </p>
+                            <div className="bg-white p-4 rounded-lg font-mono text-sm overflow-x-auto">
+                                <p><strong>Socialized Cost = Existing Residential Peak × (New Price − Old Price) × 365 days</strong></p>
+                                <p className="text-gray-500 mt-3">Where:</p>
+                                <ul className="text-gray-600 mt-2 space-y-1">
+                                    <li>• Existing Residential Peak = System Peak × 35% residential share</li>
+                                    <li>• Price difference from VRR curve interpolation</li>
+                                    <li>• Applied to capacity market utilities only</li>
+                                </ul>
+                            </div>
+                            <p className="text-sm text-amber-800 mt-3">
+                                <strong>Model Assumption:</strong> We assume 35% of system peak is residential load.
+                                This share varies by utility but is consistent with typical embedded cost allocation studies.
+                            </p>
+                        </div>
+
+                        {/* Which Utilities */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-3">Utilities with Endogenous Capacity Pricing</h4>
+                            <p className="text-sm text-gray-600 mb-3">
+                                The model applies dynamic capacity pricing to utilities in organized capacity markets.
+                                Each utility includes estimated capacity and reserve margin data:
+                            </p>
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Utility</th>
+                                        <th className="text-left py-2 font-medium">Market</th>
+                                        <th className="text-right py-2 font-medium">System Peak</th>
+                                        <th className="text-right py-2 font-medium">Reserve Margin</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100 bg-red-50">
+                                        <td className="py-2">AEP Ohio</td>
+                                        <td>PJM</td>
+                                        <td className="text-right">12,000 MW</td>
+                                        <td className="text-right font-medium text-red-600">10%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100 bg-red-50">
+                                        <td className="py-2">ConEd NYC</td>
+                                        <td>NYISO</td>
+                                        <td className="text-right">13,200 MW</td>
+                                        <td className="text-right font-medium text-red-600">10%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Dominion Virginia</td>
+                                        <td>PJM</td>
+                                        <td className="text-right">18,000 MW</td>
+                                        <td className="text-right font-medium">15%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">AEP Indiana-Michigan</td>
+                                        <td>PJM</td>
+                                        <td className="text-right">5,500 MW</td>
+                                        <td className="text-right font-medium">15%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">NYSEG</td>
+                                        <td>NYISO</td>
+                                        <td className="text-right">3,200 MW</td>
+                                        <td className="text-right font-medium">15%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">APCo Virginia</td>
+                                        <td>PJM</td>
+                                        <td className="text-right">4,500 MW</td>
+                                        <td className="text-right font-medium">15%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">APCo West Virginia</td>
+                                        <td>PJM</td>
+                                        <td className="text-right">3,500 MW</td>
+                                        <td className="text-right font-medium">15%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Mon Power WV</td>
+                                        <td>PJM</td>
+                                        <td className="text-right">2,800 MW</td>
+                                        <td className="text-right font-medium">15%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">National Grid NY</td>
+                                        <td>NYISO</td>
+                                        <td className="text-right">6,800 MW</td>
+                                        <td className="text-right font-medium">20%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Entergy Arkansas</td>
+                                        <td>MISO</td>
+                                        <td className="text-right">4,800 MW</td>
+                                        <td className="text-right font-medium">20%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Entergy Mississippi</td>
+                                        <td>MISO</td>
+                                        <td className="text-right">4,200 MW</td>
+                                        <td className="text-right font-medium">20%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div className="mt-3 p-2 bg-amber-50 border border-amber-200 rounded text-xs">
+                                <span className="font-semibold text-amber-800">Model Assumption:</span>
+                                <span className="text-gray-600"> Reserve margin estimates are based on utility IRPs, NERC assessments, and
+                                ISO/RTO capacity reports. Actual values fluctuate seasonally and with generation retirements/additions.
+                                Red highlighting indicates utilities with reserve margins at or below 10% (scarcity threshold).</span>
+                            </div>
+                        </div>
+
+                        {/* Why Flexible Loads Help */}
+                        <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+                            <h4 className="font-semibold text-green-900 mb-3">How Flexible Data Centers Reduce Price Spikes</h4>
+                            <p className="text-sm text-gray-700 mb-3">
+                                Flexible data centers that curtail during peak hours add less to system peak, which means:
+                            </p>
+                            <ul className="space-y-2 text-sm text-gray-700">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-green-600">✓</span>
+                                    <span><strong>Smaller reserve margin impact:</strong> 75% peak coincidence = 25% less contribution to peak</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-green-600">✓</span>
+                                    <span><strong>Lower capacity price increase:</strong> Less reserve margin erosion = smaller price multiplier on VRR curve</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-green-600">✓</span>
+                                    <span><strong>Reduced socialized cost:</strong> Existing ratepayers face smaller price increase on their existing load</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-green-600">✓</span>
+                                    <span><strong>Onsite generation:</strong> Further reduces net peak draw and capacity market impact</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Data Sources */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2">Data Sources & References</h4>
+                            <ul className="space-y-2 text-sm">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-gray-400">•</span>
+                                    <span>
+                                        <a href="https://www.pjm.com/-/media/DotCom/markets-ops/rpm/rpm-auction-info/2025-2026/2025-2026-base-residual-auction-report.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                            PJM 2025/26 Base Residual Auction Report
+                                        </a>
+                                        <span className="block text-xs text-gray-500">Clearing price $269.92/MW-day; VRR curve methodology</span>
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-gray-400">•</span>
+                                    <span>
+                                        <a href="https://www.pjm.com/-/media/DotCom/markets-ops/rpm/rpm-resource-demand-doc/variable-resource-requirement-curve.ashx" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                            PJM Variable Resource Requirement Curve Documentation
+                                        </a>
+                                        <span className="block text-xs text-gray-500">Official VRR curve methodology and parameters</span>
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-gray-400">•</span>
+                                    <span>
+                                        <a href="https://gridstrategiesllc.com/wp-content/uploads/National-Load-Growth-Report-2024.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                            Grid Strategies: National Load Growth Report (Dec 2024)
+                                        </a>
+                                        <span className="block text-xs text-gray-500">Data center attribution to capacity price increases</span>
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-gray-400">•</span>
+                                    <span>
+                                        <a href="https://www.nerc.com/pa/RAPA/ra/Reliability%20Assessments%20DL/NERC_LTRA_2024.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                            NERC Long-Term Reliability Assessment 2024
+                                        </a>
+                                        <span className="block text-xs text-gray-500">Regional reserve margin projections and reliability assessments</span>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Model Assumptions Box */}
+                        <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <p className="font-semibold text-amber-900 mb-2">Model Assumptions & Limitations</p>
+                            <ul className="list-disc list-inside text-sm text-amber-800 space-y-1">
+                                <li>VRR curve is simplified from actual ISO implementations (which have more complex formulations)</li>
+                                <li>CONE value ($280/MW-day) is a representative estimate; actual CONE varies by zone</li>
+                                <li>Reserve margin data is based on public utility filings; actual values fluctuate</li>
+                                <li>Model assumes linear interpolation between VRR curve points</li>
+                                <li>Socialized cost pass-through factor (50% for PJM/NYISO) is a model estimate</li>
+                                <li>Does not model zonal constraints (e.g., NYC vs upstate NY have different dynamics)</li>
+                            </ul>
                         </div>
                     </div>
                 </Section>

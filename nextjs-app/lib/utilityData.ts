@@ -556,6 +556,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     residentialCustomers: 520000,
     totalCustomers: 720000,
     systemPeakMW: 4800,
+    // Capacity for endogenous pricing - MISO market with ample capacity
+    totalGenerationCapacityMW: 5760, // ~20% reserve margin (MISO has more headroom)
+    currentReserveMargin: 0.20,
     averageMonthlyBill: 118,
     averageMonthlyUsageKWh: 1100,
     market: { ...MISO_MARKET, notes: 'Entergy operates in MISO. Formula Rate Plan allows annual rate adjustments through AR PSC.' },
@@ -636,6 +639,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     residentialCustomers: 480000,
     totalCustomers: 600000,
     systemPeakMW: 5500,
+    // Capacity for endogenous pricing - I&M in PJM with moderate margins
+    totalGenerationCapacityMW: 6325, // ~15% reserve margin
+    currentReserveMargin: 0.15,
     averageMonthlyBill: 130,
     averageMonthlyUsageKWh: 950,
     market: {
@@ -681,6 +687,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     residentialCustomers: 450000,
     totalCustomers: 610000,
     systemPeakMW: 4200,
+    // Capacity for endogenous pricing - MISO market with ample capacity
+    totalGenerationCapacityMW: 5040, // ~20% reserve margin (MISO has more headroom)
+    currentReserveMargin: 0.20,
     averageMonthlyBill: 132,
     averageMonthlyUsageKWh: 1100,
     market: { ...MISO_MARKET, notes: 'Entergy operates in MISO. AWS data center development announced in Mississippi.' },
@@ -980,6 +989,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     residentialCustomers: 500000,
     totalCustomers: 620000,
     systemPeakMW: 4500,
+    // Capacity for endogenous pricing - APCo in PJM, moderate reserve
+    totalGenerationCapacityMW: 5175, // ~15% reserve margin
+    currentReserveMargin: 0.15,
     averageMonthlyBill: 128,
     averageMonthlyUsageKWh: 1000,
     market: {
@@ -1005,6 +1017,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     residentialCustomers: 400000,
     totalCustomers: 500000,
     systemPeakMW: 3500,
+    // Capacity for endogenous pricing - APCo WV in PJM
+    totalGenerationCapacityMW: 4025, // ~15% reserve margin
+    currentReserveMargin: 0.15,
     averageMonthlyBill: 122,
     averageMonthlyUsageKWh: 1000,
     market: {
@@ -1028,6 +1043,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     residentialCustomers: 395000,
     totalCustomers: 480000,
     systemPeakMW: 2800,
+    // Capacity for endogenous pricing - FirstEnergy WV in PJM
+    totalGenerationCapacityMW: 3220, // ~15% reserve margin
+    currentReserveMargin: 0.15,
     averageMonthlyBill: 118,
     averageMonthlyUsageKWh: 950,
     market: {
