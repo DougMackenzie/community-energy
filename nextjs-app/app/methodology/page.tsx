@@ -298,7 +298,7 @@ export default function MethodologyPage() {
                             <li><strong>Calculation method:</strong> Weighted blend of 40% volumetric (kWh), 40% demand (peak MW), 20% customer count</li>
                             <li><strong>Dynamic adjustment:</strong> As data center adds energy and peak, residential shares shift</li>
                             <li><strong>Regulatory lag:</strong> Changes phase in over ~5 years through rate case proceedings</li>
-                            <li><strong>Market multipliers:</strong> ERCOT applies 0.85× (large loads face prices directly); high PJM capacity prices increase allocation</li>
+                            <li><strong>Market multipliers:</strong> ERCOT applies 0.70× (large loads face 4CP transmission costs directly); capacity markets use endogenous pricing model</li>
                         </ul>
 
                         <p className="mt-4 text-sm text-gray-500">
@@ -833,12 +833,13 @@ export default function MethodologyPage() {
                             </table>
                             <p className="mt-3 text-sm text-gray-600">
                                 <strong>Allocation Method:</strong> PJM's Reliability Pricing Model (RPM) capacity auction cleared at
-                                $269.92/MW-day for 2025/26. Our model increases residential allocation by up to 15% when
-                                capacity prices exceed $100/MW-day to reflect cost pressure spreading across customer classes, per
-                                analysis in{' '}
-                                <a href="https://www.pjm.com/-/media/DotCom/markets-ops/rpm/rpm-auction-info/2025-2026/2025-2026-base-residual-auction-report.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                    PJM auction results
-                                </a>.
+                                $269.92/MW-day for 2025/26. Our model uses <em>Endogenous Capacity Pricing</em> to calculate the
+                                "socialized cost" impact when large loads consume reserve margin and trigger capacity price spikes.
+                                This cost is calculated separately and added to residential bills after a 3-year auction lag
+                                (reflecting the time between auction and delivery year). See the{' '}
+                                <a href="#endogenous-pricing" className="text-blue-600 hover:underline">
+                                    Endogenous Capacity Pricing
+                                </a>{' '}section for methodology details.
                             </p>
                         </div>
 
@@ -1039,10 +1040,14 @@ export default function MethodologyPage() {
                                 <p className="mb-2">Adjusted Allocation = Base Allocation × Market Multiplier</p>
                                 <p className="text-gray-500 text-xs mt-3">Where Market Multiplier:</p>
                                 <ul className="text-xs text-gray-500 mt-1 space-y-1">
-                                    <li>• Regulated/SPP: 1.0 (no adjustment)</li>
-                                    <li>• PJM with high capacity prices (&gt;$100/MW-day): 1.0 to 1.15</li>
-                                    <li>• ERCOT: 0.85 (large loads face prices directly)</li>
+                                    <li>• Regulated/SPP/PJM/NYISO/MISO: 1.0 (no adjustment)</li>
+                                    <li>• ERCOT: 0.70 (large loads face 4CP transmission costs directly)</li>
                                 </ul>
+                                <p className="text-xs text-gray-500 mt-3">
+                                    <strong>Note:</strong> For capacity markets (PJM/NYISO/MISO), socialized capacity costs are calculated
+                                    separately via the <em>Endogenous Capacity Pricing</em> model and added to the residential impact.
+                                    This avoids double-counting while accurately capturing the "PJM Effect."
+                                </p>
                             </div>
                             <p className="mt-3 text-sm text-gray-600">
                                 Final allocation clamped to 20-55% range to maintain reasonable bounds regardless of market conditions.
@@ -1289,6 +1294,31 @@ export default function MethodologyPage() {
                             </ul>
                         </div>
 
+                        {/* Auction Lag */}
+                        <div className="border border-blue-200 rounded-lg p-4 bg-blue-50">
+                            <h4 className="font-semibold text-blue-900 mb-3">Capacity Auction Timing (3-Year Lag)</h4>
+                            <p className="text-sm text-gray-700 mb-3">
+                                In PJM and other organized capacity markets, the Base Residual Auction (BRA) clears approximately
+                                <strong> 3 years before the delivery year</strong>. This means capacity price impacts from new load
+                                don't affect ratepayer bills immediately—there's a lag between when load connects and when the
+                                socialized cost flows through to bills.
+                            </p>
+                            <div className="bg-white p-4 rounded-lg">
+                                <p className="font-mono text-sm mb-2"><strong>Timeline Example:</strong></p>
+                                <ul className="text-sm text-gray-600 space-y-1">
+                                    <li>• <strong>Year 0:</strong> Data center announces and begins interconnection</li>
+                                    <li>• <strong>Year 2:</strong> Data center comes online (direct infrastructure costs begin)</li>
+                                    <li>• <strong>Year 2-3:</strong> Load growth reflected in next capacity auction clearing price</li>
+                                    <li>• <strong>Year 5+:</strong> Socialized capacity costs flow through to ratepayer bills</li>
+                                </ul>
+                            </div>
+                            <p className="text-sm text-blue-800 mt-3">
+                                <strong>Model Implementation:</strong> Our trajectory projections apply a <strong>3-year lag</strong> for
+                                socialized capacity costs in PJM/NYISO/MISO markets. Direct infrastructure costs (transmission, distribution)
+                                apply immediately when the data center connects. This more accurately reflects the timing of cost impacts.
+                            </p>
+                        </div>
+
                         {/* Data Sources */}
                         <div className="border border-gray-200 rounded-lg p-4">
                             <h4 className="font-semibold text-gray-900 mb-2">Data Sources & References</h4>
@@ -1341,6 +1371,7 @@ export default function MethodologyPage() {
                                 <li>Reserve margin data is based on public utility filings; actual values fluctuate</li>
                                 <li>Model assumes linear interpolation between VRR curve points</li>
                                 <li>Socialized cost pass-through factor (50% for PJM/NYISO) is a model estimate</li>
+                                <li>3-year auction lag is applied uniformly; actual timing varies by market and auction schedule</li>
                                 <li>Does not model zonal constraints (e.g., NYC vs upstate NY have different dynamics)</li>
                             </ul>
                         </div>
