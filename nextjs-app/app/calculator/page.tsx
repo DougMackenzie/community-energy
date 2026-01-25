@@ -85,7 +85,7 @@ const ReserveMarginIndicator = ({ utility, dcCapacityMW, peakCoincidence }: Rese
                     </div>
                     {(isScarcity || isCritical) && (
                         <div className={`mt-2 text-xs ${textColor} bg-white/50 p-2 rounded`}>
-                            <strong>Hockey Stick Effect:</strong> This DC size consumes reserve margin, triggering a capacity price spike that affects <em>all</em> ratepayers.
+                            <strong>PJM Effect:</strong> This load consumes the reserve margin, triggering a capacity auction spike (3-year lag) that will be socialized across all ratepayers.
                         </div>
                     )}
                 </div>

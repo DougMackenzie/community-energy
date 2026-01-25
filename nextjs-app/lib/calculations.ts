@@ -630,10 +630,9 @@ const calculateNetResidentialImpact = (
         // This significantly reduces cost spillover to residential
         // The 4CP methodology means DC pays for their own transmission needs
         adjustedAllocation = residentialAllocation * 0.70; // Larger reduction than before
-    } else if (utility?.hasCapacityMarket && utility?.capacityPrice2024 && utility.capacityPrice2024 > 100) {
-        const priceMultiplier = Math.min(1.15, 1 + (utility.capacityPrice2024 - 100) / 1000);
-        adjustedAllocation = residentialAllocation * priceMultiplier;
     }
+    // Note: For capacity markets, we no longer adjust allocation here because
+    // socializedCapacityCost is added explicitly below. This avoids double-counting.
 
     // Add socialized capacity cost to the residential impact
     // This is the "PJM Effect" - the price increase caused by the DC
@@ -730,6 +729,10 @@ export const calculateUnoptimizedTrajectory = (
     const firmLF = dataCenter.firmLoadFactor || 0.80;
     const firmPeakCoincidence = dataCenter.firmPeakCoincidence || 1.0;
 
+    // Auction lag: capacity market price impacts take 3 years to flow through
+    // (auction clears ~3 years ahead of delivery year)
+    const marketLag = utility.hasCapacityMarket ? 3 : 0;
+
     for (let year = 0; year <= years; year++) {
         let dcImpact = 0;
         let currentAllocation = utility.baseResidentialAllocation;
@@ -761,7 +764,22 @@ export const calculateUnoptimizedTrajectory = (
             );
 
             yearMetrics = yearImpact.metrics;
-            dcImpact = yearImpact.perCustomerMonthly * phaseIn;
+
+            // Separate socialized capacity cost (PJM Effect) from direct infrastructure costs
+            // Socialized cost only applies after the auction lag period
+            const socializedPerCustomerMonthly = yearImpact.socializedCapacityCost / utility.residentialCustomers / 12;
+            const baseImpactPerCustomerMonthly = yearImpact.perCustomerMonthly - socializedPerCustomerMonthly;
+
+            // Direct infrastructure costs apply immediately
+            let directImpact = baseImpactPerCustomerMonthly * phaseIn;
+
+            // Socialized capacity cost only applies after auction lag
+            let socializedImpact = 0;
+            if (yearsOnline >= marketLag) {
+                socializedImpact = socializedPerCustomerMonthly * phaseIn;
+            }
+
+            dcImpact = directImpact + socializedImpact;
 
             if (dcImpact > 0) {
                 dcImpact *= Math.pow(1 + TIME_PARAMS.generalInflation, yearsOnline);
@@ -808,6 +826,9 @@ export const calculateFlexibleTrajectory = (
     const flexLF = dataCenter.flexLoadFactor || 0.95;
     const flexPeakCoincidence = dataCenter.flexPeakCoincidence || 0.75;
 
+    // Auction lag: capacity market price impacts take 3 years to flow through
+    const marketLag = utility.hasCapacityMarket ? 3 : 0;
+
     for (let year = 0; year <= years; year++) {
         let dcImpact = 0;
         let currentAllocation = utility.baseResidentialAllocation;
@@ -839,7 +860,21 @@ export const calculateFlexibleTrajectory = (
             );
 
             yearMetrics = yearImpact.metrics;
-            dcImpact = yearImpact.perCustomerMonthly * phaseIn;
+
+            // Separate socialized capacity cost from direct infrastructure costs
+            const socializedPerCustomerMonthly = yearImpact.socializedCapacityCost / utility.residentialCustomers / 12;
+            const baseImpactPerCustomerMonthly = yearImpact.perCustomerMonthly - socializedPerCustomerMonthly;
+
+            // Direct infrastructure costs apply immediately
+            let directImpact = baseImpactPerCustomerMonthly * phaseIn;
+
+            // Socialized capacity cost only applies after auction lag
+            let socializedImpact = 0;
+            if (yearsOnline >= marketLag) {
+                socializedImpact = socializedPerCustomerMonthly * phaseIn;
+            }
+
+            dcImpact = directImpact + socializedImpact;
 
             if (dcImpact > 0) {
                 dcImpact *= Math.pow(1 + TIME_PARAMS.generalInflation, yearsOnline);
@@ -888,6 +923,9 @@ export const calculateDispatchableTrajectory = (
     const flexPeakCoincidence = dataCenter.flexPeakCoincidence || 0.75;
     const onsiteGenMW = dataCenter.onsiteGenerationMW || dataCenter.capacityMW * 0.2;
 
+    // Auction lag: capacity market price impacts take 3 years to flow through
+    const marketLag = utility.hasCapacityMarket ? 3 : 0;
+
     for (let year = 0; year <= years; year++) {
         let dcImpact = 0;
         let currentAllocation = utility.baseResidentialAllocation;
@@ -925,7 +963,20 @@ export const calculateDispatchableTrajectory = (
                 netPeakDraw: yearImpact.metrics.effectivePeakMW,
             };
 
-            dcImpact = yearImpact.perCustomerMonthly * phaseIn;
+            // Separate socialized capacity cost from direct infrastructure costs
+            const socializedPerCustomerMonthly = yearImpact.socializedCapacityCost / utility.residentialCustomers / 12;
+            const baseImpactPerCustomerMonthly = yearImpact.perCustomerMonthly - socializedPerCustomerMonthly;
+
+            // Direct infrastructure costs apply immediately
+            let directImpact = baseImpactPerCustomerMonthly * phaseIn;
+
+            // Socialized capacity cost only applies after auction lag
+            let socializedImpact = 0;
+            if (yearsOnline >= marketLag) {
+                socializedImpact = socializedPerCustomerMonthly * phaseIn;
+            }
+
+            dcImpact = directImpact + socializedImpact;
 
             if (dcImpact > 0) {
                 dcImpact *= Math.pow(1 + TIME_PARAMS.generalInflation, yearsOnline);
