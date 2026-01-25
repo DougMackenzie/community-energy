@@ -141,6 +141,21 @@ export default function MethodologyPage() {
                         <p><strong>Basic Formula:</strong></p>
                         <div className="bg-gray-50 p-4 rounded-lg font-mono text-sm overflow-x-auto">
                             <p>Monthly Impact = (Infrastructure Costs − DC Revenue Offset) × Residential Allocation / Customers / 12</p>
+                            <p className="mt-2 text-gray-500">+ Socialized Capacity Cost / Customers / 12 <span className="text-xs">(capacity markets only)</span></p>
+                        </div>
+
+                        <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <p className="text-sm font-semibold text-amber-900 mb-2">Capacity Market Addition (PJM/NYISO/MISO)</p>
+                            <p className="text-sm text-gray-700">
+                                For utilities in organized capacity markets, we add a <strong>Socialized Capacity Cost</strong> component
+                                that captures the "PJM Effect"—when large loads consume reserve margin, capacity auction prices spike,
+                                and this price increase is paid by <em>all</em> existing customers on their existing load.
+                            </p>
+                            <p className="text-sm text-gray-600 mt-2">
+                                This cost is calculated using <strong>Endogenous Capacity Pricing</strong> (see dedicated section below)
+                                and applies with a <strong>3-year auction lag</strong> to reflect the time between capacity auction clearing
+                                and delivery year. Direct infrastructure costs apply immediately.
+                            </p>
                         </div>
 
                         <p className="mt-6"><strong>Key Terms Explained:</strong></p>

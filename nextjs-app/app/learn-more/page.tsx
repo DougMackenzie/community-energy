@@ -225,6 +225,15 @@ export default function LearnMorePage() {
                                 portion of everyone's bill, not the fuel costs. This is why how infrastructure is allocated matters.
                             </p>
                         </div>
+
+                        <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+                            <h4 className="font-semibold text-red-900 mb-2">Capacity Markets Can Amplify Impact</h4>
+                            <p className="text-sm text-gray-700">
+                                In regions with <strong>capacity markets</strong> (PJM, NYISO, MISO), large new loads can trigger
+                                price spikes that affect <em>all</em> ratepayers—not just through infrastructure costs, but through
+                                higher capacity prices paid by everyone. See the "Capacity Markets" section below for details.
+                            </p>
+                        </div>
                     </div>
                 </Section>
 
@@ -416,6 +425,104 @@ export default function LearnMorePage() {
                 </Section>
 
                 <Section
+                    id="capacity-markets"
+                    title="Capacity Markets: The 'PJM Effect'"
+                    expandedSection={expandedSection}
+                    toggleSection={toggleSection}
+                >
+                    <div className="space-y-6 text-gray-600">
+                        <p>
+                            In some regions, utilities participate in <strong>capacity markets</strong>—auctions where power plants
+                            bid to be available when needed. These markets can amplify the impact of large new loads like data centers.
+                        </p>
+
+                        <div className="border-2 border-red-200 rounded-lg p-5 bg-red-50">
+                            <h4 className="font-semibold text-red-900 mb-3">What is the "PJM Effect"?</h4>
+                            <p className="text-sm text-gray-700 mb-3">
+                                When massive new loads (like data centers) connect to the grid, they consume available <strong>reserve margin</strong>—the
+                                cushion of extra generation capacity that ensures reliability. As reserve margins shrink, capacity prices
+                                spike non-linearly in a "hockey stick" pattern.
+                            </p>
+                            <div className="bg-white rounded-lg p-4 mt-3">
+                                <p className="text-sm font-medium text-gray-900 mb-2">The key insight:</p>
+                                <p className="text-sm text-gray-700">
+                                    When a data center causes capacity prices to rise, it doesn't just pay higher prices for its own load—<strong>all
+                                    existing customers</strong> also pay the higher price on their existing load. This "socialized" cost is why
+                                    data center growth in PJM has drawn regulatory attention.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div className="border border-gray-200 rounded-lg p-4">
+                                <h4 className="font-semibold text-gray-900 mb-2">Regions with Capacity Markets</h4>
+                                <ul className="space-y-2 text-sm">
+                                    <li className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                        <span><strong>PJM</strong> — Mid-Atlantic, Ohio Valley (13 states)</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                        <span><strong>NYISO</strong> — New York State</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                        <span><strong>ISO-NE</strong> — New England</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                        <span><strong>MISO</strong> — Midwest (15 states)</span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div className="border border-gray-200 rounded-lg p-4">
+                                <h4 className="font-semibold text-gray-900 mb-2">Regions Without Capacity Markets</h4>
+                                <ul className="space-y-2 text-sm">
+                                    <li className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                        <span><strong>ERCOT</strong> — Texas (energy-only market)</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                        <span><strong>SPP</strong> — Plains states (energy-only)</span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-gray-400"></span>
+                                        <span><strong>Vertically Integrated</strong> — Traditional utilities</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                            <h4 className="font-semibold text-blue-900 mb-2">The 3-Year Auction Lag</h4>
+                            <p className="text-sm text-gray-700">
+                                Capacity auctions clear about <strong>3 years before delivery</strong>. This means when a data center
+                                connects today, its impact on capacity prices won't hit ratepayer bills for roughly 3 years.
+                                Our calculator models this lag—infrastructure costs hit immediately, but socialized capacity costs
+                                are delayed.
+                            </p>
+                        </div>
+
+                        <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                            <h4 className="font-semibold text-green-900 mb-2">How Flexible Load Helps</h4>
+                            <p className="text-sm text-gray-700">
+                                Data centers that can <strong>curtail during peak hours</strong> add less to system peak, which means
+                                they consume less reserve margin and trigger smaller capacity price increases. A 25% curtailable load
+                                can significantly reduce the socialized cost impact on existing ratepayers.
+                            </p>
+                        </div>
+
+                        <p className="text-xs text-gray-500">
+                            Reference:{' '}
+                            <a href="https://gridstrategiesllc.com/wp-content/uploads/National-Load-Growth-Report-2024.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                Grid Strategies - National Load Growth Report (Dec 2024)
+                            </a>
+                        </p>
+                    </div>
+                </Section>
+
+                <Section
                     id="questions-to-ask"
                     title="Questions to Ask About Data Center Proposals"
                     expandedSection={expandedSection}
@@ -465,6 +572,16 @@ export default function LearnMorePage() {
                                     <li>• Will there be public hearings?</li>
                                     <li>• Has the PUC approved similar arrangements before?</li>
                                     <li>• Are there consumer advocates reviewing the proposal?</li>
+                                </ul>
+                            </div>
+
+                            <div className="border-l-4 border-red-500 pl-4">
+                                <h4 className="font-semibold text-gray-900">About Capacity Markets (PJM, NYISO, MISO regions)</h4>
+                                <ul className="mt-2 space-y-1 text-sm">
+                                    <li>• What is the current reserve margin in this utility's region?</li>
+                                    <li>• How will this load affect capacity auction prices?</li>
+                                    <li>• Will the data center participate in demand response programs?</li>
+                                    <li>• Has the impact on existing ratepayers been analyzed?</li>
                                 </ul>
                             </div>
                         </div>
@@ -535,6 +652,16 @@ export default function LearnMorePage() {
                                     <p className="font-semibold text-gray-900">Rate Base</p>
                                     <p className="text-sm">The total value of a utility's assets (plants, lines, etc.) on which they're
                                         allowed to earn a return. Paid for by all customers over time.</p>
+                                </div>
+                                <div className="border-b border-gray-100 pb-3">
+                                    <p className="font-semibold text-gray-900">Capacity Market</p>
+                                    <p className="text-sm">An auction where power plants bid to be available when needed. Prices reflect
+                                        the cost of keeping enough generation ready to meet peak demand. PJM, NYISO, and MISO operate capacity markets.</p>
+                                </div>
+                                <div className="border-b border-gray-100 pb-3">
+                                    <p className="font-semibold text-gray-900">Reserve Margin</p>
+                                    <p className="text-sm">The "cushion" of extra generation capacity above peak demand. Typically 15-20%.
+                                        When large loads consume reserve margin, capacity prices can spike dramatically.</p>
                                 </div>
                             </div>
                         </div>
