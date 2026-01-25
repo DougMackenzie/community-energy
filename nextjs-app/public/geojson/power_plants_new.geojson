@@ -1,297 +1,65 @@
 {
   "type": "FeatureCollection",
   "metadata": {
-    "description": "New power plants announced/planned for data center load (2024-2035)",
+    "description": "New power generation announced/planned to support data center growth (2024-2035)",
     "sources": ["EIA Form 860M", "FERC filings", "Utility IRPs", "Company announcements"],
     "lastUpdated": "2025-01",
-    "notes": "Only includes NEW capacity additions, not existing plants"
+    "notes": "Only NEW capacity additions to support 150GW data center load by 2035"
   },
   "features": [
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Three Mile Island Restart",
-        "operator": "Constellation Energy",
-        "type": "nuclear",
-        "capacity": 837,
-        "status": "planned",
-        "year": 2028,
-        "customer": "Microsoft"
-      },
-      "geometry": { "type": "Point", "coordinates": [-76.7234, 40.1534] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Entergy Louisiana CCGT 1",
-        "operator": "Entergy",
-        "type": "gas",
-        "capacity": 800,
-        "status": "construction",
-        "year": 2027,
-        "customer": "Meta"
-      },
-      "geometry": { "type": "Point", "coordinates": [-91.1823, 30.4512] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Entergy Louisiana CCGT 2",
-        "operator": "Entergy",
-        "type": "gas",
-        "capacity": 760,
-        "status": "planned",
-        "year": 2028,
-        "customer": "Meta"
-      },
-      "geometry": { "type": "Point", "coordinates": [-91.2534, 30.4823] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Entergy Louisiana CCGT 3",
-        "operator": "Entergy",
-        "type": "gas",
-        "capacity": 700,
-        "status": "planned",
-        "year": 2029,
-        "customer": "Meta"
-      },
-      "geometry": { "type": "Point", "coordinates": [-91.3012, 30.5123] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "ExxonMobil Texas CCGT",
-        "operator": "ExxonMobil",
-        "type": "gas",
-        "capacity": 1500,
-        "status": "announced",
-        "year": 2029,
-        "customer": "Multiple DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-95.3623, 29.7534] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Dominion Virginia CCGT",
-        "operator": "Dominion Energy",
-        "type": "gas",
-        "capacity": 900,
-        "status": "planned",
-        "year": 2028,
-        "customer": "Data Center Alley"
-      },
-      "geometry": { "type": "Point", "coordinates": [-77.2134, 38.8923] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "AEP Ohio CCGT",
-        "operator": "AEP",
-        "type": "gas",
-        "capacity": 650,
-        "status": "planned",
-        "year": 2028,
-        "customer": "Columbus DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-82.7823, 40.0234] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "PSO Oklahoma CCGT",
-        "operator": "AEP/PSO",
-        "type": "gas",
-        "capacity": 550,
-        "status": "planned",
-        "year": 2027,
-        "customer": "Tulsa DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-95.8234, 36.0823] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "OGE Oklahoma CCGT",
-        "operator": "OGE",
-        "type": "gas",
-        "capacity": 600,
-        "status": "announced",
-        "year": 2029,
-        "customer": "OKC/Stillwater DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-97.4123, 35.5234] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Talen Energy Susquehanna Uprate",
-        "operator": "Talen Energy",
-        "type": "nuclear",
-        "capacity": 200,
-        "status": "planned",
-        "year": 2027,
-        "customer": "Amazon"
-      },
-      "geometry": { "type": "Point", "coordinates": [-76.1423, 41.0923] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "NuScale SMR Utah",
-        "operator": "NuScale/UAMPS",
-        "type": "nuclear",
-        "capacity": 462,
-        "status": "announced",
-        "year": 2030,
-        "customer": "Western DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-113.0123, 43.5234] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "X-Energy SMR Texas",
-        "operator": "X-Energy/Dow",
-        "type": "nuclear",
-        "capacity": 320,
-        "status": "announced",
-        "year": 2031,
-        "customer": "Industrial/DC"
-      },
-      "geometry": { "type": "Point", "coordinates": [-95.0534, 29.7123] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "SPP Wind Farm Oklahoma",
-        "operator": "NextEra",
-        "type": "wind",
-        "capacity": 450,
-        "status": "construction",
-        "year": 2026,
-        "customer": "Google Stillwater"
-      },
-      "geometry": { "type": "Point", "coordinates": [-97.3234, 36.5823] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Panhandle Wind Phase 3",
-        "operator": "Pattern Energy",
-        "type": "wind",
-        "capacity": 380,
-        "status": "planned",
-        "year": 2027,
-        "customer": "ERCOT DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-101.2134, 35.6234] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "ERCOT Solar Farm 1",
-        "operator": "Lightsource BP",
-        "type": "solar",
-        "capacity": 500,
-        "status": "construction",
-        "year": 2026,
-        "customer": "Dallas DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-97.0823, 32.4512] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Permian Solar Expansion",
-        "operator": "Invenergy",
-        "type": "solar",
-        "capacity": 600,
-        "status": "planned",
-        "year": 2027,
-        "customer": "ERCOT Grid"
-      },
-      "geometry": { "type": "Point", "coordinates": [-102.0823, 31.8534] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Virginia Solar + Storage",
-        "operator": "Dominion",
-        "type": "solar",
-        "capacity": 400,
-        "status": "construction",
-        "year": 2026,
-        "customer": "NOVA DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-77.8234, 38.5234] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Arizona Solar DC Direct",
-        "operator": "First Solar",
-        "type": "solar",
-        "capacity": 550,
-        "status": "planned",
-        "year": 2027,
-        "customer": "Phoenix DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-111.4534, 33.2812] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Nevada Geothermal",
-        "operator": "Ormat",
-        "type": "geothermal",
-        "capacity": 150,
-        "status": "planned",
-        "year": 2028,
-        "customer": "Switch"
-      },
-      "geometry": { "type": "Point", "coordinates": [-119.3234, 39.8123] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Columbia River Hydro Expansion",
-        "operator": "BPA",
-        "type": "hydro",
-        "capacity": 200,
-        "status": "planned",
-        "year": 2029,
-        "customer": "PNW DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-121.1323, 45.6534] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Oklahoma Wind Farm 2",
-        "operator": "AEP",
-        "type": "wind",
-        "capacity": 350,
-        "status": "announced",
-        "year": 2028,
-        "customer": "Tulsa DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-96.4823, 36.8234] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "SPP Solar Oklahoma",
-        "operator": "Enel",
-        "type": "solar",
-        "capacity": 420,
-        "status": "announced",
-        "year": 2028,
-        "customer": "Oklahoma DCs"
-      },
-      "geometry": { "type": "Point", "coordinates": [-97.1234, 35.8234] }
-    }
+    {"type": "Feature", "properties": {"name": "Three Mile Island Restart", "operator": "Constellation Energy", "type": "nuclear", "capacity": 837, "status": "announced", "year": 2028, "customer": "Microsoft"}, "geometry": {"type": "Point", "coordinates": [-76.7234, 40.1534]}},
+    {"type": "Feature", "properties": {"name": "Palisades Nuclear Restart", "operator": "Holtec", "type": "nuclear", "capacity": 805, "status": "announced", "year": 2027, "customer": "Grid"}, "geometry": {"type": "Point", "coordinates": [-86.3145, 42.3223]}},
+    {"type": "Feature", "properties": {"name": "Talen Susquehanna Uprate", "operator": "Talen Energy", "type": "nuclear", "capacity": 200, "status": "announced", "year": 2027, "customer": "Amazon"}, "geometry": {"type": "Point", "coordinates": [-76.1423, 41.0923]}},
+    {"type": "Feature", "properties": {"name": "NuScale SMR Utah", "operator": "NuScale/UAMPS", "type": "nuclear", "capacity": 462, "status": "announced", "year": 2030, "customer": "Western DCs"}, "geometry": {"type": "Point", "coordinates": [-113.0123, 43.5234]}},
+    {"type": "Feature", "properties": {"name": "X-Energy SMR Texas", "operator": "X-Energy/Dow", "type": "nuclear", "capacity": 320, "status": "announced", "year": 2031, "customer": "Industrial/DC"}, "geometry": {"type": "Point", "coordinates": [-95.0534, 29.7123]}},
+    {"type": "Feature", "properties": {"name": "Kairos SMR Tennessee", "operator": "Kairos Power", "type": "nuclear", "capacity": 500, "status": "anticipated", "year": 2032, "customer": "TVA Region"}, "geometry": {"type": "Point", "coordinates": [-84.8712, 35.9534]}},
+    {"type": "Feature", "properties": {"name": "TerraPower Wyoming", "operator": "TerraPower", "type": "nuclear", "capacity": 345, "status": "announced", "year": 2030, "customer": "Grid/DC"}, "geometry": {"type": "Point", "coordinates": [-105.3823, 41.1412]}},
+    {"type": "Feature", "properties": {"name": "Entergy Louisiana CCGT 1", "operator": "Entergy", "type": "gas", "capacity": 800, "status": "construction", "year": 2027, "customer": "Meta"}, "geometry": {"type": "Point", "coordinates": [-91.1823, 30.4512]}},
+    {"type": "Feature", "properties": {"name": "Entergy Louisiana CCGT 2", "operator": "Entergy", "type": "gas", "capacity": 760, "status": "announced", "year": 2028, "customer": "Meta"}, "geometry": {"type": "Point", "coordinates": [-91.2534, 30.4823]}},
+    {"type": "Feature", "properties": {"name": "Entergy Louisiana CCGT 3", "operator": "Entergy", "type": "gas", "capacity": 700, "status": "announced", "year": 2029, "customer": "Meta"}, "geometry": {"type": "Point", "coordinates": [-91.3012, 30.5123]}},
+    {"type": "Feature", "properties": {"name": "ExxonMobil Texas CCGT", "operator": "ExxonMobil", "type": "gas", "capacity": 1500, "status": "announced", "year": 2029, "customer": "Multiple DCs"}, "geometry": {"type": "Point", "coordinates": [-95.3623, 29.7534]}},
+    {"type": "Feature", "properties": {"name": "Dominion Virginia CCGT 1", "operator": "Dominion Energy", "type": "gas", "capacity": 900, "status": "announced", "year": 2028, "customer": "Data Center Alley"}, "geometry": {"type": "Point", "coordinates": [-77.2134, 38.8923]}},
+    {"type": "Feature", "properties": {"name": "Dominion Virginia CCGT 2", "operator": "Dominion Energy", "type": "gas", "capacity": 850, "status": "anticipated", "year": 2030, "customer": "NOVA DCs"}, "geometry": {"type": "Point", "coordinates": [-77.4512, 38.7823]}},
+    {"type": "Feature", "properties": {"name": "AEP Ohio CCGT", "operator": "AEP", "type": "gas", "capacity": 650, "status": "announced", "year": 2028, "customer": "Columbus DCs"}, "geometry": {"type": "Point", "coordinates": [-82.7823, 40.0234]}},
+    {"type": "Feature", "properties": {"name": "AEP Ohio CCGT 2", "operator": "AEP", "type": "gas", "capacity": 700, "status": "anticipated", "year": 2030, "customer": "Ohio DCs"}, "geometry": {"type": "Point", "coordinates": [-82.9534, 40.1234]}},
+    {"type": "Feature", "properties": {"name": "PSO Oklahoma CCGT", "operator": "AEP/PSO", "type": "gas", "capacity": 550, "status": "announced", "year": 2027, "customer": "Tulsa DCs"}, "geometry": {"type": "Point", "coordinates": [-95.8234, 36.0823]}},
+    {"type": "Feature", "properties": {"name": "OGE Oklahoma CCGT", "operator": "OGE", "type": "gas", "capacity": 600, "status": "announced", "year": 2029, "customer": "OKC/Stillwater DCs"}, "geometry": {"type": "Point", "coordinates": [-97.4123, 35.5234]}},
+    {"type": "Feature", "properties": {"name": "OGE Oklahoma CCGT 2", "operator": "OGE", "type": "gas", "capacity": 650, "status": "anticipated", "year": 2031, "customer": "Oklahoma DCs"}, "geometry": {"type": "Point", "coordinates": [-97.2312, 35.6823]}},
+    {"type": "Feature", "properties": {"name": "ERCOT Texas CCGT 1", "operator": "Various", "type": "gas", "capacity": 800, "status": "announced", "year": 2028, "customer": "Dallas DCs"}, "geometry": {"type": "Point", "coordinates": [-96.6234, 32.9123]}},
+    {"type": "Feature", "properties": {"name": "ERCOT Texas CCGT 2", "operator": "Various", "type": "gas", "capacity": 900, "status": "anticipated", "year": 2030, "customer": "ERCOT DCs"}, "geometry": {"type": "Point", "coordinates": [-97.8123, 31.2534]}},
+    {"type": "Feature", "properties": {"name": "ERCOT Texas CCGT 3", "operator": "Various", "type": "gas", "capacity": 750, "status": "anticipated", "year": 2031, "customer": "Texas DCs"}, "geometry": {"type": "Point", "coordinates": [-98.4934, 29.4612]}},
+    {"type": "Feature", "properties": {"name": "Arizona CCGT", "operator": "APS", "type": "gas", "capacity": 600, "status": "anticipated", "year": 2029, "customer": "Phoenix DCs"}, "geometry": {"type": "Point", "coordinates": [-111.5312, 33.4823]}},
+    {"type": "Feature", "properties": {"name": "Nevada CCGT", "operator": "NV Energy", "type": "gas", "capacity": 550, "status": "anticipated", "year": 2030, "customer": "Nevada DCs"}, "geometry": {"type": "Point", "coordinates": [-119.4523, 39.4812]}},
+    {"type": "Feature", "properties": {"name": "Georgia CCGT", "operator": "Georgia Power", "type": "gas", "capacity": 700, "status": "anticipated", "year": 2029, "customer": "Atlanta DCs"}, "geometry": {"type": "Point", "coordinates": [-84.2512, 33.8123]}},
+    {"type": "Feature", "properties": {"name": "SPP Wind Farm Oklahoma 1", "operator": "NextEra", "type": "wind", "capacity": 450, "status": "construction", "year": 2026, "customer": "Google Stillwater"}, "geometry": {"type": "Point", "coordinates": [-97.3234, 36.5823]}},
+    {"type": "Feature", "properties": {"name": "SPP Wind Farm Oklahoma 2", "operator": "AEP", "type": "wind", "capacity": 350, "status": "announced", "year": 2028, "customer": "Tulsa DCs"}, "geometry": {"type": "Point", "coordinates": [-96.4823, 36.8234]}},
+    {"type": "Feature", "properties": {"name": "SPP Wind Farm Oklahoma 3", "operator": "Invenergy", "type": "wind", "capacity": 500, "status": "anticipated", "year": 2029, "customer": "Oklahoma DCs"}, "geometry": {"type": "Point", "coordinates": [-98.1234, 36.3234]}},
+    {"type": "Feature", "properties": {"name": "Panhandle Wind Phase 3", "operator": "Pattern Energy", "type": "wind", "capacity": 380, "status": "announced", "year": 2027, "customer": "ERCOT DCs"}, "geometry": {"type": "Point", "coordinates": [-101.2134, 35.6234]}},
+    {"type": "Feature", "properties": {"name": "Panhandle Wind Phase 4", "operator": "Pattern Energy", "type": "wind", "capacity": 420, "status": "anticipated", "year": 2029, "customer": "ERCOT DCs"}, "geometry": {"type": "Point", "coordinates": [-101.5423, 35.4512]}},
+    {"type": "Feature", "properties": {"name": "West Texas Wind 1", "operator": "Various", "type": "wind", "capacity": 600, "status": "anticipated", "year": 2028, "customer": "ERCOT DCs"}, "geometry": {"type": "Point", "coordinates": [-102.3312, 32.4534]}},
+    {"type": "Feature", "properties": {"name": "West Texas Wind 2", "operator": "Various", "type": "wind", "capacity": 550, "status": "anticipated", "year": 2030, "customer": "ERCOT DCs"}, "geometry": {"type": "Point", "coordinates": [-101.8534, 31.8312]}},
+    {"type": "Feature", "properties": {"name": "Iowa Wind Farm", "operator": "MidAmerican", "type": "wind", "capacity": 400, "status": "anticipated", "year": 2029, "customer": "MISO DCs"}, "geometry": {"type": "Point", "coordinates": [-93.6091, 42.0312]}},
+    {"type": "Feature", "properties": {"name": "Minnesota Wind Farm", "operator": "Xcel", "type": "wind", "capacity": 450, "status": "anticipated", "year": 2030, "customer": "MISO DCs"}, "geometry": {"type": "Point", "coordinates": [-95.1234, 44.2312]}},
+    {"type": "Feature", "properties": {"name": "Nebraska Wind Farm", "operator": "OPPD", "type": "wind", "capacity": 350, "status": "anticipated", "year": 2029, "customer": "SPP DCs"}, "geometry": {"type": "Point", "coordinates": [-100.5234, 41.2534]}},
+    {"type": "Feature", "properties": {"name": "Kansas Wind Farm", "operator": "Evergy", "type": "wind", "capacity": 500, "status": "anticipated", "year": 2030, "customer": "SPP DCs"}, "geometry": {"type": "Point", "coordinates": [-99.3234, 38.4512]}},
+    {"type": "Feature", "properties": {"name": "PNW Wind Farm", "operator": "BPA", "type": "wind", "capacity": 400, "status": "anticipated", "year": 2029, "customer": "PNW DCs"}, "geometry": {"type": "Point", "coordinates": [-120.3234, 46.2312]}},
+    {"type": "Feature", "properties": {"name": "ERCOT Solar Farm 1", "operator": "Lightsource BP", "type": "solar", "capacity": 500, "status": "construction", "year": 2026, "customer": "Dallas DCs"}, "geometry": {"type": "Point", "coordinates": [-97.0823, 32.4512]}},
+    {"type": "Feature", "properties": {"name": "ERCOT Solar Farm 2", "operator": "Various", "type": "solar", "capacity": 600, "status": "announced", "year": 2027, "customer": "ERCOT DCs"}, "geometry": {"type": "Point", "coordinates": [-98.2134, 31.5234]}},
+    {"type": "Feature", "properties": {"name": "ERCOT Solar Farm 3", "operator": "Various", "type": "solar", "capacity": 700, "status": "anticipated", "year": 2029, "customer": "Texas DCs"}, "geometry": {"type": "Point", "coordinates": [-99.5312, 30.8234]}},
+    {"type": "Feature", "properties": {"name": "Permian Solar Expansion", "operator": "Invenergy", "type": "solar", "capacity": 600, "status": "announced", "year": 2027, "customer": "ERCOT Grid"}, "geometry": {"type": "Point", "coordinates": [-102.0823, 31.8534]}},
+    {"type": "Feature", "properties": {"name": "Virginia Solar + Storage", "operator": "Dominion", "type": "solar", "capacity": 400, "status": "construction", "year": 2026, "customer": "NOVA DCs"}, "geometry": {"type": "Point", "coordinates": [-77.8234, 38.5234]}},
+    {"type": "Feature", "properties": {"name": "Virginia Solar 2", "operator": "Dominion", "type": "solar", "capacity": 500, "status": "anticipated", "year": 2028, "customer": "PJM DCs"}, "geometry": {"type": "Point", "coordinates": [-78.2312, 37.8923]}},
+    {"type": "Feature", "properties": {"name": "Arizona Solar DC Direct", "operator": "First Solar", "type": "solar", "capacity": 550, "status": "announced", "year": 2027, "customer": "Phoenix DCs"}, "geometry": {"type": "Point", "coordinates": [-111.4534, 33.2812]}},
+    {"type": "Feature", "properties": {"name": "Arizona Solar 2", "operator": "APS", "type": "solar", "capacity": 600, "status": "anticipated", "year": 2029, "customer": "Arizona DCs"}, "geometry": {"type": "Point", "coordinates": [-111.8312, 33.5234]}},
+    {"type": "Feature", "properties": {"name": "Nevada Solar Farm", "operator": "NV Energy", "type": "solar", "capacity": 500, "status": "anticipated", "year": 2028, "customer": "Nevada DCs"}, "geometry": {"type": "Point", "coordinates": [-114.9234, 36.1234]}},
+    {"type": "Feature", "properties": {"name": "SPP Solar Oklahoma", "operator": "Enel", "type": "solar", "capacity": 420, "status": "announced", "year": 2028, "customer": "Oklahoma DCs"}, "geometry": {"type": "Point", "coordinates": [-97.1234, 35.8234]}},
+    {"type": "Feature", "properties": {"name": "SPP Solar Oklahoma 2", "operator": "NextEra", "type": "solar", "capacity": 500, "status": "anticipated", "year": 2030, "customer": "Oklahoma DCs"}, "geometry": {"type": "Point", "coordinates": [-96.5812, 35.4523]}},
+    {"type": "Feature", "properties": {"name": "California Solar DC", "operator": "CAISO", "type": "solar", "capacity": 450, "status": "anticipated", "year": 2029, "customer": "CA DCs"}, "geometry": {"type": "Point", "coordinates": [-117.1611, 33.7411]}},
+    {"type": "Feature", "properties": {"name": "Georgia Solar Farm", "operator": "Georgia Power", "type": "solar", "capacity": 400, "status": "anticipated", "year": 2029, "customer": "Atlanta DCs"}, "geometry": {"type": "Point", "coordinates": [-83.8234, 33.4512]}},
+    {"type": "Feature", "properties": {"name": "North Carolina Solar", "operator": "Duke Energy", "type": "solar", "capacity": 500, "status": "anticipated", "year": 2028, "customer": "NC DCs"}, "geometry": {"type": "Point", "coordinates": [-79.5234, 35.4534]}},
+    {"type": "Feature", "properties": {"name": "Nevada Geothermal", "operator": "Ormat", "type": "geothermal", "capacity": 150, "status": "announced", "year": 2028, "customer": "Switch"}, "geometry": {"type": "Point", "coordinates": [-119.3234, 39.8123]}},
+    {"type": "Feature", "properties": {"name": "California Geothermal", "operator": "Ormat", "type": "geothermal", "capacity": 100, "status": "anticipated", "year": 2030, "customer": "CA DCs"}, "geometry": {"type": "Point", "coordinates": [-115.5234, 33.0123]}},
+    {"type": "Feature", "properties": {"name": "Columbia River Hydro Expansion", "operator": "BPA", "type": "hydro", "capacity": 200, "status": "announced", "year": 2029, "customer": "PNW DCs"}, "geometry": {"type": "Point", "coordinates": [-121.1323, 45.6534]}},
+    {"type": "Feature", "properties": {"name": "TVA Hydro Upgrade", "operator": "TVA", "type": "hydro", "capacity": 150, "status": "anticipated", "year": 2030, "customer": "SE DCs"}, "geometry": {"type": "Point", "coordinates": [-85.6234, 35.0534]}}
   ]
 }

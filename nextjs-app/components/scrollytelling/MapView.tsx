@@ -435,25 +435,28 @@ export default function MapView({ location, layerColor = '#EF4444', stepId, regi
     };
 
     // Fly to new location with seamless animation
+    // Use individual location values as dependencies to properly detect changes
     useEffect(() => {
         if (mapRef.current && mapLoaded && location) {
             // Calculate duration based on distance
             const currentZoom = mapRef.current.getZoom();
             const zoomDiff = Math.abs(location.zoom - currentZoom);
-            const baseDuration = 2500;
-            const duration = baseDuration + (zoomDiff * 500);
+            const baseDuration = 2000;
+            const duration = baseDuration + (zoomDiff * 400);
+
+            console.log('Flying to:', location.lng, location.lat, 'zoom:', location.zoom);
 
             mapRef.current.flyTo({
                 center: [location.lng, location.lat],
                 zoom: location.zoom,
                 pitch: location.pitch,
                 bearing: location.bearing,
-                duration: Math.min(duration, 5000),
+                duration: Math.min(duration, 4000),
                 essential: true,
                 easing: easeInOutCubic,
             });
         }
-    }, [location, mapLoaded]);
+    }, [location.lng, location.lat, location.zoom, location.pitch, location.bearing, mapLoaded]);
 
     // Update layer styling based on current step
     useEffect(() => {

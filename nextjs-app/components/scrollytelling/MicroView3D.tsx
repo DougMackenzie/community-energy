@@ -69,10 +69,13 @@ export default function MicroView3D({ visualState, powerMetric }: MicroView3DPro
 function ContinuousScene({ visualState }: { visualState: string }) {
     const groupRef = useRef<THREE.Group>(null);
     const { camera } = useThree();
+    const initializedRef = useRef(false);
 
-    const targetPosRef = useRef(new THREE.Vector3(3, 2, 3));
-    const targetLookRef = useRef(new THREE.Vector3(0, 0.05, 0));
-    const targetZoomRef = useRef(280);
+    // Initialize refs with chip-glow config (initial view)
+    const chipConfig = cameraConfig['chip-glow'];
+    const targetPosRef = useRef(new THREE.Vector3(...chipConfig.position));
+    const targetLookRef = useRef(new THREE.Vector3(...chipConfig.target));
+    const targetZoomRef = useRef(chipConfig.zoom);
 
     const currentIndex = scaleOrder.indexOf(visualState);
     const config = cameraConfig[visualState] || cameraConfig['chip-glow'];
@@ -84,12 +87,27 @@ function ContinuousScene({ visualState }: { visualState: string }) {
         targetZoomRef.current = config.zoom;
     }, [config]);
 
+    // Initialize camera position immediately on first render
+    useMemo(() => {
+        if (!initializedRef.current && camera) {
+            camera.position.set(...chipConfig.position);
+            if ('zoom' in camera) {
+                const orthoCamera = camera as THREE.OrthographicCamera;
+                orthoCamera.zoom = chipConfig.zoom;
+                orthoCamera.updateProjectionMatrix();
+            }
+            camera.lookAt(new THREE.Vector3(...chipConfig.target));
+            initializedRef.current = true;
+        }
+    }, [camera, chipConfig]);
+
     // Smooth continuous camera animation
     useFrame((state, delta) => {
         if (!camera) return;
 
-        // Slower interpolation for more seamless transitions between scales
-        const speed = 1.0;
+        // Adaptive speed - faster for larger zoom changes
+        const zoomDiff = Math.abs(targetZoomRef.current - (camera as THREE.OrthographicCamera).zoom);
+        const speed = zoomDiff > 100 ? 2.5 : zoomDiff > 50 ? 2.0 : 1.5;
 
         camera.position.lerp(targetPosRef.current, delta * speed);
 
