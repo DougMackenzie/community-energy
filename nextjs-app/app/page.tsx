@@ -127,38 +127,8 @@ export default function HomePage() {
               Household Costs
             </h2>
             <p className="text-lg text-slate-600 max-w-3xl mx-auto">
-              One large data center uses as much power as <strong className="text-slate-800">300,000 homes</strong>. Here's how costs flow to your bill.
+              One large data center campus uses as much power as <strong className="text-slate-800">300,000 homes</strong>. Here's how costs flow to your bill.
             </p>
-          </div>
-
-          {/* Visual Scale Comparison */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 mb-12 p-6 bg-slate-50 rounded-xl border border-slate-200">
-            <div className="flex items-center gap-6">
-              {/* Data center icon */}
-              <div className="relative">
-                <div className="w-20 h-20 bg-gradient-to-br from-slate-600 to-slate-700 rounded-2xl flex items-center justify-center shadow-lg">
-                  <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="currentColor">
-                    <rect x="3" y="4" width="18" height="4" rx="1" />
-                    <rect x="3" y="10" width="18" height="4" rx="1" />
-                    <rect x="3" y="16" width="18" height="4" rx="1" />
-                  </svg>
-                </div>
-                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-medium text-slate-600 whitespace-nowrap">1 Data Center</span>
-              </div>
-              <span className="text-2xl font-bold text-slate-400">=</span>
-              {/* Houses grid */}
-              <div className="relative">
-                <div className="grid grid-cols-5 gap-1 p-3 bg-amber-100 rounded-2xl border border-amber-200">
-                  {[...Array(15)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 text-amber-600" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 3L4 9v12h16V9l-8-6zm0 2.5L18 10v9H6v-9l6-4.5z"/>
-                      <rect x="10" y="14" width="4" height="5" />
-                    </svg>
-                  ))}
-                </div>
-                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs font-medium text-amber-700 whitespace-nowrap">300,000 Homes</span>
-              </div>
-            </div>
           </div>
 
           {/* How Costs Flow - Simplified */}
