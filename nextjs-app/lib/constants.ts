@@ -387,3 +387,87 @@ export const formatMW = (value: number): string => {
     }
     return `${value.toFixed(0)} MW`;
 };
+
+// ============================================
+// NATIONAL DATA CENTER STATISTICS
+// ============================================
+
+export const NATIONAL_DC_STATS = {
+    // Current state (2024-2025)
+    currentCapacityGW: 50,
+    currentElectricityShare: 0.044, // 4.4%
+    currentTWh: 176, // 2023 consumption
+
+    // Projections
+    projected2030ShareLow: 0.06,
+    projected2030ShareHigh: 0.09,
+    projected2035CapacityGW: 150,
+    growthMultiplier2035: 6, // 6x from 2024
+
+    // Equivalents
+    gwPerNuclearPlant: 1, // 1 GW ≈ 1 nuclear plant
+    homesPerGW: 750000, // ~750k-1M homes per GW
+
+    // Demand backlog
+    totalUSRequestedGW: 1000, // GW requested from US utilities
+
+    // PJM capacity market impact
+    pjmCapacityPrice2024: 269.92, // $/MW-day
+    pjmCapacityPricePrior: 28.92, // $/MW-day (prior year)
+    pjmPriceIncreaseMultiple: 10, // 10x increase
+    dcAttributionPercent: 0.63, // 63% of increase attributed to DC growth
+};
+
+// State-level data center statistics
+export const STATE_DC_DATA: Record<string, {
+    requestedGW?: number;
+    capacityGW?: number;
+    stateElectricityShare?: number;
+    loadGrowthShare?: number;
+    notes: string;
+}> = {
+    TX: {
+        requestedGW: 230,
+        capacityGW: 4.2,
+        loadGrowthShare: 0.46, // 46% of ERCOT projected load growth
+        notes: 'ERCOT energy-only market with 4CP transmission allocation',
+    },
+    VA: {
+        requestedGW: 65,
+        capacityGW: 5.6,
+        stateElectricityShare: 0.25, // 25% of Virginia electricity
+        notes: 'Data center capital of the world, 70% of global internet traffic flows through Loudoun County',
+    },
+    GA: {
+        requestedGW: 51,
+        capacityGW: 1.5,
+        notes: 'Atlanta metro growing tech sector',
+    },
+    PA: {
+        requestedGW: 42,
+        notes: 'PJM territory with capacity market',
+    },
+    NC: {
+        requestedGW: 42,
+        capacityGW: 1.3,
+        notes: 'Charlotte and Research Triangle growth',
+    },
+    IL: {
+        requestedGW: 28,
+        notes: 'Chicago metro data center hub',
+    },
+    IN: {
+        requestedGW: 22,
+        notes: 'Midwest data center expansion',
+    },
+    OH: {
+        requestedGW: 13,
+        capacityGW: 1.2,
+        notes: 'Emerging frontier as Virginia reaches capacity constraints',
+    },
+    AZ: {
+        requestedGW: 12,
+        capacityGW: 1.8,
+        notes: 'Phoenix metro data center growth',
+    },
+};
