@@ -2,15 +2,11 @@
 
 import Link from 'next/link';
 import { useCalculator } from '@/hooks/useCalculator';
-import { formatMW } from '@/lib/constants';
 import USDataCenterHeatMap from '@/components/USDataCenterHeatMap';
 
 export default function HomePage() {
-  const { summary, utility, dataCenter, projectionYears } = useCalculator();
-
-  const baselineFinalBill = summary.finalYearBills.baseline;
-  const firmLoadDiff = summary.finalYearBills.unoptimized - baselineFinalBill;
-  const dispatchableDiff = summary.finalYearBills.dispatchable - baselineFinalBill;
+  // Calculator context is still available if needed for future enhancements
+  useCalculator();
 
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -171,50 +167,58 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Bill Comparison Cards - The key visual */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-            {/* Baseline */}
-            <div className="p-6 bg-slate-50 rounded-xl border border-slate-200 text-center">
-              <p className="text-sm font-medium text-slate-500 mb-2">Without Data Center</p>
-              <p className="text-4xl font-bold text-slate-600">
-                ${baselineFinalBill.toFixed(0)}
-              </p>
-              <p className="text-xs text-slate-500 mt-2">in {projectionYears} years</p>
-              <p className="text-xs text-slate-400 mt-2">Normal rate increases</p>
-            </div>
+          {/* Cost Impact Range Message */}
+          <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-8 border border-slate-200">
+            <h3 className="text-xl font-bold text-slate-800 mb-4 text-center">
+              The Impact on Your Bill Varies Widely
+            </h3>
+            <p className="text-slate-600 text-center max-w-3xl mx-auto mb-6">
+              The impact of data center growth on your electricity costs depends on where you live and how your utility manages new large loads.
+            </p>
 
-            {/* Typical Data Center */}
-            <div className="p-6 bg-red-50 rounded-xl border border-red-200 text-center">
-              <p className="text-sm font-medium text-red-600 mb-2">With Typical Data Center</p>
-              <p className="text-4xl font-bold text-red-600">
-                ${summary.finalYearBills.unoptimized.toFixed(0)}
-              </p>
-              <p className="text-xs text-slate-500 mt-2">in {projectionYears} years</p>
-              <p className={`text-sm font-semibold mt-2 ${firmLoadDiff >= 0 ? 'text-red-600' : 'text-green-600'}`}>
-                {firmLoadDiff >= 0 ? '+' : ''}{firmLoadDiff.toFixed(2)}/mo vs baseline
-              </p>
-            </div>
-
-            {/* Optimized Data Center */}
-            <div className="p-6 bg-green-50 rounded-xl border-2 border-green-400 text-center ring-2 ring-green-200 ring-offset-2 ring-offset-white">
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <p className="text-sm font-medium text-green-700">With Optimized Data Center</p>
-                <span className="text-xs bg-green-200 text-green-800 px-2 py-0.5 rounded-full font-medium border border-green-300">
-                  BEST
-                </span>
+            {/* Range Visualization */}
+            <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 mb-6">
+              {/* Best Case */}
+              <div className="flex-1 max-w-sm p-6 bg-green-50 rounded-xl border border-green-200 text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3 border border-green-200">
+                  <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 12l2 2 4-4" />
+                    <circle cx="12" cy="12" r="9" />
+                  </svg>
+                </div>
+                <p className="text-sm font-medium text-green-700 mb-2">Best Case Scenario</p>
+                <p className="text-3xl font-bold text-green-700 mb-2">-$2 to $0</p>
+                <p className="text-xs text-slate-600">per month impact</p>
+                <p className="text-xs text-slate-500 mt-3 italic">
+                  Flexible data centers with good policy in markets like Oklahoma
+                </p>
               </div>
-              <p className="text-4xl font-bold text-green-700">
-                ${summary.finalYearBills.dispatchable.toFixed(0)}
-              </p>
-              <p className="text-xs text-slate-500 mt-2">in {projectionYears} years</p>
-              <p className={`text-sm font-semibold mt-2 ${dispatchableDiff >= 0 ? 'text-red-600' : 'text-green-600'}`}>
-                {dispatchableDiff >= 0 ? '+' : ''}{dispatchableDiff.toFixed(2)}/mo vs baseline
+
+              {/* Worst Case */}
+              <div className="flex-1 max-w-sm p-6 bg-red-50 rounded-xl border border-red-200 text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-3 border border-red-200">
+                  <svg className="w-6 h-6 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-medium text-red-700 mb-2">Worst Case Scenario</p>
+                <p className="text-3xl font-bold text-red-700 mb-2">+$15 to $30</p>
+                <p className="text-xs text-slate-600">per month impact</p>
+                <p className="text-xs text-slate-500 mt-3 italic">
+                  Rapid growth without proper cost allocation, as seen in Virginia
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
+              <p className="text-sm text-slate-700">
+                <strong className="text-amber-800">The right policies and operational requirements are critical</strong> to ensuring individual households aren't covering the cost of data center development.
               </p>
             </div>
           </div>
 
           <p className="text-center text-sm text-slate-500 mt-6">
-            Based on a {formatMW(dataCenter.capacityMW)} data center serving {utility.residentialCustomers.toLocaleString()} residential customers
+            Use our <Link href="/calculator" className="text-amber-600 hover:underline font-medium">calculator</Link> to see projections specific to your utility and community.
           </p>
         </div>
       </section>
@@ -229,11 +233,10 @@ export default function HomePage() {
               </svg>
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-slate-800 mb-2">The Path Forward: Equitable Tariffs and Flexible Operations</h2>
+              <h2 className="text-2xl font-bold text-slate-800 mb-2">The Path Forward: Fair Rates and Flexible Operations</h2>
               <p className="text-slate-600">
-                In a supply-constrained market, the key to responsible data center development is both in (1) the tariffs
-                and policies making sure that data center loads cover any increase in marginal costs, and (2) the data
-                centers are designed and operated with flexibility in mind.
+                The good news: data center growth doesn't have to mean higher bills for you. With the right policies
+                and smart operations, large industrial loads can actually benefit communities. Here's what matters most.
               </p>
             </div>
           </div>
@@ -241,53 +244,67 @@ export default function HomePage() {
           {/* Two Column Cards */}
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-              <h4 className="font-semibold text-slate-700 mb-3">Coordination to Share Costs</h4>
-              <p className="text-slate-600 text-sm">
-                With coordinated planning, large industrial loads can put <strong className="text-slate-800">downward pressure on rates</strong> because
-                more customers share fixed infrastructure costs. Greater grid utilization makes for more efficient use of
-                existing assets.
+              <h4 className="font-semibold text-slate-700 mb-3">Fair Cost Allocation Through Good Policy</h4>
+              <p className="text-slate-600 text-sm mb-3">
+                New large electricity users like data centers require new power plants and transmission lines.
+                <strong className="text-slate-800"> The critical question is: who pays for this new infrastructure?</strong>
               </p>
+              <ul className="space-y-2 text-slate-600 text-sm">
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-500">→</span>
+                  <span>With good policy, data centers pay their fair share of the costs they create</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-500">→</span>
+                  <span>Without good policy, existing customers may subsidize data center infrastructure</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-slate-500">→</span>
+                  <span>When done right, more customers sharing the grid can lower costs for everyone</span>
+                </li>
+              </ul>
             </div>
 
             <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-              <h4 className="font-semibold text-green-700 mb-3">The Smart Design Model</h4>
+              <h4 className="font-semibold text-green-700 mb-3">Flexible Data Centers Maximize Benefits</h4>
               <p className="text-slate-600 text-sm mb-3">
-                Flexible data center operations rather than size are key to maximizing benefits and minimizing risks:
+                How a data center operates matters as much as how big it is. Flexible operations can protect communities:
               </p>
               <ul className="space-y-2 text-slate-600 text-sm">
                 <li className="flex items-start gap-2">
                   <span className="text-green-600">✓</span>
-                  <span>Flexibility provides insurance if local supply and demand don't align</span>
+                  <span>Flexible loads can reduce power use during peak demand, avoiding costly infrastructure</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-green-600">✓</span>
-                  <span>On-site generation reduces strain on the shared grid</span>
+                  <span>On-site generators reduce reliance on the shared power grid</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-green-600">✓</span>
-                  <span>During grid emergencies, data centers can shed load and push power back</span>
+                  <span>During emergencies (like heat waves or storms), data centers can cut back so homes have power</span>
                 </li>
               </ul>
             </div>
           </div>
 
-          {/* Virginia/ERCOT Comparison */}
+          {/* Why Policy Matters - Simplified */}
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8">
-            <h4 className="font-semibold text-amber-800 mb-3">Market Structure Matters: Virginia vs. Texas</h4>
+            <h4 className="font-semibold text-amber-800 mb-3">Why Rate Structure Matters</h4>
             <p className="text-slate-600 text-sm mb-3">
-              Virginia electricity bills have increased significantly because the market structure doesn't properly
-              allocate costs—data centers don't fully pay for the infrastructure they require.
+              In Virginia, electricity bills have been rising in part because data centers aren't fully covering
+              the infrastructure costs they create. Existing households end up paying more.
             </p>
             <p className="text-slate-600 text-sm">
-              In contrast, <strong className="text-slate-800">ERCOT's 4CP (Four Coincident Peak) methodology</strong> allocates transmission costs based on
-              contribution during the 4 highest system peak hours each year. This incentivizes large loads to reduce consumption
-              during critical periods, protecting existing ratepayers while rewarding flexible operations.
+              In contrast, some states have rate structures that create strong incentives for data centers
+              to operate flexibly and reduce their impact during high-demand periods. <strong className="text-slate-800">When data centers
+              are charged based on how much they contribute to peak demand</strong>, they have a financial reason
+              to operate in ways that benefit everyone.
             </p>
           </div>
 
           {/* Data Center Operations - Simplified */}
           <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-            <h4 className="font-semibold text-slate-800 mb-6 text-center">Data Center Operations in Practice</h4>
+            <h4 className="font-semibold text-slate-800 mb-6 text-center">How Data Center Design Affects You</h4>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-xl mb-2 border border-red-200">
@@ -295,9 +312,9 @@ export default function HomePage() {
                     <path d="M18.364 5.636a9 9 0 11-12.728 0M12 9v4" />
                   </svg>
                 </div>
-                <h5 className="font-bold text-red-700 text-sm">Firm Load</h5>
-                <p className="text-xs text-slate-500 mt-1">100% on at all times</p>
-                <p className="text-xs font-medium text-red-600 mt-1">Maximum infrastructure</p>
+                <h5 className="font-bold text-red-700 text-sm">Always-On</h5>
+                <p className="text-xs text-slate-500 mt-1">Runs at full power 24/7</p>
+                <p className="text-xs font-medium text-red-600 mt-1">Highest cost to grid</p>
               </div>
               <div>
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-amber-100 rounded-xl mb-2 border border-amber-200">
@@ -305,9 +322,9 @@ export default function HomePage() {
                     <path d="M4 4v16h16M8 16l4-8 4 4 4-8" />
                   </svg>
                 </div>
-                <h5 className="font-bold text-amber-700 text-sm">Flexible Load</h5>
-                <p className="text-xs text-slate-500 mt-1">25% curtailable</p>
-                <p className="text-xs font-medium text-amber-600 mt-1">Reduced infrastructure</p>
+                <h5 className="font-bold text-amber-700 text-sm">Flexible</h5>
+                <p className="text-xs text-slate-500 mt-1">Can reduce power when needed</p>
+                <p className="text-xs font-medium text-amber-600 mt-1">Lower grid impact</p>
               </div>
               <div>
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-xl mb-2 border border-green-200">
@@ -316,9 +333,9 @@ export default function HomePage() {
                     <circle cx="12" cy="12" r="9" />
                   </svg>
                 </div>
-                <h5 className="font-bold text-green-700 text-sm">Optimized Load</h5>
-                <p className="text-xs text-slate-500 mt-1">Flex + on-site generation</p>
-                <p className="text-xs font-medium text-green-600 mt-1">Minimum infrastructure</p>
+                <h5 className="font-bold text-green-700 text-sm">Optimized</h5>
+                <p className="text-xs text-slate-500 mt-1">Flexible + own power source</p>
+                <p className="text-xs font-medium text-green-600 mt-1">Minimal community cost</p>
               </div>
             </div>
           </div>

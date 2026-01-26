@@ -98,7 +98,7 @@ function USDataCenterHeatMap({ className = '' }: USDataCenterHeatMapProps) {
       <div className="relative bg-slate-100 rounded-xl p-6 border border-slate-200">
         {/* Title */}
         <h3 className="text-lg font-semibold text-slate-800 mb-4 text-center">
-          Data Center Load Requests by State
+          Projected Data Center Demand by State
         </h3>
 
         {/* Map Container */}
