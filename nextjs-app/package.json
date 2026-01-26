@@ -22,6 +22,7 @@
     "react-dom": "19.2.3",
     "react-map-gl": "^8.1.0",
     "react-scrollama": "^2.4.2",
+    "react-simple-maps": "^3.0.0",
     "recharts": "^3.7.0",
     "three": "^0.182.0"
   },
@@ -29,6 +30,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-simple-maps": "^3.0.6",
     "@types/three": "^0.182.0",
     "autoprefixer": "^10.4.23",
     "eslint": "^9",
