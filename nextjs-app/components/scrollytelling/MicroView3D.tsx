@@ -15,18 +15,21 @@ interface MicroView3DProps {
     };
 }
 
-// Camera configurations for seamless continuous zoom
-// Based on NVIDIA Rubin specifications - GPU to Campus at real relative scales
+// Camera configurations for cinematic Z-axis dolly zoom
+// GPU stays dead center - camera pulls straight back along diagonal
+// Isometric angle maintained: position on 45° diagonal from origin
 const cameraConfig: Record<string, {
     position: [number, number, number];
     target: [number, number, number];
     zoom: number;
 }> = {
+    // Pure Z-axis dolly: camera moves along [1, 0.6, 1] normalized direction
+    // Target stays at GPU height (0.08) for chip, then rises smoothly
     'chip-glow': { position: [0.8, 0.5, 0.8], target: [0, 0.08, 0], zoom: 550 },
-    'rack-zoom': { position: [2.5, 2, 2.5], target: [0, 1.2, 0], zoom: 110 },
-    'pod-zoom': { position: [15, 10, 15], target: [0, 1.2, 0], zoom: 32 },
-    'building-iso': { position: [60, 45, 60], target: [0, 8, 0], zoom: 6 },
-    'campus-grid': { position: [320, 240, 320], target: [0, 20, 0], zoom: 1.2 },
+    'rack-zoom': { position: [3, 1.8, 3], target: [0, 0.08, 0], zoom: 100 },
+    'pod-zoom': { position: [18, 10.8, 18], target: [0, 0.08, 0], zoom: 28 },
+    'building-iso': { position: [80, 48, 80], target: [0, 0.08, 0], zoom: 5 },
+    'campus-grid': { position: [400, 240, 400], target: [0, 0.08, 0], zoom: 0.9 },
 };
 
 const scaleOrder = ['chip-glow', 'rack-zoom', 'pod-zoom', 'building-iso', 'campus-grid'];
@@ -323,50 +326,112 @@ function RubinGPU() {
 }
 
 /**
- * Rubin Ultra Kyber Rack - Full liquid immersion, 600kW
+ * Rubin Ultra Kyber Rack - X-Ray Material with MeshPhysicalMaterial
+ * Uses transmission for glassy/phantom effect that materializes as camera pulls back
  * 576 GPU dies in vertical blade orientation (4 pods × 18 blades × 8 GPUs)
- * The rack is semi-transparent so you can see the GPU (which is at position [0, 0.08, 0])
  */
 function VeraRubinRack() {
+    const rackRef = useRef<THREE.Group>(null);
+    const materialRefs = useRef<THREE.MeshPhysicalMaterial[]>([]);
+
+    // Animate opacity based on camera distance - starts glassy, becomes solid
+    useFrame(({ camera }) => {
+        if (!rackRef.current) return;
+
+        // Calculate distance from camera to rack center
+        const rackCenter = new THREE.Vector3(0, 1.0, 0);
+        const distance = camera.position.distanceTo(rackCenter);
+
+        // Transition from glassy (close) to solid (far)
+        // At zoom 550 (chip view), distance ~1.3, transmission = 0.95 (very glassy)
+        // At zoom 100 (rack view), distance ~4.2, transmission = 0.3 (more solid)
+        // At zoom < 50, transmission = 0 (fully solid)
+        const normalizedDist = Math.min(1, Math.max(0, (distance - 2) / 10));
+        const transmission = Math.max(0, 0.95 - normalizedDist * 1.2);
+
+        materialRefs.current.forEach((mat) => {
+            if (mat) {
+                mat.transmission = transmission;
+                mat.opacity = 1 - transmission * 0.5;
+            }
+        });
+    });
+
+    // Helper to add material ref
+    const addMaterialRef = (mat: THREE.MeshPhysicalMaterial | null) => {
+        if (mat && !materialRefs.current.includes(mat)) {
+            materialRefs.current.push(mat);
+        }
+    };
+
     return (
-        <group position={[0, 0, 0]}>
-            {/* Rack frame - transparent to show GPU inside - 0.6m W × 1.2m D × 2.0m H */}
+        <group ref={rackRef} position={[0, 0, 0]}>
+            {/* X-Ray Rack frame - MeshPhysicalMaterial with transmission */}
             <mesh position={[0, 1.0, 0]}>
                 <boxGeometry args={[0.65, 2.0, 1.1]} />
-                <meshStandardMaterial color="#1e293b" metalness={0.5} roughness={0.4} transparent opacity={0.3} />
+                <meshPhysicalMaterial
+                    ref={addMaterialRef}
+                    color="#1e3a5f"
+                    metalness={0.1}
+                    roughness={0}
+                    transmission={0.95}
+                    thickness={2}
+                    transparent
+                    opacity={0.6}
+                    ior={1.5}
+                    envMapIntensity={0.5}
+                />
             </mesh>
 
-            {/* Rack frame edges for definition */}
+            {/* Rack frame edges - wireframe for X-ray effect */}
             <lineSegments position={[0, 1.0, 0]}>
                 <edgesGeometry args={[new THREE.BoxGeometry(0.65, 2.0, 1.1)]} />
-                <lineBasicMaterial color="#38bdf8" transparent opacity={0.6} />
+                <lineBasicMaterial color="#38bdf8" transparent opacity={0.8} />
             </lineSegments>
 
             {/* Vertical blade pods - Kyber has 4 pods arranged vertically */}
             {[0, 1, 2, 3].map((pod) => (
                 <group key={pod} position={[0, 0.25 + pod * 0.45, 0]}>
-                    {/* Pod container - slightly transparent */}
+                    {/* Pod container - X-ray material */}
                     <mesh>
                         <boxGeometry args={[0.58, 0.4, 0.95]} />
-                        <meshStandardMaterial color="#0f172a" transparent opacity={0.4} />
+                        <meshPhysicalMaterial
+                            ref={addMaterialRef}
+                            color="#0c2d4a"
+                            metalness={0.05}
+                            roughness={0.1}
+                            transmission={0.9}
+                            thickness={1.5}
+                            transparent
+                            opacity={0.5}
+                        />
                     </mesh>
 
-                    {/* 18 vertical blades per pod - each with 8 GPUs = 72 GPUs per pod × 4 pods = 288 × 2 = 576 */}
+                    {/* 18 vertical blades per pod */}
                     {[...Array(18)].map((_, blade) => (
                         <group key={blade} position={[-0.26 + blade * 0.03, 0, 0]}>
-                            {/* Vertical blade */}
+                            {/* Vertical blade - slightly visible through X-ray */}
                             <mesh>
                                 <boxGeometry args={[0.022, 0.35, 0.85]} />
-                                <meshStandardMaterial color="#334155" metalness={0.4} />
+                                <meshPhysicalMaterial
+                                    ref={addMaterialRef}
+                                    color="#1e3a5f"
+                                    metalness={0.3}
+                                    roughness={0.2}
+                                    transmission={0.7}
+                                    thickness={0.5}
+                                    transparent
+                                    opacity={0.6}
+                                />
                             </mesh>
-                            {/* GPU dies on blade (8 per blade) - visible as glowing squares */}
+                            {/* GPU dies on blade - these stay SOLID (not X-ray) */}
                             {[...Array(8)].map((_, gpu) => (
                                 <mesh key={gpu} position={[0.012, -0.14 + gpu * 0.04, -0.3 + blade * 0.02]}>
                                     <boxGeometry args={[0.005, 0.03, 0.03]} />
                                     <meshStandardMaterial
                                         color="#1a1a2e"
                                         emissive={gpu === 0 && blade === 9 && pod === 0 ? "#f59e0b" : "#38bdf8"}
-                                        emissiveIntensity={gpu === 0 && blade === 9 && pod === 0 ? 1.5 : 0.15}
+                                        emissiveIntensity={gpu === 0 && blade === 9 && pod === 0 ? 1.5 : 0.2}
                                     />
                                 </mesh>
                             ))}
@@ -378,13 +443,22 @@ function VeraRubinRack() {
                 </group>
             ))}
 
-            {/* Liquid immersion tank walls - visible as blue tint */}
+            {/* Liquid immersion tank walls - ethereal blue glow */}
             <mesh position={[0, 1.0, 0]}>
                 <boxGeometry args={[0.62, 1.9, 1.05]} />
-                <meshStandardMaterial color="#0891b2" transparent opacity={0.08} />
+                <meshPhysicalMaterial
+                    color="#0891b2"
+                    transmission={0.85}
+                    thickness={0.5}
+                    roughness={0}
+                    transparent
+                    opacity={0.15}
+                    emissive="#0891b2"
+                    emissiveIntensity={0.05}
+                />
             </mesh>
 
-            {/* Liquid cooling inlet (bottom) and outlet (top) - large diameter for immersion */}
+            {/* Liquid cooling inlet (bottom) and outlet (top) - solid */}
             <mesh position={[-0.38, 0.1, 0]}>
                 <cylinderGeometry args={[0.05, 0.05, 0.2]} />
                 <meshStandardMaterial color="#0891b2" emissive="#38bdf8" emissiveIntensity={0.3} metalness={0.7} />
@@ -394,13 +468,22 @@ function VeraRubinRack() {
                 <meshStandardMaterial color="#dc2626" emissive="#ef4444" emissiveIntensity={0.2} metalness={0.7} />
             </mesh>
 
-            {/* Power sidecar (Kyber uses separate power unit) */}
+            {/* Power sidecar - X-ray material */}
             <mesh position={[0.45, 0.6, 0]}>
                 <boxGeometry args={[0.2, 1.2, 0.8]} />
-                <meshStandardMaterial color="#1f2937" metalness={0.5} />
+                <meshPhysicalMaterial
+                    ref={addMaterialRef}
+                    color="#1f2937"
+                    metalness={0.3}
+                    roughness={0.2}
+                    transmission={0.6}
+                    thickness={1}
+                    transparent
+                    opacity={0.7}
+                />
             </mesh>
 
-            {/* Front panel display - "600 kW" */}
+            {/* Front panel display - "600 kW" - solid */}
             <mesh position={[0, 1.85, 0.56]}>
                 <boxGeometry args={[0.35, 0.12, 0.01]} />
                 <meshBasicMaterial color="#0f172a" />
@@ -410,7 +493,7 @@ function VeraRubinRack() {
                 <meshBasicMaterial color="#22d3ee" transparent opacity={0.9} />
             </mesh>
 
-            {/* "576 GPUs" label - as glowing text simulation */}
+            {/* "576 GPUs" label */}
             <mesh position={[0, 1.7, 0.56]}>
                 <boxGeometry args={[0.2, 0.04, 0.005]} />
                 <meshBasicMaterial color="#f59e0b" transparent opacity={0.6} />
@@ -647,175 +730,355 @@ function SecondarySubstation({ position }: { position: [number, number, number] 
 }
 
 /**
- * Campus Layout - Full hyperscale campus for Kyber liquid immersion
- * Based on 130-acre reference: 500m × 400m
- * Power: 300-500 MW total
- * NO cooling towers - Kyber uses direct liquid immersion with heat exchangers
- * Backup generators NEXT TO each building
+ * Campus Layout - 300MW Hyperscale Campus
+ * Procedural geometry with:
+ * - The Hall: Long rectangular structure (300m x 100m scale)
+ * - The Cooling: Row of 20 cylindrical cooling towers along roof spine
+ * - The Power: Perimeter line of diesel generator blocks (white containers)
+ * - The Substation: Grid of grey transformer boxes in foreground
  */
 function CampusLayout() {
-    // 4 main data halls in 2×2 grid with adjacent backup generators
-    const buildingConfigs = [
-        { pos: [-70, 0, -50] as [number, number, number], genPos: [-110, 0, -50] as [number, number, number] },
-        { pos: [70, 0, -50] as [number, number, number], genPos: [110, 0, -50] as [number, number, number] },
-        { pos: [-70, 0, 50] as [number, number, number], genPos: [-110, 0, 50] as [number, number, number] },
-        { pos: [70, 0, 50] as [number, number, number], genPos: [110, 0, 50] as [number, number, number] },
-    ];
-
     return (
         <group position={[0, 0, 0]}>
-            {/* Data center buildings with adjacent backup generators */}
-            {buildingConfigs.map((config, i) => (
-                <group key={i}>
-                    <SimplifiedBuilding position={config.pos} scale={0.8} />
-                    <CompactGeneratorUnit position={config.genPos} />
-                </group>
-            ))}
+            {/* THE HALL - Main data center building (300m x 100m x 20m) */}
+            <HyperscaleHall position={[0, 0, 0]} />
 
-            {/* Primary Substation (345kV/138kV) - Northwest corner */}
-            <PrimarySubstation position={[-150, 0, -100]} />
+            {/* THE COOLING - 20 cylindrical cooling towers along roof spine */}
+            <CoolingTowerArray position={[0, 20, 0]} />
 
-            {/* Secondary substations near each building pair */}
-            <SecondarySubstation position={[-70, 0, -90]} />
-            <SecondarySubstation position={[70, 0, -90]} />
+            {/* THE POWER - Perimeter diesel generators (white containers) */}
+            <DieselGeneratorPerimeter />
 
-            {/* Liquid Cooling Distribution Center - replaces cooling towers */}
-            <LiquidCoolingCenter position={[0, 0, -120]} />
+            {/* THE SUBSTATION - Grid of transformer boxes in foreground */}
+            <TransformerGrid position={[0, 0, 120]} />
 
-            {/* Battery Storage (BESS) - central location */}
-            <BatteryStorage position={[0, 0, 100]} />
-
-            {/* Transmission line towers corridor */}
+            {/* Transmission line towers corridor leading away */}
             {[...Array(8)].map((_, i) => (
-                <TransmissionTower key={i} position={[-180 - i * 30, 0, -100]} />
+                <TransmissionTower key={i} position={[-200 - i * 40, 0, 0]} />
             ))}
 
-            {/* Main access road - loops around campus */}
+            {/* Main access road around campus */}
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-                <ringGeometry args={[130, 138, 64]} />
+                <planeGeometry args={[400, 10]} />
+                <meshStandardMaterial color="#374151" />
+            </mesh>
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 80]}>
+                <planeGeometry args={[400, 10]} />
                 <meshStandardMaterial color="#374151" />
             </mesh>
 
-            {/* Internal roads between buildings */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-                <planeGeometry args={[280, 8]} />
-                <meshStandardMaterial color="#374151" />
-            </mesh>
-            <mesh rotation={[-Math.PI / 2, 0, Math.PI / 2]} position={[0, 0.02, 0]}>
-                <planeGeometry args={[160, 8]} />
-                <meshStandardMaterial color="#374151" />
-            </mesh>
-
-            {/* Admin/security building at entrance */}
-            <mesh position={[0, 3, 140]}>
-                <boxGeometry args={[20, 6, 12]} />
-                <meshStandardMaterial color="#64748b" />
-            </mesh>
-
-            {/* Guard house */}
-            <mesh position={[0, 1.5, 155]}>
-                <boxGeometry args={[4, 3, 4]} />
-                <meshStandardMaterial color="#475569" />
-            </mesh>
-
-            {/* Parking area */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[40, 0.01, 130]}>
-                <planeGeometry args={[50, 30]} />
-                <meshStandardMaterial color="#1e293b" />
-            </mesh>
-
-            {/* Perimeter fence */}
+            {/* Perimeter security fence */}
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03, 0]}>
-                <ringGeometry args={[160, 162, 64]} />
-                <meshStandardMaterial color="#475569" transparent opacity={0.4} />
+                <ringGeometry args={[200, 203, 4]} />
+                <meshStandardMaterial color="#475569" transparent opacity={0.3} />
             </mesh>
         </group>
     );
 }
 
 /**
- * Compact Generator Unit - Backup power next to each building
- * 3 generators × 2MW = 6MW per building (N+1 redundancy)
+ * The Hall - Main hyperscale data center building
+ * 300m x 100m x 20m with industrial metal cladding
  */
-function CompactGeneratorUnit({ position }: { position: [number, number, number] }) {
+function HyperscaleHall({ position }: { position: [number, number, number] }) {
     return (
         <group position={position}>
-            {/* Generator pad */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
-                <planeGeometry args={[25, 20]} />
-                <meshStandardMaterial color="#4b5563" />
+            {/* Main structure - 300m x 100m x 20m */}
+            <mesh position={[0, 10, 0]}>
+                <boxGeometry args={[300, 20, 100]} />
+                <meshStandardMaterial
+                    color="#475569"
+                    metalness={0.4}
+                    roughness={0.6}
+                />
             </mesh>
 
-            {/* 3 generator units per building */}
-            {[-6, 0, 6].map((z, i) => (
-                <group key={i} position={[0, 0, z]}>
-                    <mesh position={[0, 2, 0]}>
-                        <boxGeometry args={[10, 4, 4]} />
-                        <meshStandardMaterial color="#374151" metalness={0.4} />
-                    </mesh>
-                    {/* Exhaust stack */}
-                    <mesh position={[4, 4.5, 0]}>
-                        <cylinderGeometry args={[0.3, 0.4, 2]} />
-                        <meshStandardMaterial color="#4b5563" />
-                    </mesh>
-                    {/* Status light */}
-                    <mesh position={[-4, 3.5, 2.1]}>
-                        <sphereGeometry args={[0.15, 8, 8]} />
-                        <meshBasicMaterial color="#22c55e" />
-                    </mesh>
-                </group>
-            ))}
+            {/* Building edge wireframe for definition */}
+            <lineSegments position={[0, 10, 0]}>
+                <edgesGeometry args={[new THREE.BoxGeometry(300, 20, 100)]} />
+                <lineBasicMaterial color="#64748b" transparent opacity={0.5} />
+            </lineSegments>
 
-            {/* Fuel tank */}
-            <mesh position={[12, 2, 0]} rotation={[0, 0, Math.PI / 2]}>
-                <cylinderGeometry args={[1.5, 1.5, 12]} />
-                <meshStandardMaterial color="#1f2937" metalness={0.3} />
-            </mesh>
-        </group>
-    );
-}
-
-/**
- * Liquid Cooling Distribution Center - For Kyber immersion cooling
- * Replaces traditional cooling towers
- */
-function LiquidCoolingCenter({ position }: { position: [number, number, number] }) {
-    return (
-        <group position={position}>
-            {/* Main cooling building */}
-            <mesh position={[0, 4, 0]}>
-                <boxGeometry args={[40, 8, 20]} />
-                <meshStandardMaterial color="#0891b2" metalness={0.4} roughness={0.5} />
-            </mesh>
-
-            {/* Heat exchangers - low profile units */}
-            {[-25, 25].map((x, i) => (
-                <group key={i} position={[x, 0, 0]}>
-                    {[...Array(4)].map((_, j) => (
-                        <mesh key={j} position={[0, 2, -6 + j * 4]}>
-                            <boxGeometry args={[8, 4, 3]} />
-                            <meshStandardMaterial color="#0d9488" metalness={0.5} />
-                        </mesh>
-                    ))}
-                </group>
-            ))}
-
-            {/* Coolant pipes to buildings */}
-            {[-35, 35].map((x, i) => (
-                <mesh key={i} position={[x, 1, 50]} rotation={[Math.PI / 2, 0, 0]}>
-                    <cylinderGeometry args={[0.8, 0.8, 100]} />
-                    <meshStandardMaterial color="#0891b2" metalness={0.5} />
+            {/* Horizontal cladding lines */}
+            {[...Array(5)].map((_, i) => (
+                <mesh key={`clad-${i}`} position={[0, 3 + i * 4, 50.1]}>
+                    <boxGeometry args={[298, 0.2, 0.1]} />
+                    <meshStandardMaterial color="#64748b" metalness={0.6} />
                 </mesh>
             ))}
 
-            {/* Pump house */}
-            <mesh position={[0, 3, 15]}>
-                <boxGeometry args={[12, 6, 8]} />
-                <meshStandardMaterial color="#475569" />
+            {/* Large intake louvers on long sides */}
+            {[...Array(10)].map((_, i) => (
+                <group key={`louver-${i}`}>
+                    {/* Front side */}
+                    <mesh position={[-120 + i * 28, 8, 50.2]}>
+                        <boxGeometry args={[20, 12, 0.3]} />
+                        <meshStandardMaterial color="#1e293b" />
+                    </mesh>
+                    {/* Louver slats */}
+                    {[...Array(8)].map((_, j) => (
+                        <mesh key={j} position={[-120 + i * 28, 3.5 + j * 1.4, 50.25]}>
+                            <boxGeometry args={[19, 0.1, 0.1]} />
+                            <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={0.1} />
+                        </mesh>
+                    ))}
+                    {/* Back side mirror */}
+                    <mesh position={[-120 + i * 28, 8, -50.2]}>
+                        <boxGeometry args={[20, 12, 0.3]} />
+                        <meshStandardMaterial color="#1e293b" />
+                    </mesh>
+                </group>
+            ))}
+
+            {/* Loading docks on ends */}
+            <mesh position={[152, 2, 0]}>
+                <boxGeometry args={[8, 4, 40]} />
+                <meshStandardMaterial color="#374151" />
+            </mesh>
+            <mesh position={[-152, 2, 0]}>
+                <boxGeometry args={[8, 4, 40]} />
+                <meshStandardMaterial color="#374151" />
+            </mesh>
+
+            {/* Foundation */}
+            <mesh position={[0, -0.5, 0]}>
+                <boxGeometry args={[310, 1, 110]} />
+                <meshStandardMaterial color="#1f2937" />
             </mesh>
         </group>
     );
 }
+
+/**
+ * Cooling Tower Array - 20 cylindrical towers along roof spine
+ */
+function CoolingTowerArray({ position }: { position: [number, number, number] }) {
+    return (
+        <group position={position}>
+            {[...Array(20)].map((_, i) => (
+                <group key={i} position={[-133 + i * 14, 0, 0]}>
+                    {/* Cylindrical cooling tower */}
+                    <mesh position={[0, 6, 0]}>
+                        <cylinderGeometry args={[5, 6, 12, 16]} />
+                        <meshStandardMaterial color="#6b7280" metalness={0.3} roughness={0.7} />
+                    </mesh>
+
+                    {/* Fan shroud on top */}
+                    <mesh position={[0, 12.5, 0]}>
+                        <cylinderGeometry args={[4, 4.5, 1.5, 16]} />
+                        <meshStandardMaterial color="#4b5563" metalness={0.5} />
+                    </mesh>
+
+                    {/* Fan blades (simplified) */}
+                    <mesh position={[0, 13, 0]} rotation={[0, i * 0.5, 0]}>
+                        <boxGeometry args={[7, 0.2, 0.8]} />
+                        <meshStandardMaterial color="#374151" />
+                    </mesh>
+                    <mesh position={[0, 13, 0]} rotation={[0, i * 0.5 + Math.PI / 2, 0]}>
+                        <boxGeometry args={[7, 0.2, 0.8]} />
+                        <meshStandardMaterial color="#374151" />
+                    </mesh>
+
+                    {/* Steam/vapor effect - white glow */}
+                    <mesh position={[0, 14, 0]}>
+                        <sphereGeometry args={[2, 8, 8]} />
+                        <meshBasicMaterial color="#e2e8f0" transparent opacity={0.15} />
+                    </mesh>
+
+                    {/* Base mounting */}
+                    <mesh position={[0, 0, 0]}>
+                        <boxGeometry args={[12, 0.5, 12]} />
+                        <meshStandardMaterial color="#475569" />
+                    </mesh>
+                </group>
+            ))}
+
+            {/* Main cooling water header pipe along roof */}
+            <mesh position={[0, -2, 30]} rotation={[0, 0, Math.PI / 2]}>
+                <cylinderGeometry args={[1.5, 1.5, 280]} />
+                <meshStandardMaterial color="#0891b2" metalness={0.6} />
+            </mesh>
+            <mesh position={[0, -2, -30]} rotation={[0, 0, Math.PI / 2]}>
+                <cylinderGeometry args={[1.5, 1.5, 280]} />
+                <meshStandardMaterial color="#dc2626" metalness={0.6} />
+            </mesh>
+        </group>
+    );
+}
+
+/**
+ * Diesel Generator Perimeter - White containers around building
+ */
+function DieselGeneratorPerimeter() {
+    // Generators along the long sides (front and back)
+    const longSideGens = [...Array(12)].map((_, i) => ({
+        pos: [-132 + i * 24, 0, 70] as [number, number, number],
+    }));
+    const backSideGens = [...Array(12)].map((_, i) => ({
+        pos: [-132 + i * 24, 0, -70] as [number, number, number],
+    }));
+
+    return (
+        <group>
+            {/* Front perimeter */}
+            {longSideGens.map((gen, i) => (
+                <DieselGeneratorUnit key={`front-${i}`} position={gen.pos} />
+            ))}
+
+            {/* Back perimeter */}
+            {backSideGens.map((gen, i) => (
+                <DieselGeneratorUnit key={`back-${i}`} position={gen.pos} />
+            ))}
+
+            {/* Side generators */}
+            {[...Array(3)].map((_, i) => (
+                <group key={`side-${i}`}>
+                    <DieselGeneratorUnit position={[165, 0, -30 + i * 30]} rotation={[0, Math.PI / 2, 0]} />
+                    <DieselGeneratorUnit position={[-165, 0, -30 + i * 30]} rotation={[0, Math.PI / 2, 0]} />
+                </group>
+            ))}
+        </group>
+    );
+}
+
+/**
+ * Single Diesel Generator Unit - White container with exhaust
+ */
+function DieselGeneratorUnit({ position, rotation = [0, 0, 0] }: {
+    position: [number, number, number];
+    rotation?: [number, number, number];
+}) {
+    return (
+        <group position={position} rotation={rotation}>
+            {/* White container body */}
+            <mesh position={[0, 2.5, 0]}>
+                <boxGeometry args={[15, 5, 4]} />
+                <meshStandardMaterial color="#f1f5f9" metalness={0.2} roughness={0.6} />
+            </mesh>
+
+            {/* Container ribs */}
+            {[...Array(5)].map((_, i) => (
+                <mesh key={i} position={[-6 + i * 3, 2.5, 2.05]}>
+                    <boxGeometry args={[0.3, 4.5, 0.1]} />
+                    <meshStandardMaterial color="#e2e8f0" />
+                </mesh>
+            ))}
+
+            {/* Exhaust stack */}
+            <mesh position={[5, 6, 0]}>
+                <cylinderGeometry args={[0.4, 0.5, 3]} />
+                <meshStandardMaterial color="#4b5563" metalness={0.5} />
+            </mesh>
+
+            {/* Ventilation grilles */}
+            <mesh position={[-6, 2.5, 2.1]}>
+                <boxGeometry args={[3, 2, 0.1]} />
+                <meshStandardMaterial color="#374151" />
+            </mesh>
+
+            {/* Status light */}
+            <mesh position={[6.5, 4, 2.1]}>
+                <sphereGeometry args={[0.2, 8, 8]} />
+                <meshBasicMaterial color="#22c55e" />
+            </mesh>
+
+            {/* Concrete pad */}
+            <mesh position={[0, 0, 0]}>
+                <boxGeometry args={[18, 0.3, 6]} />
+                <meshStandardMaterial color="#4b5563" />
+            </mesh>
+        </group>
+    );
+}
+
+/**
+ * Transformer Grid - Grey transformer boxes in foreground
+ */
+function TransformerGrid({ position }: { position: [number, number, number] }) {
+    return (
+        <group position={position}>
+            {/* Substation pad */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
+                <planeGeometry args={[200, 60]} />
+                <meshStandardMaterial color="#4b5563" />
+            </mesh>
+
+            {/* Grid of 12 main transformers (4x3) */}
+            {[...Array(12)].map((_, i) => {
+                const row = Math.floor(i / 4);
+                const col = i % 4;
+                return (
+                    <group key={i} position={[-60 + col * 40, 0, -15 + row * 18]}>
+                        {/* Transformer body */}
+                        <mesh position={[0, 4, 0]}>
+                            <boxGeometry args={[8, 8, 6]} />
+                            <meshStandardMaterial color="#374151" metalness={0.5} roughness={0.5} />
+                        </mesh>
+
+                        {/* Radiator fins on sides */}
+                        <mesh position={[4.2, 4, 0]}>
+                            <boxGeometry args={[0.4, 6, 5]} />
+                            <meshStandardMaterial color="#4b5563" />
+                        </mesh>
+                        <mesh position={[-4.2, 4, 0]}>
+                            <boxGeometry args={[0.4, 6, 5]} />
+                            <meshStandardMaterial color="#4b5563" />
+                        </mesh>
+
+                        {/* HV bushings on top */}
+                        {[-2, 0, 2].map((x, j) => (
+                            <mesh key={j} position={[x, 9.5, 0]}>
+                                <cylinderGeometry args={[0.4, 0.5, 3]} />
+                                <meshStandardMaterial color="#94a3b8" />
+                            </mesh>
+                        ))}
+
+                        {/* Oil level indicator */}
+                        <mesh position={[4.5, 6, 0]}>
+                            <cylinderGeometry args={[0.15, 0.15, 2]} />
+                            <meshStandardMaterial color="#f59e0b" />
+                        </mesh>
+                    </group>
+                );
+            })}
+
+            {/* Bus bars connecting transformers */}
+            <mesh position={[0, 12, -15]}>
+                <boxGeometry args={[180, 0.3, 0.3]} />
+                <meshStandardMaterial color="#f59e0b" metalness={0.8} emissive="#f59e0b" emissiveIntensity={0.1} />
+            </mesh>
+            <mesh position={[0, 12, 3]}>
+                <boxGeometry args={[180, 0.3, 0.3]} />
+                <meshStandardMaterial color="#f59e0b" metalness={0.8} emissive="#f59e0b" emissiveIntensity={0.1} />
+            </mesh>
+            <mesh position={[0, 12, 20]}>
+                <boxGeometry args={[180, 0.3, 0.3]} />
+                <meshStandardMaterial color="#f59e0b" metalness={0.8} emissive="#f59e0b" emissiveIntensity={0.1} />
+            </mesh>
+
+            {/* Steel lattice towers at ends */}
+            {[-90, 90].map((x, i) => (
+                <mesh key={i} position={[x, 10, 0]}>
+                    <cylinderGeometry args={[0.6, 1.2, 20, 4]} />
+                    <meshStandardMaterial color="#64748b" metalness={0.7} />
+                </mesh>
+            ))}
+
+            {/* Control building */}
+            <mesh position={[80, 3, -20]}>
+                <boxGeometry args={[15, 6, 10]} />
+                <meshStandardMaterial color="#475569" />
+            </mesh>
+
+            {/* Security fence around substation */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.1, 0]}>
+                <ringGeometry args={[102, 104, 4]} />
+                <meshStandardMaterial color="#6b7280" transparent opacity={0.3} />
+            </mesh>
+        </group>
+    );
+}
+
 
 /**
  * Primary Substation - 345kV/138kV (80m × 60m)
@@ -920,33 +1183,6 @@ function BatteryStorage({ position }: { position: [number, number, number] }) {
     );
 }
 
-function SimplifiedBuilding({ position, scale }: { position: [number, number, number]; scale: number }) {
-    return (
-        <group position={position} scale={scale}>
-            {/* Building - 30m × 60m × 12m */}
-            <mesh position={[0, 6, 0]}>
-                <boxGeometry args={[30, 12, 60]} />
-                <meshStandardMaterial
-                    color="#64748b"
-                    metalness={0.25}
-                    roughness={0.5}
-                />
-            </mesh>
-            {/* Edge highlights */}
-            <lineSegments position={[0, 6, 0]}>
-                <edgesGeometry args={[new THREE.BoxGeometry(30, 12, 60)]} />
-                <lineBasicMaterial color="#94a3b8" transparent opacity={0.4} />
-            </lineSegments>
-            {/* Louvers */}
-            {[...Array(4)].map((_, i) => (
-                <mesh key={i} position={[15.1, 3 + i * 2.5, -15 + i * 10]}>
-                    <boxGeometry args={[0.15, 2, 5]} />
-                    <meshStandardMaterial color="#38bdf8" emissive="#38bdf8" emissiveIntensity={0.08} />
-                </mesh>
-            ))}
-        </group>
-    );
-}
 
 function TransmissionTower({ position }: { position: [number, number, number] }) {
     return (
