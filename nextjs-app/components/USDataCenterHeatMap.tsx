@@ -5,7 +5,6 @@ import {
   ComposableMap,
   Geographies,
   Geography,
-  Annotation,
 } from 'react-simple-maps';
 
 // TopoJSON URL for US states with accurate boundaries
@@ -39,7 +38,7 @@ const STATE_LOAD_DATA: Record<string, number> = {
   NC: 42000,
   IL: 28000,
   IN: 22000,
-  OH: 13000,
+  OH: 42000,
   AZ: 12000,
   NV: 10000,
   CA: 9000,
@@ -49,7 +48,7 @@ const STATE_LOAD_DATA: Record<string, number> = {
   SC: 4500,
   WA: 4000,
   OR: 3500,
-  CO: 3000,
+  CO: 200,
   UT: 2500,
   FL: 2000,
   MD: 1800,
@@ -60,13 +59,14 @@ const STATE_LOAD_DATA: Record<string, number> = {
   IA: 800,
   NE: 600,
   KS: 500,
-  OK: 400,
+  OK: 42000,
   AR: 300,
   LA: 250,
   MS: 200,
   AL: 180,
   KY: 150,
   WV: 100,
+  WY: 600,
 };
 
 // Get color intensity based on load - muted slate/blue tones
@@ -162,91 +162,6 @@ function USDataCenterHeatMap({ className = '' }: USDataCenterHeatMapProps) {
               }
             </Geographies>
 
-            {/* State label annotations for key states */}
-            <Annotation
-              subject={[-99.9, 31.5]}
-              dx={0}
-              dy={0}
-              connectorProps={{}}
-            >
-              <text
-                textAnchor="middle"
-                fill="#ffffff"
-                fontSize={14}
-                fontWeight={700}
-                style={{ pointerEvents: 'none' }}
-              >
-                TX
-              </text>
-            </Annotation>
-
-            <Annotation
-              subject={[-78.5, 37.5]}
-              dx={0}
-              dy={0}
-              connectorProps={{}}
-            >
-              <text
-                textAnchor="middle"
-                fill="#ffffff"
-                fontSize={10}
-                fontWeight={600}
-                style={{ pointerEvents: 'none' }}
-              >
-                VA
-              </text>
-            </Annotation>
-
-            <Annotation
-              subject={[-83.5, 32.5]}
-              dx={0}
-              dy={0}
-              connectorProps={{}}
-            >
-              <text
-                textAnchor="middle"
-                fill="#ffffff"
-                fontSize={10}
-                fontWeight={600}
-                style={{ pointerEvents: 'none' }}
-              >
-                GA
-              </text>
-            </Annotation>
-
-            <Annotation
-              subject={[-77.5, 41]}
-              dx={0}
-              dy={0}
-              connectorProps={{}}
-            >
-              <text
-                textAnchor="middle"
-                fill="#ffffff"
-                fontSize={9}
-                fontWeight={600}
-                style={{ pointerEvents: 'none' }}
-              >
-                PA
-              </text>
-            </Annotation>
-
-            <Annotation
-              subject={[-79.5, 35.5]}
-              dx={0}
-              dy={0}
-              connectorProps={{}}
-            >
-              <text
-                textAnchor="middle"
-                fill="#ffffff"
-                fontSize={9}
-                fontWeight={600}
-                style={{ pointerEvents: 'none' }}
-              >
-                NC
-              </text>
-            </Annotation>
           </ComposableMap>
 
           {/* Hover tooltip */}
