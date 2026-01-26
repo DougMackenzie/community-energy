@@ -8,19 +8,22 @@ import MapView from './MapView';
 import { steps, type StoryStep } from './storyData';
 
 /**
- * NYT-inspired color palette for consistent styling
+ * NYT-inspired color palette - SLATE BLUE background with white/yellow accents
+ * Based on NYT interactive article style
  */
 const NYT_COLORS = {
-    bgDeep: '#0a0a0f',
-    bgSurface: '#1a1a24',
-    textPrimary: '#f0ebe3',
-    textSecondary: '#a8a29e',
-    textMuted: '#6b6560',
-    accentAmber: '#d4a574',
-    accentCyan: '#7dd3c0',
-    accentCoral: '#e8927c',
-    accentBlue: '#7c9cc9',
-    border: 'rgba(107, 101, 96, 0.3)',
+    bgDeep: '#3d4f5f',            // Main slate blue
+    bgMid: '#4a5a68',             // Slightly lighter slate
+    bgSurface: '#526270',         // Surface tone
+    textPrimary: '#f0ebe3',       // Warm off-white
+    textSecondary: '#c9c4bc',     // Lighter warm gray
+    textMuted: '#94918a',         // Muted warm gray
+    accentYellow: '#f0c040',      // Bright gold/yellow
+    accentAmber: '#e8a830',       // Amber
+    accentCyan: '#88c4c8',        // Soft teal
+    accentCoral: '#d88070',       // Soft coral
+    accentBlue: '#7c9cc9',        // Soft blue
+    border: 'rgba(200, 196, 188, 0.3)',
 };
 
 // Dynamically import 3D component to avoid SSR issues with Three.js
@@ -29,8 +32,8 @@ const MicroView3D = dynamic(() => import('./MicroView3D'), {
     loading: () => (
         <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: NYT_COLORS.bgDeep }}>
             <div className="text-center">
-                <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin mx-auto mb-2" style={{ borderColor: NYT_COLORS.accentCyan, borderTopColor: 'transparent' }} />
-                <p className="text-sm" style={{ color: NYT_COLORS.textMuted }}>Loading 3D view...</p>
+                <div className="w-8 h-8 border-2 border-t-transparent rounded-full animate-spin mx-auto mb-2" style={{ borderColor: NYT_COLORS.accentYellow, borderTopColor: 'transparent' }} />
+                <p className="text-sm" style={{ color: NYT_COLORS.textSecondary }}>Loading 3D view...</p>
             </div>
         </div>
     ),
@@ -160,15 +163,15 @@ function StoryCard({
     stepNumber: number;
     totalSteps: number;
 }) {
-    // Determine mode label and color - using NYT muted palette
+    // Determine mode label and color - using NYT yellow accent palette
     const getModeInfo = () => {
         switch (step.mode) {
             case 'micro':
-                return { label: 'Micro Scale', bgColor: `${NYT_COLORS.accentCyan}25`, textColor: NYT_COLORS.accentCyan };
+                return { label: 'Micro Scale', bgColor: `${NYT_COLORS.accentYellow}25`, textColor: NYT_COLORS.accentYellow };
             case 'infrastructure':
                 return { label: 'Grid Infrastructure', bgColor: `${NYT_COLORS.accentAmber}25`, textColor: NYT_COLORS.accentAmber };
             case 'map':
-                return { label: 'Regional View', bgColor: `${NYT_COLORS.accentBlue}25`, textColor: NYT_COLORS.accentBlue };
+                return { label: 'Regional View', bgColor: `${NYT_COLORS.accentCyan}25`, textColor: NYT_COLORS.accentCyan };
             default:
                 return { label: 'View', bgColor: `${NYT_COLORS.textMuted}25`, textColor: NYT_COLORS.textMuted };
         }
@@ -203,7 +206,7 @@ function StoryCard({
                 <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ backgroundColor: NYT_COLORS.bgDeep }}>
                     <motion.div
                         className="h-full"
-                        style={{ background: `linear-gradient(to right, ${NYT_COLORS.accentCyan}, ${NYT_COLORS.accentBlue})` }}
+                        style={{ background: `linear-gradient(to right, ${NYT_COLORS.accentYellow}, ${NYT_COLORS.accentAmber})` }}
                         initial={{ width: 0 }}
                         animate={{ width: isActive ? '100%' : '0%' }}
                         transition={{ duration: 0.5 }}

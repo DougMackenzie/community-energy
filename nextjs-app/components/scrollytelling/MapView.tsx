@@ -46,23 +46,25 @@ interface MapViewProps {
 }
 
 /**
- * NYT-inspired color palette - muted but high contrast
- * More sophisticated, journalistic aesthetic
+ * NYT-inspired color palette - SLATE BLUE background with white/yellow accents
+ * Based on NYT interactive article style: muted blue background, cream/white shapes, gold highlights
  */
 const NYT_COLORS = {
-    // Backgrounds
-    bgDeep: '#0a0a0f',
-    bgSurface: '#1a1a24',
+    // Backgrounds - SLATE BLUE (like NYT article)
+    bgDeep: '#3d4f5f',            // Main slate blue
+    bgMid: '#4a5a68',             // Slightly lighter slate
+    bgSurface: '#526270',         // Surface tone
 
-    // Text
-    textPrimary: '#f0ebe3',      // Warm off-white
-    textSecondary: '#a8a29e',     // Warm gray
-    textMuted: '#6b6560',         // Muted warm gray
+    // Text - warm off-white
+    textPrimary: '#f0ebe3',       // Warm off-white
+    textSecondary: '#c9c4bc',     // Lighter warm gray
+    textMuted: '#94918a',         // Muted warm gray
 
-    // Accents
-    accentAmber: '#d4a574',       // Muted gold
-    accentCyan: '#7dd3c0',        // Soft teal
-    accentCoral: '#e8927c',       // Soft coral
+    // Accents - YELLOW/GOLD (like NYT particles)
+    accentYellow: '#f0c040',      // Bright gold/yellow
+    accentAmber: '#e8a830',       // Amber
+    accentCyan: '#88c4c8',        // Soft teal
+    accentCoral: '#d88070',       // Soft coral
     accentBlue: '#7c9cc9',        // Soft blue
 };
 

@@ -40,37 +40,43 @@ const scaleOrder = ['chip-glow', 'rack-zoom', 'pod-zoom', 'building-iso', 'campu
  * All elements exist in one unified 3D space at their real relative scales
  */
 /**
- * NYT-inspired color palette - muted but high contrast
- * Background: Deep charcoal with slight warmth (#0a0a0f to #12121a)
- * Text: Warm off-white (#f0ebe3) instead of pure white
- * Accents: Muted amber (#d4a574), soft cyan (#7dd3c0), muted coral (#e8927c)
+ * NYT-inspired color palette - SLATE BLUE background with white/yellow accents
+ * Based on NYT interactive article style: muted blue background, cream/white shapes, gold highlights
+ * Reference: https://www.nytimes.com/interactive/2020/10/30/science/wear-mask-covid-particles-ul.html
  */
 const NYT_COLORS = {
-    // Backgrounds
-    bgDeep: '#0a0a0f',
-    bgMid: '#12121a',
-    bgSurface: '#1a1a24',
+    // Backgrounds - SLATE BLUE (like NYT article)
+    bgDeep: '#3d4f5f',            // Main slate blue
+    bgMid: '#4a5a68',             // Slightly lighter slate
+    bgSurface: '#526270',         // Surface tone
 
-    // Text
-    textPrimary: '#f0ebe3',      // Warm off-white
-    textSecondary: '#a8a29e',     // Warm gray
-    textMuted: '#6b6560',         // Muted warm gray
+    // Text - warm off-white
+    textPrimary: '#f0ebe3',       // Warm off-white
+    textSecondary: '#c9c4bc',     // Lighter warm gray
+    textMuted: '#94918a',         // Muted warm gray
 
-    // Accents - muted but visible
-    accentAmber: '#d4a574',       // Muted gold/amber
-    accentCyan: '#7dd3c0',        // Soft teal
-    accentCoral: '#e8927c',       // Soft coral/red
-    accentBlue: '#7c9cc9',        // Soft blue
+    // 3D Elements - WHITE/CREAM (like NYT shapes)
+    elementWhite: '#e8e4dc',      // Cream white for main shapes
+    elementLight: '#d4d0c8',      // Slightly darker cream
+    elementFrame: '#c0bbb2',      // Frame/edge color
 
-    // Data viz specific
-    dcBlue: '#5b7aa6',            // Data centers - muted blue
-    ppGreen: '#6b9e7a',           // Power plants - muted green
-    gridLine: '#3d4f6f',          // Grid/transmission lines
+    // Accents - YELLOW/GOLD (like NYT particles)
+    accentYellow: '#f0c040',      // Bright gold/yellow
+    accentAmber: '#e8a830',       // Amber
+    accentGold: '#d4a020',        // Darker gold
+
+    // Secondary accents
+    accentCyan: '#88c4c8',        // Soft teal (for cooling elements)
+    accentCoral: '#d88070',       // Soft coral (for heat elements)
+
+    // Grid/ground
+    groundColor: '#354555',       // Darker slate for ground
+    gridLine: '#4a5a6a',          // Grid lines
 };
 
 export default function MicroView3D({ visualState, powerMetric }: MicroView3DProps) {
     return (
-        <div className="relative w-full h-full overflow-hidden" style={{ background: `linear-gradient(135deg, ${NYT_COLORS.bgDeep} 0%, ${NYT_COLORS.bgMid} 50%, ${NYT_COLORS.bgDeep} 100%)` }}>
+        <div className="relative w-full h-full overflow-hidden" style={{ background: `linear-gradient(180deg, ${NYT_COLORS.bgMid} 0%, ${NYT_COLORS.bgDeep} 50%, ${NYT_COLORS.bgMid} 100%)` }}>
             <Canvas
                 orthographic
                 camera={{
@@ -180,11 +186,12 @@ function ContinuousScene({ visualState }: { visualState: string }) {
 
     return (
         <group ref={groupRef}>
-            {/* Lighting - NYT-style: warmer, more dramatic */}
-            <ambientLight intensity={0.35} color="#f0ebe3" />
-            <directionalLight position={[50, 100, 50]} intensity={0.7} color="#fff8f0" />
-            <pointLight position={[0, 5, 0]} intensity={0.5} color="#d4a574" />
-            <pointLight position={[-20, 30, -20]} intensity={0.2} color="#7dd3c0" />
+            {/* Lighting - NYT-style: bright, clean lighting for white elements on blue background */}
+            <ambientLight intensity={0.6} color="#ffffff" />
+            <directionalLight position={[50, 100, 50]} intensity={1.0} color="#fffaf0" />
+            <directionalLight position={[-30, 60, -30]} intensity={0.4} color="#f0f8ff" />
+            <pointLight position={[0, 5, 0]} intensity={0.8} color="#f0c040" />
+            <pointLight position={[-20, 30, -20]} intensity={0.3} color="#88c4c8" />
 
             {/* GPU Chip - always visible at origin */}
             <RubinGPU />
@@ -247,6 +254,12 @@ function FadeInGroup({ children, delay = 0 }: { children: React.ReactNode; delay
 /**
  * NVIDIA Rubin GPU - Detailed isometric view
  * Power: ~2,300W (2.3 kW)
+ *
+ * SCALE: GPU is sized to match rack placement.
+ * Rack GPU package: 0.045 units → Main GPU scaled to ~0.09 units for detail visibility
+ * This is ~2x the rack GPU size for visual detail, but proportionally correct for zoom transition
+ *
+ * NYT STYLE: White/cream colors with yellow/gold accents on slate-blue background
  */
 function RubinGPU() {
     const glowRef = useRef<THREE.Mesh>(null);
@@ -255,101 +268,112 @@ function RubinGPU() {
     useFrame((state) => {
         if (glowRef.current) {
             const mat = glowRef.current.material as THREE.MeshBasicMaterial;
-            mat.opacity = 0.5 + Math.sin(state.clock.elapsedTime * 2.5) * 0.25;
+            mat.opacity = 0.6 + Math.sin(state.clock.elapsedTime * 2.5) * 0.3;
         }
         if (chipRef.current) {
-            chipRef.current.position.y = 0.08 + Math.sin(state.clock.elapsedTime * 1.5) * 0.005;
+            chipRef.current.position.y = 0.08 + Math.sin(state.clock.elapsedTime * 1.5) * 0.003;
         }
     });
 
+    // Scale factor: designed so GPU visually matches rack position
+    // Main GPU is displayed at ~0.09 units to match rack GPU proportions when zooming
+    const scale = 0.09;
+
     return (
-        <group ref={chipRef} position={[0, 0.08, 0]}>
-            {/* Glow base effect - muted amber */}
-            <mesh ref={glowRef} position={[0, -0.02, 0]}>
-                <boxGeometry args={[1.2, 0.02, 1.2]} />
-                <meshBasicMaterial color="#d4a574" transparent opacity={0.4} />
+        <group ref={chipRef} position={[0, 0.08, 0]} scale={[scale, scale, scale]}>
+            {/* Glow base effect - YELLOW/GOLD (NYT particle style) */}
+            <mesh ref={glowRef} position={[0, -0.3, 0]}>
+                <boxGeometry args={[14, 0.2, 14]} />
+                <meshBasicMaterial color={NYT_COLORS.accentYellow} transparent opacity={0.5} />
             </mesh>
 
-            {/* Package substrate - 1.0 × 1.0 units - deeper charcoal */}
+            {/* Package substrate - WHITE/CREAM (NYT shape style) */}
             <mesh position={[0, 0, 0]}>
-                <boxGeometry args={[1.0, 0.06, 1.0]} />
-                <meshStandardMaterial color="#1a1a24" metalness={0.8} roughness={0.2} />
+                <boxGeometry args={[12, 0.7, 12]} />
+                <meshStandardMaterial color={NYT_COLORS.elementWhite} metalness={0.3} roughness={0.4} />
             </mesh>
 
-            {/* Interposer - 0.8 × 0.8 units, dark PCB */}
-            <mesh position={[0, 0.04, 0]}>
-                <boxGeometry args={[0.8, 0.025, 0.8]} />
-                <meshStandardMaterial color="#12121a" metalness={0.6} roughness={0.3} />
+            {/* Interposer - slightly darker cream */}
+            <mesh position={[0, 0.5, 0]}>
+                <boxGeometry args={[10, 0.3, 10]} />
+                <meshStandardMaterial color={NYT_COLORS.elementLight} metalness={0.4} roughness={0.3} />
             </mesh>
 
-            {/* Main GPU die - 0.4 × 0.4 units, muted amber with glow */}
-            <mesh position={[0, 0.065, 0]}>
-                <boxGeometry args={[0.4, 0.025, 0.4]} />
+            {/* Main GPU die - YELLOW/GOLD with bright glow (like NYT particles) */}
+            <mesh position={[0, 0.8, 0]}>
+                <boxGeometry args={[5, 0.3, 5]} />
                 <meshStandardMaterial
-                    color="#2a2a35"
-                    emissive="#d4a574"
-                    emissiveIntensity={0.9}
-                    metalness={0.95}
-                    roughness={0.05}
+                    color={NYT_COLORS.accentYellow}
+                    emissive={NYT_COLORS.accentYellow}
+                    emissiveIntensity={0.8}
+                    metalness={0.6}
+                    roughness={0.2}
                 />
             </mesh>
 
-            {/* Heat spreader frame - warm metallic */}
-            <mesh position={[0, 0.08, 0]}>
-                <boxGeometry args={[0.5, 0.015, 0.5]} />
-                <meshStandardMaterial color="#a8a29e" metalness={0.9} roughness={0.1} />
+            {/* Heat spreader frame - metallic silver/white */}
+            <mesh position={[0, 1.0, 0]}>
+                <boxGeometry args={[6, 0.2, 6]} />
+                <meshStandardMaterial color={NYT_COLORS.elementFrame} metalness={0.8} roughness={0.2} />
             </mesh>
-            {/* Heat spreader cutout (darker center) */}
-            <mesh position={[0, 0.085, 0]}>
-                <boxGeometry args={[0.38, 0.01, 0.38]} />
+            {/* Heat spreader cutout window */}
+            <mesh position={[0, 1.05, 0]}>
+                <boxGeometry args={[4.5, 0.12, 4.5]} />
                 <meshStandardMaterial
-                    color="#0a0a0f"
-                    emissive="#d4a574"
-                    emissiveIntensity={0.5}
+                    color={NYT_COLORS.bgDeep}
+                    emissive={NYT_COLORS.accentYellow}
+                    emissiveIntensity={0.4}
                 />
             </mesh>
 
-            {/* HBM4 stacks - 6 stacks arranged around die */}
+            {/* HBM4 stacks - 6 stacks arranged around die - WHITE with subtle glow */}
             {[
-                [-0.28, 0.055, -0.15], [0.28, 0.055, -0.15],
-                [-0.28, 0.055, 0.15], [0.28, 0.055, 0.15],
-                [-0.28, 0.055, 0], [0.28, 0.055, 0]
+                [-3.5, 0.7, -2], [3.5, 0.7, -2],
+                [-3.5, 0.7, 2], [3.5, 0.7, 2],
+                [-3.5, 0.7, 0], [3.5, 0.7, 0]
             ].map((pos, i) => (
                 <mesh key={i} position={pos as [number, number, number]}>
-                    <boxGeometry args={[0.08, 0.06, 0.08]} />
+                    <boxGeometry args={[1, 0.8, 1]} />
                     <meshStandardMaterial
-                        color="#252530"
-                        metalness={0.7}
+                        color={NYT_COLORS.elementWhite}
+                        emissive={NYT_COLORS.accentYellow}
+                        emissiveIntensity={0.1}
+                        metalness={0.5}
                         roughness={0.3}
                     />
                 </mesh>
             ))}
 
-            {/* BGA pins array underneath - muted gold */}
+            {/* BGA pins array underneath - GOLD */}
             {[...Array(64)].map((_, i) => {
                 const row = Math.floor(i / 8);
                 const col = i % 8;
                 return (
                     <mesh key={i} position={[
-                        -0.35 + col * 0.1,
-                        -0.04,
-                        -0.35 + row * 0.1
+                        -4.2 + col * 1.2,
+                        -0.5,
+                        -4.2 + row * 1.2
                     ]}>
-                        <sphereGeometry args={[0.012, 8, 8]} />
-                        <meshStandardMaterial color="#d4a574" metalness={0.95} />
+                        <sphereGeometry args={[0.15, 8, 8]} />
+                        <meshStandardMaterial color={NYT_COLORS.accentGold} metalness={0.9} />
                     </mesh>
                 );
             })}
 
-            {/* Circuit traces on interposer - muted amber */}
+            {/* Circuit traces on interposer - GOLD lines */}
             {[...Array(12)].map((_, i) => (
                 <mesh key={`trace-${i}`} position={[
-                    -0.35 + (i % 4) * 0.23,
-                    0.053,
-                    -0.3 + Math.floor(i / 4) * 0.3
+                    -4.2 + (i % 4) * 2.8,
+                    0.66,
+                    -3.6 + Math.floor(i / 4) * 3.6
                 ]}>
-                    <boxGeometry args={[0.15, 0.002, 0.003]} />
-                    <meshStandardMaterial color="#d4a574" metalness={0.8} emissive="#d4a574" emissiveIntensity={0.25} />
+                    <boxGeometry args={[1.8, 0.025, 0.04]} />
+                    <meshStandardMaterial
+                        color={NYT_COLORS.accentGold}
+                        metalness={0.8}
+                        emissive={NYT_COLORS.accentYellow}
+                        emissiveIntensity={0.3}
+                    />
                 </mesh>
             ))}
         </group>
@@ -358,8 +382,8 @@ function RubinGPU() {
 
 /**
  * Vera Rubin NVL72 Rack - Transparent front panel showing 72 GPUs
- * GPU scale: The main GPU at origin is ~1.0 units, rack GPU dies are ~0.08 units (8x smaller for visibility)
- * Front panel transparency decreases as camera zooms out
+ * NYT STYLE: White/cream rack frame with yellow GPU accents
+ * GPU positions scaled to match main GPU when zooming out
  */
 function VeraRubinRack() {
     const rackRef = useRef<THREE.Group>(null);
@@ -374,12 +398,11 @@ function VeraRubinRack() {
         const distance = camera.position.distanceTo(rackCenter);
 
         // Front panel: very transparent (0.95) when close, opaque (0.3) when far
-        // This lets you see GPU clearly at chip-glow, but panel darkens at rack-zoom
         const normalizedDist = Math.min(1, Math.max(0, (distance - 1.0) / 5));
         const frontPanelTransmission = Math.max(0.3, 0.95 - normalizedDist * 0.65);
 
-        // Rack body: starts invisible, becomes visible as we zoom out
-        const bodyOpacity = Math.min(0.85, normalizedDist * 0.9);
+        // Rack body: starts semi-visible, becomes more opaque as we zoom out
+        const bodyOpacity = Math.min(0.9, 0.3 + normalizedDist * 0.6);
 
         if (frontPanelRef.current) {
             frontPanelRef.current.transmission = frontPanelTransmission;
@@ -391,11 +414,11 @@ function VeraRubinRack() {
     });
 
     // GPU arrangement: 72 GPUs in 8 rows × 9 columns (Vera Rubin NVL72 spec)
+    // Main GPU is at position [0, 0.08, 0] with scale 0.09
+    // Rack GPUs should be at same relative size: 0.045 × 2 = 0.09 units
     const gpuPositions: [number, number, number][] = [];
     for (let row = 0; row < 8; row++) {
         for (let col = 0; col < 9; col++) {
-            // GPU size ~0.08 units (8% of main GPU), arranged in grid inside rack
-            // Rack is 0.55 wide × 1.8 tall × 0.9 deep
             gpuPositions.push([
                 -0.22 + col * 0.055,  // X: spread across width
                 0.15 + row * 0.21,     // Y: spread across height
@@ -406,23 +429,23 @@ function VeraRubinRack() {
 
     return (
         <group ref={rackRef} position={[0, 0, 0]}>
-            {/* Rack frame - dark metal */}
+            {/* Rack frame - WHITE/CREAM (NYT style) */}
             <mesh position={[0, 1.0, 0]}>
                 <boxGeometry args={[0.6, 2.0, 1.0]} />
                 <meshPhysicalMaterial
                     ref={rackBodyRef}
-                    color="#1e293b"
-                    metalness={0.5}
-                    roughness={0.3}
+                    color={NYT_COLORS.elementLight}
+                    metalness={0.3}
+                    roughness={0.4}
                     transparent
-                    opacity={0}
+                    opacity={0.3}
                 />
             </mesh>
 
-            {/* Rack frame edges - muted cyan */}
+            {/* Rack frame edges - WHITE/CREAM */}
             <lineSegments position={[0, 1.0, 0]}>
                 <edgesGeometry args={[new THREE.BoxGeometry(0.6, 2.0, 1.0)]} />
-                <lineBasicMaterial color="#7dd3c0" transparent opacity={0.5} />
+                <lineBasicMaterial color={NYT_COLORS.elementWhite} transparent opacity={0.7} />
             </lineSegments>
 
             {/* TRANSPARENT FRONT PANEL - shows GPUs through it */}
@@ -430,7 +453,7 @@ function VeraRubinRack() {
                 <boxGeometry args={[0.58, 1.95, 0.02]} />
                 <meshPhysicalMaterial
                     ref={frontPanelRef}
-                    color="#1a2535"
+                    color={NYT_COLORS.elementWhite}
                     metalness={0.1}
                     roughness={0}
                     transmission={0.95}
@@ -443,81 +466,83 @@ function VeraRubinRack() {
 
             {/* 72 GPU dies arranged in grid - VISIBLE through front panel */}
             {gpuPositions.map((pos, i) => {
-                // Highlight the center GPU to match the main GPU position
-                const isMainGPU = i === 36; // Center of 72 (row 4, col 4)
+                // Highlight the center GPU to match the main GPU position (row 4, col 4 = index 40)
+                const centerRow = 4;
+                const centerCol = 4;
+                const isMainGPU = Math.floor(i / 9) === centerRow && (i % 9) === centerCol;
                 return (
                     <group key={i} position={pos}>
-                        {/* GPU package */}
+                        {/* GPU package - WHITE/CREAM */}
                         <mesh>
                             <boxGeometry args={[0.045, 0.12, 0.045]} />
                             <meshStandardMaterial
-                                color="#1a1a24"
-                                metalness={0.8}
-                                roughness={0.2}
+                                color={NYT_COLORS.elementWhite}
+                                metalness={0.4}
+                                roughness={0.3}
                             />
                         </mesh>
-                        {/* GPU die with glow - muted amber for main, soft teal for others */}
+                        {/* GPU die with glow - YELLOW/GOLD for main, dimmer yellow for others */}
                         <mesh position={[0, 0.02, 0.024]}>
                             <boxGeometry args={[0.025, 0.06, 0.002]} />
                             <meshStandardMaterial
-                                color="#2a2a35"
-                                emissive={isMainGPU ? "#d4a574" : "#7dd3c0"}
-                                emissiveIntensity={isMainGPU ? 1.5 : 0.35}
+                                color={NYT_COLORS.accentYellow}
+                                emissive={NYT_COLORS.accentYellow}
+                                emissiveIntensity={isMainGPU ? 1.5 : 0.4}
                             />
                         </mesh>
-                        {/* HBM stacks */}
+                        {/* HBM stacks - white */}
                         <mesh position={[-0.015, 0.02, 0.024]}>
                             <boxGeometry args={[0.008, 0.04, 0.002]} />
-                            <meshStandardMaterial color="#252530" />
+                            <meshStandardMaterial color={NYT_COLORS.elementLight} />
                         </mesh>
                         <mesh position={[0.015, 0.02, 0.024]}>
                             <boxGeometry args={[0.008, 0.04, 0.002]} />
-                            <meshStandardMaterial color="#252530" />
+                            <meshStandardMaterial color={NYT_COLORS.elementLight} />
                         </mesh>
                     </group>
                 );
             })}
 
-            {/* Liquid cooling manifolds visible at top and bottom - muted teal/coral */}
+            {/* Liquid cooling manifolds visible at top and bottom - TEAL/CORAL */}
             <mesh position={[0, 0.05, 0.3]} rotation={[0, 0, Math.PI / 2]}>
                 <cylinderGeometry args={[0.03, 0.03, 0.5]} />
-                <meshStandardMaterial color="#4a8c7a" emissive="#7dd3c0" emissiveIntensity={0.15} />
+                <meshStandardMaterial color={NYT_COLORS.accentCyan} emissive={NYT_COLORS.accentCyan} emissiveIntensity={0.2} />
             </mesh>
             <mesh position={[0, 1.95, 0.3]} rotation={[0, 0, Math.PI / 2]}>
                 <cylinderGeometry args={[0.03, 0.03, 0.5]} />
-                <meshStandardMaterial color="#b86a5a" emissive="#e8927c" emissiveIntensity={0.1} />
+                <meshStandardMaterial color={NYT_COLORS.accentCoral} emissive={NYT_COLORS.accentCoral} emissiveIntensity={0.15} />
             </mesh>
 
             {/* Side cooling pipes */}
             <mesh position={[-0.32, 1.0, 0]}>
                 <cylinderGeometry args={[0.025, 0.025, 1.8]} />
-                <meshStandardMaterial color="#4a8c7a" metalness={0.6} />
+                <meshStandardMaterial color={NYT_COLORS.accentCyan} metalness={0.5} />
             </mesh>
             <mesh position={[0.32, 1.0, 0]}>
                 <cylinderGeometry args={[0.025, 0.025, 1.8]} />
-                <meshStandardMaterial color="#b86a5a" metalness={0.6} />
+                <meshStandardMaterial color={NYT_COLORS.accentCoral} metalness={0.5} />
             </mesh>
 
-            {/* Power sidecar */}
+            {/* Power sidecar - WHITE/CREAM */}
             <mesh position={[0.4, 0.6, 0]}>
                 <boxGeometry args={[0.15, 1.0, 0.7]} />
-                <meshStandardMaterial color="#1f2937" metalness={0.4} />
+                <meshStandardMaterial color={NYT_COLORS.elementLight} metalness={0.3} />
             </mesh>
 
-            {/* Front panel display */}
+            {/* Front panel display - dark with cyan glow */}
             <mesh position={[0, 1.85, 0.53]}>
                 <boxGeometry args={[0.3, 0.1, 0.01]} />
-                <meshBasicMaterial color="#0a0a0f" />
+                <meshBasicMaterial color={NYT_COLORS.bgDeep} />
             </mesh>
             <mesh position={[0, 1.85, 0.535]}>
                 <boxGeometry args={[0.25, 0.06, 0.005]} />
-                <meshBasicMaterial color="#7dd3c0" transparent opacity={0.85} />
+                <meshBasicMaterial color={NYT_COLORS.accentCyan} transparent opacity={0.85} />
             </mesh>
 
-            {/* "72 GPUs" label */}
+            {/* "72 GPUs" label - GOLD */}
             <mesh position={[0, 1.72, 0.535]}>
                 <boxGeometry args={[0.15, 0.03, 0.005]} />
-                <meshBasicMaterial color="#d4a574" transparent opacity={0.7} />
+                <meshBasicMaterial color={NYT_COLORS.accentYellow} transparent opacity={0.8} />
             </mesh>
 
             {/* Status LEDs */}
@@ -615,15 +640,16 @@ function SimplifiedRack({ position }: { position: [number, number, number] }) {
             <mesh position={[0, 1.0, 0]}>
                 <boxGeometry args={[0.6, 2.0, 1.0]} />
                 <meshStandardMaterial
-                    color="#2a2a35"
-                    emissive="#7dd3c0"
-                    emissiveIntensity={0.025}
-                    metalness={0.4}
+                    color={NYT_COLORS.elementLight}
+                    emissive={NYT_COLORS.accentYellow}
+                    emissiveIntensity={0.05}
+                    metalness={0.3}
+                    roughness={0.4}
                 />
             </mesh>
             <lineSegments position={[0, 1.0, 0]}>
                 <edgesGeometry args={[new THREE.BoxGeometry(0.6, 2.0, 1.0)]} />
-                <lineBasicMaterial color="#4a4a55" transparent opacity={0.4} />
+                <lineBasicMaterial color={NYT_COLORS.elementWhite} transparent opacity={0.6} />
             </lineSegments>
         </group>
     );
@@ -634,12 +660,12 @@ function CRAHUnit({ position }: { position: [number, number, number] }) {
         <group position={position}>
             <mesh position={[0, 1.2, 0]}>
                 <boxGeometry args={[1.8, 2.4, 1.2]} />
-                <meshStandardMaterial color="#4a8c7a" metalness={0.5} roughness={0.4} />
+                <meshStandardMaterial color={NYT_COLORS.accentCyan} metalness={0.4} roughness={0.5} />
             </mesh>
             {/* Cooling coils visible */}
             <mesh position={[0, 1.2, 0.65]}>
                 <boxGeometry args={[1.4, 1.8, 0.1]} />
-                <meshStandardMaterial color="#3a3a45" />
+                <meshStandardMaterial color={NYT_COLORS.elementFrame} />
             </mesh>
         </group>
     );
@@ -649,64 +675,64 @@ function CRAHUnit({ position }: { position: [number, number, number] }) {
  * Data Center Building - Single Data Hall (75-150MW+)
  * Dimensions: 50m W × 100m L × 15m H
  * Power: 75-150MW+ (125 racks × 600kW = ~75 MW per hall)
- * Features rooftop cooling equipment visible from above
+ * NYT STYLE: White/cream building with yellow accents
  */
 function DataCenterBuilding() {
     return (
         <group position={[0, 0, 0]}>
-            {/* Main building shell - 50m × 100m × 15m - warmer charcoal */}
+            {/* Main building shell - 50m × 100m × 15m - WHITE/CREAM */}
             <mesh position={[0, 7.5, 0]}>
                 <boxGeometry args={[50, 15, 100]} />
                 <meshStandardMaterial
-                    color="#3a3a45"
-                    metalness={0.4}
-                    roughness={0.5}
+                    color={NYT_COLORS.elementLight}
+                    metalness={0.2}
+                    roughness={0.6}
                 />
             </mesh>
 
-            {/* Building edge highlights for definition - softer */}
+            {/* Building edge highlights for definition - WHITE */}
             <lineSegments position={[0, 7.5, 0]}>
                 <edgesGeometry args={[new THREE.BoxGeometry(50, 15, 100)]} />
-                <lineBasicMaterial color="#5a5a65" transparent opacity={0.4} />
+                <lineBasicMaterial color={NYT_COLORS.elementWhite} transparent opacity={0.6} />
             </lineSegments>
 
-            {/* Foundation */}
+            {/* Foundation - darker cream */}
             <mesh position={[0, -0.3, 0]}>
                 <boxGeometry args={[54, 0.6, 104]} />
-                <meshStandardMaterial color="#1a1a24" />
+                <meshStandardMaterial color={NYT_COLORS.elementFrame} />
             </mesh>
 
-            {/* ROOFTOP EQUIPMENT - Cooling units in row along Z-axis (rotated 90 degrees) */}
+            {/* ROOFTOP EQUIPMENT - Cooling units in row along Z-axis */}
             {[...Array(16)].map((_, i) => (
                 <group key={`rooftop-cooling-${i}`} position={[0, 15, -38 + i * 5]}>
-                    {/* Base sits directly on roof (y=0 relative to group = roof surface) */}
+                    {/* Base sits directly on roof */}
                     <mesh position={[0, 0.15, 0]}>
                         <boxGeometry args={[2.8, 0.3, 2.8]} />
-                        <meshStandardMaterial color="#475569" />
+                        <meshStandardMaterial color={NYT_COLORS.elementFrame} />
                     </mesh>
-                    {/* Cooling unit on base */}
+                    {/* Cooling unit on base - WHITE/CREAM */}
                     <mesh position={[0, 1.15, 0]}>
                         <cylinderGeometry args={[1.0, 1.2, 1.7, 12]} />
-                        <meshStandardMaterial color="#6b7280" metalness={0.3} roughness={0.7} />
+                        <meshStandardMaterial color={NYT_COLORS.elementWhite} metalness={0.2} roughness={0.5} />
                     </mesh>
                     {/* Fan shroud on top */}
                     <mesh position={[0, 2.2, 0]}>
                         <cylinderGeometry args={[0.8, 0.9, 0.5, 12]} />
-                        <meshStandardMaterial color="#4b5563" metalness={0.5} />
+                        <meshStandardMaterial color={NYT_COLORS.elementLight} metalness={0.3} />
                     </mesh>
                 </group>
             ))}
 
-            {/* Rooftop HVAC/electrical units on sides - flat boxes on roof */}
+            {/* Rooftop HVAC/electrical units on sides */}
             {[...Array(6)].map((_, i) => (
                 <group key={`rooftop-hvac-${i}`}>
                     <mesh position={[18, 15.4, -40 + i * 16]}>
                         <boxGeometry args={[3, 0.8, 5]} />
-                        <meshStandardMaterial color="#4b5563" metalness={0.4} />
+                        <meshStandardMaterial color={NYT_COLORS.elementFrame} metalness={0.3} />
                     </mesh>
                     <mesh position={[-18, 15.4, -40 + i * 16]}>
                         <boxGeometry args={[3, 0.8, 5]} />
-                        <meshStandardMaterial color="#4b5563" metalness={0.4} />
+                        <meshStandardMaterial color={NYT_COLORS.elementFrame} metalness={0.3} />
                     </mesh>
                 </group>
             ))}
@@ -716,19 +742,23 @@ function DataCenterBuilding() {
                 <group key={`louver-${i}`}>
                     <mesh position={[25.1, 5, -40 + i * 11]}>
                         <boxGeometry args={[0.2, 8, 8]} />
-                        <meshStandardMaterial color="#1e293b" />
+                        <meshStandardMaterial color={NYT_COLORS.bgDeep} />
                     </mesh>
-                    {/* Louver slats with soft teal glow */}
+                    {/* Louver slats with YELLOW glow */}
                     {[...Array(6)].map((_, j) => (
                         <mesh key={j} position={[25.15, 2 + j * 1.2, -40 + i * 11]}>
                             <boxGeometry args={[0.1, 0.1, 7.5]} />
-                            <meshStandardMaterial color="#7dd3c0" emissive="#7dd3c0" emissiveIntensity={0.1} />
+                            <meshStandardMaterial
+                                color={NYT_COLORS.accentYellow}
+                                emissive={NYT_COLORS.accentYellow}
+                                emissiveIntensity={0.2}
+                            />
                         </mesh>
                     ))}
                     {/* Mirror on back side */}
                     <mesh position={[-25.1, 5, -40 + i * 11]}>
                         <boxGeometry args={[0.2, 8, 8]} />
-                        <meshStandardMaterial color="#1e293b" />
+                        <meshStandardMaterial color={NYT_COLORS.bgDeep} />
                     </mesh>
                 </group>
             ))}
@@ -1199,15 +1229,15 @@ function InfiniteGround({ currentIndex }: { currentIndex: number }) {
 
     return (
         <group>
-            {/* Dark ground plane - deep charcoal */}
+            {/* Ground plane - darker slate blue */}
             <mesh ref={meshRef} rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} scale={[3, 1, 3]}>
                 <planeGeometry args={[2, 2]} />
-                <meshStandardMaterial color="#0a0a0f" />
+                <meshStandardMaterial color={NYT_COLORS.groundColor} />
             </mesh>
 
-            {/* Grid overlay - muted warm tones */}
+            {/* Grid overlay - subtle white lines */}
             <gridHelper
-                args={[targetSize * 2, divisions, '#252530', '#0a0a0f']}
+                args={[targetSize * 2, divisions, NYT_COLORS.gridLine, NYT_COLORS.groundColor]}
                 position={[0, -0.09, 0]}
             />
         </group>
@@ -1216,20 +1246,20 @@ function InfiniteGround({ currentIndex }: { currentIndex: number }) {
 
 /**
  * Power Indicator UI - Updated for NVIDIA Rubin Ultra Kyber specs (600kW racks)
- * NYT-style: warm off-white text, muted accent colors
+ * NYT-style: slate blue background, white text, yellow accents
  */
 function PowerIndicator({ visualState, powerMetric }: {
     visualState: string;
     powerMetric?: { value: string; unit: string; comparison: string };
 }) {
     // Based on Rubin Ultra NVL576 Kyber (600kW per rack, 2027)
-    // Muted NYT-style colors
+    // Yellow/gold accent colors to match NYT style
     const data: Record<string, { label: string; value: string; unit: string; comparison: string; color: string }> = {
-        'chip-glow': { label: 'NVIDIA Rubin GPU', value: '2.3', unit: 'kW', comparison: '≈ 2 homes', color: '#d4a574' },
-        'rack-zoom': { label: 'Rubin Ultra Kyber Rack', value: '600', unit: 'kW', comparison: '≈ 500 homes', color: '#7dd3c0' },
-        'pod-zoom': { label: 'Compute Pod (8 racks)', value: '4.8', unit: 'MW', comparison: '≈ 4,000 homes', color: '#7dd3c0' },
-        'building-iso': { label: 'Data Center Facility', value: '75-150', unit: 'MW', comparison: '≈ 60,000-125,000 homes', color: '#e8927c' },
-        'campus-grid': { label: 'Hyperscale Campus (4 buildings)', value: '600', unit: 'MW', comparison: '≈ small nuclear plant', color: '#e8927c' },
+        'chip-glow': { label: 'NVIDIA Rubin GPU', value: '2.3', unit: 'kW', comparison: '≈ 2 homes', color: NYT_COLORS.accentYellow },
+        'rack-zoom': { label: 'Rubin Ultra Kyber Rack', value: '600', unit: 'kW', comparison: '≈ 500 homes', color: NYT_COLORS.accentYellow },
+        'pod-zoom': { label: 'Compute Pod (8 racks)', value: '4.8', unit: 'MW', comparison: '≈ 4,000 homes', color: NYT_COLORS.accentYellow },
+        'building-iso': { label: 'Data Center Facility', value: '75-150', unit: 'MW', comparison: '≈ 60,000-125,000 homes', color: NYT_COLORS.accentYellow },
+        'campus-grid': { label: 'Hyperscale Campus (4 buildings)', value: '600', unit: 'MW', comparison: '≈ small nuclear plant', color: NYT_COLORS.accentYellow },
     };
 
     const d = data[visualState];
@@ -1240,27 +1270,27 @@ function PowerIndicator({ visualState, powerMetric }: {
             key={visualState}
             className="absolute bottom-8 left-8 rounded-lg px-5 py-4 border z-10"
             style={{
-                backgroundColor: 'rgba(10, 10, 15, 0.9)',
-                borderColor: 'rgba(107, 101, 96, 0.3)'
+                backgroundColor: 'rgba(45, 60, 75, 0.95)',
+                borderColor: 'rgba(200, 196, 188, 0.3)'
             }}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
         >
-            <div className="text-xs uppercase tracking-wider mb-1" style={{ color: '#a8a29e' }}>{d.label}</div>
+            <div className="text-xs uppercase tracking-wider mb-1" style={{ color: NYT_COLORS.textSecondary }}>{d.label}</div>
             <div className="flex items-baseline gap-1">
                 <span className="text-3xl font-bold font-mono" style={{ color: d.color }}>
                     {powerMetric?.value || d.value}
                 </span>
-                <span className="text-lg font-mono" style={{ color: '#f0ebe3' }}>{powerMetric?.unit || d.unit}</span>
+                <span className="text-lg font-mono" style={{ color: NYT_COLORS.textPrimary }}>{powerMetric?.unit || d.unit}</span>
             </div>
-            <div className="text-sm mt-1" style={{ color: '#a8a29e' }}>{powerMetric?.comparison || d.comparison}</div>
+            <div className="text-sm mt-1" style={{ color: NYT_COLORS.textSecondary }}>{powerMetric?.comparison || d.comparison}</div>
         </motion.div>
     );
 }
 
 /**
- * Scale Indicator UI - NYT-style muted colors
+ * Scale Indicator UI - NYT-style slate blue with yellow accent
  */
 function ScaleIndicator({ visualState }: { visualState: string }) {
     const scales: Record<string, { level: number; label: string }> = {
@@ -1277,13 +1307,13 @@ function ScaleIndicator({ visualState }: { visualState: string }) {
         <motion.div
             className="absolute top-8 right-8 rounded-lg px-4 py-3 border z-10"
             style={{
-                backgroundColor: 'rgba(10, 10, 15, 0.85)',
-                borderColor: 'rgba(107, 101, 96, 0.3)'
+                backgroundColor: 'rgba(45, 60, 75, 0.9)',
+                borderColor: 'rgba(200, 196, 188, 0.3)'
             }}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
         >
-            <div className="text-xs uppercase tracking-wider mb-2" style={{ color: '#a8a29e' }}>Scale</div>
+            <div className="text-xs uppercase tracking-wider mb-2" style={{ color: NYT_COLORS.textSecondary }}>Scale</div>
             <div className="flex gap-1.5">
                 {[1, 2, 3, 4, 5].map((level) => (
                     <motion.div
@@ -1291,14 +1321,14 @@ function ScaleIndicator({ visualState }: { visualState: string }) {
                         className="w-2 rounded-sm"
                         style={{ height: 8 + level * 4 }}
                         animate={{
-                            backgroundColor: level <= current.level ? '#7dd3c0' : '#3a3a45',
+                            backgroundColor: level <= current.level ? NYT_COLORS.accentYellow : NYT_COLORS.bgDeep,
                             opacity: level <= current.level ? 1 : 0.4,
                         }}
                         transition={{ duration: 0.3 }}
                     />
                 ))}
             </div>
-            <div className="text-sm font-medium mt-2" style={{ color: '#f0ebe3' }}>{current.label}</div>
+            <div className="text-sm font-medium mt-2" style={{ color: NYT_COLORS.textPrimary }}>{current.label}</div>
         </motion.div>
     );
 }
