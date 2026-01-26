@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useCalculator } from '@/hooks/useCalculator';
 import { formatMW } from '@/lib/constants';
-import CarbonFooter from '@/components/CarbonFooter';
 import USDataCenterHeatMap from '@/components/USDataCenterHeatMap';
 
 export default function HomePage() {
@@ -460,9 +459,6 @@ export default function HomePage() {
             </svg>
             <span className="font-semibold">View on GitHub</span>
           </a>
-
-          {/* AI Carbon Footprint Statement - Dynamic */}
-          <CarbonFooter />
         </div>
       </section>
     </div>
