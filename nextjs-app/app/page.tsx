@@ -187,10 +187,10 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <p className="text-sm font-medium text-green-700 mb-2">Best Case Scenario</p>
-                <p className="text-3xl font-bold text-green-700 mb-2">-$2 to $0</p>
-                <p className="text-xs text-slate-600">per month impact</p>
+                <p className="text-3xl font-bold text-green-700 mb-2">-$5 to $0</p>
+                <p className="text-xs text-slate-600">per month change</p>
                 <p className="text-xs text-slate-500 mt-3 italic">
-                  Flexible data centers with good policy in markets like Oklahoma
+                  Flexible data centers in markets with cost control policies
                 </p>
               </div>
 
@@ -202,10 +202,10 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <p className="text-sm font-medium text-red-700 mb-2">Worst Case Scenario</p>
-                <p className="text-3xl font-bold text-red-700 mb-2">+$15 to $30</p>
-                <p className="text-xs text-slate-600">per month impact</p>
+                <p className="text-3xl font-bold text-red-700 mb-2">+$20 to $35</p>
+                <p className="text-xs text-slate-600">per month increase</p>
                 <p className="text-xs text-slate-500 mt-3 italic">
-                  Rapid growth without proper cost allocation, as seen in Virginia
+                  Rapid growth in markets without proper cost allocation and protections
                 </p>
               </div>
             </div>
