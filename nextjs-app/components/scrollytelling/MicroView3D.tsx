@@ -653,36 +653,36 @@ function DataCenterBuilding() {
                 <meshStandardMaterial color="#1f2937" />
             </mesh>
 
-            {/* ROOFTOP EQUIPMENT - Cooling towers along roof spine */}
-            {[...Array(12)].map((_, i) => (
-                <group key={`rooftop-cooling-${i}`} position={[-40 + i * 7, 15, 0]}>
-                    {/* Cylindrical cooling unit */}
-                    <mesh position={[0, 3, 0]}>
-                        <cylinderGeometry args={[2.5, 3, 6, 12]} />
+            {/* ROOFTOP EQUIPMENT - Smaller cooling units along roof spine */}
+            {[...Array(16)].map((_, i) => (
+                <group key={`rooftop-cooling-${i}`} position={[-36 + i * 5, 15, 0]}>
+                    {/* Smaller cylindrical cooling unit - sits flat on roof */}
+                    <mesh position={[0, 1, 0]}>
+                        <cylinderGeometry args={[1.2, 1.4, 2, 12]} />
                         <meshStandardMaterial color="#6b7280" metalness={0.3} roughness={0.7} />
                     </mesh>
-                    {/* Fan shroud */}
-                    <mesh position={[0, 6.5, 0]}>
-                        <cylinderGeometry args={[2, 2.2, 1, 12]} />
+                    {/* Fan shroud on top */}
+                    <mesh position={[0, 2.3, 0]}>
+                        <cylinderGeometry args={[0.9, 1.0, 0.6, 12]} />
                         <meshStandardMaterial color="#4b5563" metalness={0.5} />
                     </mesh>
-                    {/* Base mount */}
-                    <mesh position={[0, 0.25, 0]}>
-                        <boxGeometry args={[6, 0.5, 6]} />
+                    {/* Small base mount */}
+                    <mesh position={[0, 0.15, 0]}>
+                        <boxGeometry args={[2.8, 0.3, 2.8]} />
                         <meshStandardMaterial color="#475569" />
                     </mesh>
                 </group>
             ))}
 
-            {/* Rooftop HVAC/electrical units on sides */}
+            {/* Rooftop HVAC/electrical units on sides - smaller */}
             {[...Array(6)].map((_, i) => (
                 <group key={`rooftop-hvac-${i}`}>
-                    <mesh position={[20, 15.75, -40 + i * 16]}>
-                        <boxGeometry args={[4, 1.5, 8]} />
+                    <mesh position={[18, 15.5, -40 + i * 16]}>
+                        <boxGeometry args={[3, 1, 5]} />
                         <meshStandardMaterial color="#4b5563" metalness={0.4} />
                     </mesh>
-                    <mesh position={[-20, 15.75, -40 + i * 16]}>
-                        <boxGeometry args={[4, 1.5, 8]} />
+                    <mesh position={[-18, 15.5, -40 + i * 16]}>
+                        <boxGeometry args={[3, 1, 5]} />
                         <meshStandardMaterial color="#4b5563" metalness={0.4} />
                     </mesh>
                 </group>
@@ -859,16 +859,16 @@ function CampusLayout() {
                 </mesh>
             </group>
 
-            {/* Admin/security building at main entrance */}
-            <mesh position={[0, 3, 200]}>
-                <boxGeometry args={[25, 6, 15]} />
-                <meshStandardMaterial color="#64748b" />
+            {/* Admin/security building at main entrance - small, clearly not a data center */}
+            <mesh position={[0, 2.5, 200]}>
+                <boxGeometry args={[18, 5, 10]} />
+                <meshStandardMaterial color="#9ca3af" metalness={0.2} />
             </mesh>
 
-            {/* Guard house */}
-            <mesh position={[0, 2, 215]}>
-                <boxGeometry args={[5, 4, 5]} />
-                <meshStandardMaterial color="#475569" />
+            {/* Guard house - small booth */}
+            <mesh position={[0, 1.5, 212]}>
+                <boxGeometry args={[4, 3, 3]} />
+                <meshStandardMaterial color="#9ca3af" />
             </mesh>
         </group>
     );
@@ -903,33 +903,34 @@ function CampusBuilding({ position }: { position: [number, number, number] }) {
                 <meshStandardMaterial color="#1f2937" />
             </mesh>
 
-            {/* ROOFTOP COOLING - 8 cooling towers along spine */}
-            {[...Array(8)].map((_, i) => (
-                <group key={`cooling-${i}`} position={[-28 + i * 8, 15, 0]}>
-                    <mesh position={[0, 3, 0]}>
-                        <cylinderGeometry args={[2, 2.5, 6, 12]} />
+            {/* ROOFTOP COOLING - 10 smaller cooling units along spine */}
+            {[...Array(10)].map((_, i) => (
+                <group key={`cooling-${i}`} position={[-24 + i * 5.5, 15, 0]}>
+                    {/* Smaller unit that sits flat on roof */}
+                    <mesh position={[0, 0.9, 0]}>
+                        <cylinderGeometry args={[1.0, 1.2, 1.8, 12]} />
                         <meshStandardMaterial color="#6b7280" metalness={0.3} roughness={0.7} />
                     </mesh>
-                    <mesh position={[0, 6.5, 0]}>
-                        <cylinderGeometry args={[1.6, 1.8, 1, 12]} />
+                    <mesh position={[0, 2.0, 0]}>
+                        <cylinderGeometry args={[0.75, 0.85, 0.5, 12]} />
                         <meshStandardMaterial color="#4b5563" metalness={0.5} />
                     </mesh>
-                    <mesh position={[0, 0.25, 0]}>
-                        <boxGeometry args={[5, 0.5, 5]} />
+                    <mesh position={[0, 0.12, 0]}>
+                        <boxGeometry args={[2.4, 0.25, 2.4]} />
                         <meshStandardMaterial color="#475569" />
                     </mesh>
                 </group>
             ))}
 
-            {/* HVAC units on roof sides */}
+            {/* HVAC units on roof sides - smaller */}
             {[...Array(4)].map((_, i) => (
                 <group key={`hvac-${i}`}>
-                    <mesh position={[25, 15.75, -30 + i * 20]}>
-                        <boxGeometry args={[5, 1.5, 10]} />
+                    <mesh position={[23, 15.4, -30 + i * 20]}>
+                        <boxGeometry args={[3, 0.8, 6]} />
                         <meshStandardMaterial color="#4b5563" metalness={0.4} />
                     </mesh>
-                    <mesh position={[-25, 15.75, -30 + i * 20]}>
-                        <boxGeometry args={[5, 1.5, 10]} />
+                    <mesh position={[-23, 15.4, -30 + i * 20]}>
+                        <boxGeometry args={[3, 0.8, 6]} />
                         <meshStandardMaterial color="#4b5563" metalness={0.4} />
                     </mesh>
                 </group>
@@ -992,57 +993,96 @@ function CampusBuilding({ position }: { position: [number, number, number] }) {
 
 /**
  * Primary Substation - 345kV/138kV (80m × 60m)
+ * Designed to be clearly a substation, NOT a data center building
  */
 function PrimarySubstation({ position }: { position: [number, number, number] }) {
     return (
         <group position={position}>
-            {/* Substation pad */}
+            {/* Substation pad - gravel/concrete */}
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.05, 0]}>
-                <planeGeometry args={[80, 60]} />
-                <meshStandardMaterial color="#4b5563" />
+                <planeGeometry args={[70, 50]} />
+                <meshStandardMaterial color="#6b7280" />
             </mesh>
 
-            {/* Control building */}
-            <mesh position={[30, 4, 20]}>
-                <boxGeometry args={[15, 8, 10]} />
-                <meshStandardMaterial color="#475569" metalness={0.3} />
+            {/* Small control shed (NOT a building - clearly different from data centers) */}
+            <mesh position={[28, 2.5, 18]}>
+                <boxGeometry args={[8, 5, 6]} />
+                <meshStandardMaterial color="#9ca3af" metalness={0.2} />
             </mesh>
 
-            {/* Main power transformers (6 units) */}
-            {[[-20, 0, -10], [0, 0, -10], [20, 0, -10], [-20, 0, 10], [0, 0, 10], [20, 0, 10]].map((pos, i) => (
+            {/* Main power transformers (6 units) - larger and more prominent */}
+            {[[-18, 0, -8], [0, 0, -8], [18, 0, -8], [-18, 0, 8], [0, 0, 8], [18, 0, 8]].map((pos, i) => (
                 <group key={i} position={pos as [number, number, number]}>
-                    <mesh position={[0, 3, 0]}>
-                        <boxGeometry args={[6, 6, 4]} />
+                    {/* Transformer body */}
+                    <mesh position={[0, 3.5, 0]}>
+                        <boxGeometry args={[7, 7, 5]} />
                         <meshStandardMaterial color="#374151" metalness={0.6} />
                     </mesh>
                     {/* Radiator fins */}
-                    <mesh position={[0, 3, 2.5]}>
-                        <boxGeometry args={[5, 4, 0.8]} />
+                    <mesh position={[0, 3.5, 3]}>
+                        <boxGeometry args={[6, 5, 1]} />
                         <meshStandardMaterial color="#4b5563" />
                     </mesh>
-                    {/* HV bushings */}
-                    {[-1.5, 0, 1.5].map((x, j) => (
-                        <mesh key={j} position={[x, 7, 0]}>
-                            <cylinderGeometry args={[0.3, 0.4, 2.5]} />
+                    {/* HV bushings - taller and more visible */}
+                    {[-2, 0, 2].map((x, j) => (
+                        <mesh key={j} position={[x, 8, 0]}>
+                            <cylinderGeometry args={[0.35, 0.5, 3]} />
                             <meshStandardMaterial color="#94a3b8" />
                         </mesh>
                     ))}
                 </group>
             ))}
 
-            {/* Bus bars at 12m height */}
-            <mesh position={[0, 12, 0]}>
-                <boxGeometry args={[70, 0.2, 0.2]} />
-                <meshStandardMaterial color="#f59e0b" metalness={0.8} emissive="#f59e0b" emissiveIntensity={0.1} />
+            {/* Bus bars at 14m height - more visible */}
+            <mesh position={[0, 14, 0]}>
+                <boxGeometry args={[60, 0.3, 0.3]} />
+                <meshStandardMaterial color="#f59e0b" metalness={0.8} emissive="#f59e0b" emissiveIntensity={0.15} />
+            </mesh>
+            {/* Cross bus bar */}
+            <mesh position={[0, 14, 0]} rotation={[0, Math.PI / 2, 0]}>
+                <boxGeometry args={[40, 0.3, 0.3]} />
+                <meshStandardMaterial color="#f59e0b" metalness={0.8} emissive="#f59e0b" emissiveIntensity={0.15} />
             </mesh>
 
-            {/* Steel lattice structures */}
-            {[-30, 0, 30].map((x, i) => (
-                <mesh key={i} position={[x, 8, -25]}>
-                    <cylinderGeometry args={[0.4, 0.8, 16, 4]} />
+            {/* Steel lattice towers - taller */}
+            {[-25, 0, 25].map((x, i) => (
+                <mesh key={i} position={[x, 10, -20]}>
+                    <cylinderGeometry args={[0.5, 1.0, 20, 4]} />
                     <meshStandardMaterial color="#64748b" metalness={0.7} />
                 </mesh>
             ))}
+
+            {/* Additional lattice towers on other side */}
+            {[-25, 0, 25].map((x, i) => (
+                <mesh key={`back-${i}`} position={[x, 10, 20]}>
+                    <cylinderGeometry args={[0.5, 1.0, 20, 4]} />
+                    <meshStandardMaterial color="#64748b" metalness={0.7} />
+                </mesh>
+            ))}
+
+            {/* Fence around substation - chain link style */}
+            <group>
+                {/* North fence */}
+                <mesh position={[0, 1.5, -26]}>
+                    <boxGeometry args={[72, 3, 0.2]} />
+                    <meshStandardMaterial color="#64748b" transparent opacity={0.4} />
+                </mesh>
+                {/* South fence */}
+                <mesh position={[0, 1.5, 26]}>
+                    <boxGeometry args={[72, 3, 0.2]} />
+                    <meshStandardMaterial color="#64748b" transparent opacity={0.4} />
+                </mesh>
+                {/* East fence */}
+                <mesh position={[36, 1.5, 0]}>
+                    <boxGeometry args={[0.2, 3, 52]} />
+                    <meshStandardMaterial color="#64748b" transparent opacity={0.4} />
+                </mesh>
+                {/* West fence */}
+                <mesh position={[-36, 1.5, 0]}>
+                    <boxGeometry args={[0.2, 3, 52]} />
+                    <meshStandardMaterial color="#64748b" transparent opacity={0.4} />
+                </mesh>
+            </group>
         </group>
     );
 }
