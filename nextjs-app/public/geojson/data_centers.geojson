@@ -2,11 +2,12 @@
   "type": "FeatureCollection",
   "metadata": {
     "description": "US Data Centers: Existing 500MW+, announced projects, and anticipated growth to 150GW by 2035",
-    "sources": ["Baxtel", "DataCenterMap", "Company announcements", "Utility filings", "Growth projections"],
-    "lastUpdated": "2025-01",
+    "sources": ["Baxtel", "DataCenterMap", "Company announcements", "Utility filings", "Growth projections", "State economic development agencies"],
+    "lastUpdated": "2026-01",
     "projectedCapacity2035": "150+ GW",
     "currentCapacity2024": "25 GW",
-    "notes": "Anticipated facilities represent projected growth based on utility IRPs, interconnection queues, and AI demand forecasts"
+    "featureCount": 216,
+    "notes": "Anticipated facilities represent projected growth based on utility IRPs, interconnection queues, and AI demand forecasts. Includes major projects in PA (~$90-110B pipeline), MI (Stargate 1.4GW+), NC (85% of Duke load growth), GA (8.2GW over 6 years), and emerging markets."
   },
   "features": [
     {"type": "Feature", "properties": {"name": "Digital Realty Ashburn Campus", "operator": "Digital Realty", "capacity": 650, "region": "nova", "status": "operational", "year": 2010}, "geometry": {"type": "Point", "coordinates": [-77.4875, 39.0437]}},
@@ -156,6 +157,91 @@
     {"type": "Feature", "properties": {"name": "Utah Solar DC 2", "operator": "Multiple", "capacity": 1000, "region": "mountain", "status": "anticipated", "year": 2032}, "geometry": {"type": "Point", "coordinates": [-111.7234, 40.8234]}},
     {"type": "Feature", "properties": {"name": "New Mexico Solar Hub 1", "operator": "Multiple", "capacity": 900, "region": "southwest", "status": "anticipated", "year": 2030}, "geometry": {"type": "Point", "coordinates": [-106.6504, 35.0844]}},
     {"type": "Feature", "properties": {"name": "New Mexico Solar Hub 2", "operator": "Multiple", "capacity": 1100, "region": "southwest", "status": "anticipated", "year": 2032}, "geometry": {"type": "Point", "coordinates": [-106.5234, 35.1534]}},
-    {"type": "Feature", "properties": {"name": "New Mexico AI Campus 2034", "operator": "Multiple", "capacity": 1300, "region": "southwest", "status": "anticipated", "year": 2034}, "geometry": {"type": "Point", "coordinates": [-106.7534, 34.9534]}}
+    {"type": "Feature", "properties": {"name": "New Mexico AI Campus 2034", "operator": "Multiple", "capacity": 1300, "region": "southwest", "status": "anticipated", "year": 2034}, "geometry": {"type": "Point", "coordinates": [-106.7534, 34.9534]}},
+
+    {"type": "Feature", "properties": {"name": "Amazon AI Campus Salem Township", "operator": "Amazon", "capacity": 1500, "region": "pennsylvania", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-79.9012, 40.5234]}},
+    {"type": "Feature", "properties": {"name": "Amazon AI Campus Falls Township", "operator": "Amazon", "capacity": 1200, "region": "pennsylvania", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-74.8534, 40.1823]}},
+    {"type": "Feature", "properties": {"name": "PAX Digital Carlisle", "operator": "PAX", "capacity": 1350, "region": "pennsylvania", "status": "announced", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-77.1889, 40.2015]}},
+    {"type": "Feature", "properties": {"name": "CoreWeave Lancaster County", "operator": "CoreWeave", "capacity": 800, "region": "pennsylvania", "status": "construction", "year": 2026}, "geometry": {"type": "Point", "coordinates": [-76.3055, 40.0379]}},
+    {"type": "Feature", "properties": {"name": "Homer City Energy Campus", "operator": "Multiple", "capacity": 2000, "region": "pennsylvania", "status": "announced", "year": 2030}, "geometry": {"type": "Point", "coordinates": [-79.1612, 40.5423]}},
+    {"type": "Feature", "properties": {"name": "Air Products Lehigh Campus", "operator": "Air Products", "capacity": 1000, "region": "pennsylvania", "status": "announced", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-75.4712, 40.6023]}},
+    {"type": "Feature", "properties": {"name": "PA AI Corridor Expansion 1", "operator": "Multiple", "capacity": 1800, "region": "pennsylvania", "status": "anticipated", "year": 2031}, "geometry": {"type": "Point", "coordinates": [-76.8823, 40.2734]}},
+    {"type": "Feature", "properties": {"name": "PA AI Corridor Expansion 2", "operator": "Multiple", "capacity": 2200, "region": "pennsylvania", "status": "anticipated", "year": 2033}, "geometry": {"type": "Point", "coordinates": [-75.9534, 40.3423]}},
+    {"type": "Feature", "properties": {"name": "PJM East PA Campus 2035", "operator": "Multiple", "capacity": 2500, "region": "pennsylvania", "status": "anticipated", "year": 2035}, "geometry": {"type": "Point", "coordinates": [-76.4234, 40.1234]}},
+
+    {"type": "Feature", "properties": {"name": "Microsoft Cheyenne Expansion", "operator": "Microsoft", "capacity": 250, "region": "wyoming", "status": "construction", "year": 2026}, "geometry": {"type": "Point", "coordinates": [-104.8202, 41.1400]}},
+    {"type": "Feature", "properties": {"name": "Microsoft Bison Park", "operator": "Microsoft", "capacity": 500, "region": "wyoming", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-104.7912, 41.1623]}},
+    {"type": "Feature", "properties": {"name": "Meta Cheyenne", "operator": "Meta", "capacity": 600, "region": "wyoming", "status": "anticipated", "year": 2030}, "geometry": {"type": "Point", "coordinates": [-104.8534, 41.1234]}},
+    {"type": "Feature", "properties": {"name": "Crusoe Energy Wyoming", "operator": "Crusoe", "capacity": 400, "region": "wyoming", "status": "anticipated", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-105.5912, 42.8534]}},
+    {"type": "Feature", "properties": {"name": "Wyoming Wind-Powered DC 1", "operator": "Multiple", "capacity": 800, "region": "wyoming", "status": "anticipated", "year": 2031}, "geometry": {"type": "Point", "coordinates": [-105.0234, 41.3123]}},
+    {"type": "Feature", "properties": {"name": "Wyoming Wind-Powered DC 2", "operator": "Multiple", "capacity": 1000, "region": "wyoming", "status": "anticipated", "year": 2033}, "geometry": {"type": "Point", "coordinates": [-104.6823, 41.0534]}},
+
+    {"type": "Feature", "properties": {"name": "Meta Los Lunas AI Expansion", "operator": "Meta", "capacity": 800, "region": "newmexico", "status": "construction", "year": 2026}, "geometry": {"type": "Point", "coordinates": [-106.7334, 34.8062]}},
+    {"type": "Feature", "properties": {"name": "Meta Los Lunas Phase 3", "operator": "Meta", "capacity": 1200, "region": "newmexico", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-106.7612, 34.7923]}},
+
+    {"type": "Feature", "properties": {"name": "Amazon AWS Catawba County", "operator": "Amazon", "capacity": 1200, "region": "northcarolina", "status": "construction", "year": 2026}, "geometry": {"type": "Point", "coordinates": [-81.2301, 35.6650]}},
+    {"type": "Feature", "properties": {"name": "Microsoft Catawba Site 1", "operator": "Microsoft", "capacity": 600, "region": "northcarolina", "status": "construction", "year": 2026}, "geometry": {"type": "Point", "coordinates": [-81.1823, 35.6823]}},
+    {"type": "Feature", "properties": {"name": "Microsoft Catawba Site 2", "operator": "Microsoft", "capacity": 600, "region": "northcarolina", "status": "construction", "year": 2027}, "geometry": {"type": "Point", "coordinates": [-81.2534, 35.6423]}},
+    {"type": "Feature", "properties": {"name": "Microsoft Catawba Site 3", "operator": "Microsoft", "capacity": 600, "region": "northcarolina", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-81.2012, 35.7012]}},
+    {"type": "Feature", "properties": {"name": "Microsoft Catawba Site 4", "operator": "Microsoft", "capacity": 600, "region": "northcarolina", "status": "announced", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-81.1534, 35.6234]}},
+    {"type": "Feature", "properties": {"name": "Apple Maiden Expansion", "operator": "Apple", "capacity": 800, "region": "northcarolina", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-81.2123, 35.5734]}},
+    {"type": "Feature", "properties": {"name": "PowerHouse Charlotte", "operator": "PowerHouse", "capacity": 350, "region": "northcarolina", "status": "construction", "year": 2026}, "geometry": {"type": "Point", "coordinates": [-80.8431, 35.2271]}},
+    {"type": "Feature", "properties": {"name": "Digital Realty Charlotte", "operator": "Digital Realty", "capacity": 400, "region": "northcarolina", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-80.8923, 35.1934]}},
+    {"type": "Feature", "properties": {"name": "Google Lenoir", "operator": "Google", "capacity": 600, "region": "northcarolina", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-81.5390, 35.9140]}},
+    {"type": "Feature", "properties": {"name": "Energy Storage Solutions Tarboro", "operator": "ESS", "capacity": 900, "region": "northcarolina", "status": "announced", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-77.5358, 35.8968]}},
+    {"type": "Feature", "properties": {"name": "Duke Energy NC Hyperscale 1", "operator": "Multiple", "capacity": 1500, "region": "northcarolina", "status": "anticipated", "year": 2030}, "geometry": {"type": "Point", "coordinates": [-80.4234, 35.5123]}},
+    {"type": "Feature", "properties": {"name": "Duke Energy NC Hyperscale 2", "operator": "Multiple", "capacity": 1800, "region": "northcarolina", "status": "anticipated", "year": 2032}, "geometry": {"type": "Point", "coordinates": [-81.0534, 35.8234]}},
+    {"type": "Feature", "properties": {"name": "NC AI Corridor 2034", "operator": "Multiple", "capacity": 2000, "region": "northcarolina", "status": "anticipated", "year": 2034}, "geometry": {"type": "Point", "coordinates": [-79.7923, 36.0734]}},
+
+    {"type": "Feature", "properties": {"name": "DC BLOX North Augusta", "operator": "DC BLOX", "capacity": 50, "region": "southcarolina", "status": "operational", "year": 2022}, "geometry": {"type": "Point", "coordinates": [-81.9651, 33.5018]}},
+    {"type": "Feature", "properties": {"name": "DC BLOX Greenville", "operator": "DC BLOX", "capacity": 80, "region": "southcarolina", "status": "operational", "year": 2023}, "geometry": {"type": "Point", "coordinates": [-82.3940, 34.8526]}},
+    {"type": "Feature", "properties": {"name": "SC Charleston Tech Hub", "operator": "Multiple", "capacity": 500, "region": "southcarolina", "status": "anticipated", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-79.9311, 32.7765]}},
+    {"type": "Feature", "properties": {"name": "SC Columbia Campus", "operator": "Multiple", "capacity": 600, "region": "southcarolina", "status": "anticipated", "year": 2031}, "geometry": {"type": "Point", "coordinates": [-81.0348, 34.0007]}},
+    {"type": "Feature", "properties": {"name": "SC AI Corridor 2033", "operator": "Multiple", "capacity": 800, "region": "southcarolina", "status": "anticipated", "year": 2033}, "geometry": {"type": "Point", "coordinates": [-82.0534, 33.8534]}},
+
+    {"type": "Feature", "properties": {"name": "Google Douglas County", "operator": "Google", "capacity": 800, "region": "georgia", "status": "operational", "year": 2021}, "geometry": {"type": "Point", "coordinates": [-84.7477, 33.7515]}},
+    {"type": "Feature", "properties": {"name": "Google Monroe County", "operator": "Google", "capacity": 1500, "region": "georgia", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-83.9901, 33.0123]}},
+    {"type": "Feature", "properties": {"name": "DC BLOX Atlanta East Conyers", "operator": "DC BLOX", "capacity": 200, "region": "georgia", "status": "construction", "year": 2026}, "geometry": {"type": "Point", "coordinates": [-84.0180, 33.6676]}},
+    {"type": "Feature", "properties": {"name": "xAI Atlanta", "operator": "xAI", "capacity": 1000, "region": "georgia", "status": "announced", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-84.1234, 33.9234]}},
+    {"type": "Feature", "properties": {"name": "Microsoft Atlanta Region", "operator": "Microsoft", "capacity": 900, "region": "georgia", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-84.5534, 33.6534]}},
+    {"type": "Feature", "properties": {"name": "Georgia Power AI Hub 1", "operator": "Multiple", "capacity": 1600, "region": "georgia", "status": "anticipated", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-84.0823, 33.5823]}},
+    {"type": "Feature", "properties": {"name": "Georgia Power AI Hub 2", "operator": "Multiple", "capacity": 2000, "region": "georgia", "status": "anticipated", "year": 2031}, "geometry": {"type": "Point", "coordinates": [-84.6234, 33.7234]}},
+    {"type": "Feature", "properties": {"name": "GA AI Mega Campus 2033", "operator": "Multiple", "capacity": 2400, "region": "georgia", "status": "anticipated", "year": 2033}, "geometry": {"type": "Point", "coordinates": [-84.2534, 33.8923]}},
+    {"type": "Feature", "properties": {"name": "GA AI Mega Campus 2035", "operator": "Multiple", "capacity": 2800, "region": "georgia", "status": "anticipated", "year": 2035}, "geometry": {"type": "Point", "coordinates": [-84.4012, 33.6123]}},
+
+    {"type": "Feature", "properties": {"name": "DC BLOX Montgomery", "operator": "DC BLOX", "capacity": 40, "region": "alabama", "status": "operational", "year": 2021}, "geometry": {"type": "Point", "coordinates": [-86.2999, 32.3668]}},
+    {"type": "Feature", "properties": {"name": "DC BLOX Huntsville", "operator": "DC BLOX", "capacity": 50, "region": "alabama", "status": "operational", "year": 2022}, "geometry": {"type": "Point", "coordinates": [-86.5861, 34.7304]}},
+    {"type": "Feature", "properties": {"name": "DC BLOX Birmingham", "operator": "DC BLOX", "capacity": 60, "region": "alabama", "status": "operational", "year": 2023}, "geometry": {"type": "Point", "coordinates": [-86.8025, 33.5207]}},
+    {"type": "Feature", "properties": {"name": "Alabama TVA AI Hub 1", "operator": "Multiple", "capacity": 600, "region": "alabama", "status": "anticipated", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-86.7534, 34.6823]}},
+    {"type": "Feature", "properties": {"name": "Alabama TVA AI Hub 2", "operator": "Multiple", "capacity": 800, "region": "alabama", "status": "anticipated", "year": 2031}, "geometry": {"type": "Point", "coordinates": [-86.4234, 33.5534]}},
+    {"type": "Feature", "properties": {"name": "Alabama AI Campus 2033", "operator": "Multiple", "capacity": 1000, "region": "alabama", "status": "anticipated", "year": 2033}, "geometry": {"type": "Point", "coordinates": [-86.6012, 34.8234]}},
+
+    {"type": "Feature", "properties": {"name": "Amazon Mississippi Site 1", "operator": "Amazon", "capacity": 1500, "region": "mississippi", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-90.1848, 32.2988]}},
+    {"type": "Feature", "properties": {"name": "Amazon Mississippi Site 2", "operator": "Amazon", "capacity": 1500, "region": "mississippi", "status": "announced", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-89.5423, 33.4523]}},
+    {"type": "Feature", "properties": {"name": "Mississippi AI Hub 1", "operator": "Multiple", "capacity": 800, "region": "mississippi", "status": "anticipated", "year": 2030}, "geometry": {"type": "Point", "coordinates": [-90.0534, 32.3534]}},
+    {"type": "Feature", "properties": {"name": "Mississippi AI Hub 2", "operator": "Multiple", "capacity": 1000, "region": "mississippi", "status": "anticipated", "year": 2032}, "geometry": {"type": "Point", "coordinates": [-89.7823, 33.5123]}},
+
+    {"type": "Feature", "properties": {"name": "AVAIO Leo Data Hub Little Rock", "operator": "AVAIO", "capacity": 500, "region": "arkansas", "status": "construction", "year": 2026}, "geometry": {"type": "Point", "coordinates": [-92.2896, 34.7465]}},
+    {"type": "Feature", "properties": {"name": "Google West Memphis", "operator": "Google", "capacity": 1200, "region": "arkansas", "status": "construction", "year": 2027}, "geometry": {"type": "Point", "coordinates": [-90.1848, 35.1465]}},
+    {"type": "Feature", "properties": {"name": "Serverfarm Clarksville", "operator": "Serverfarm", "capacity": 600, "region": "arkansas", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-93.4616, 35.4715]}},
+    {"type": "Feature", "properties": {"name": "Arkansas AI Corridor 1", "operator": "Multiple", "capacity": 900, "region": "arkansas", "status": "anticipated", "year": 2030}, "geometry": {"type": "Point", "coordinates": [-92.4234, 34.8123]}},
+    {"type": "Feature", "properties": {"name": "Arkansas AI Corridor 2", "operator": "Multiple", "capacity": 1100, "region": "arkansas", "status": "anticipated", "year": 2032}, "geometry": {"type": "Point", "coordinates": [-91.1534, 34.9534]}},
+    {"type": "Feature", "properties": {"name": "AR AI Campus 2034", "operator": "Multiple", "capacity": 1300, "region": "arkansas", "status": "anticipated", "year": 2034}, "geometry": {"type": "Point", "coordinates": [-92.1823, 34.6823]}},
+
+    {"type": "Feature", "properties": {"name": "Stargate Saline Township", "operator": "OpenAI/Oracle", "capacity": 1400, "region": "michigan", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-83.7823, 42.1679]}},
+    {"type": "Feature", "properties": {"name": "Project Flex Lyon Township", "operator": "Alphabet", "capacity": 1200, "region": "michigan", "status": "announced", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-83.6334, 42.4623]}},
+    {"type": "Feature", "properties": {"name": "Project Cannoli Van Buren", "operator": "Undisclosed", "capacity": 1000, "region": "michigan", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-83.5023, 42.2234]}},
+    {"type": "Feature", "properties": {"name": "Metrobloks Southfield", "operator": "Metrobloks", "capacity": 100, "region": "michigan", "status": "construction", "year": 2026}, "geometry": {"type": "Point", "coordinates": [-83.2219, 42.4734]}},
+    {"type": "Feature", "properties": {"name": "Microsoft Grand Rapids", "operator": "Microsoft", "capacity": 600, "region": "michigan", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-85.6681, 42.9634]}},
+    {"type": "Feature", "properties": {"name": "Microsoft Lowell Township", "operator": "Microsoft", "capacity": 500, "region": "michigan", "status": "announced", "year": 2029}, "geometry": {"type": "Point", "coordinates": [-85.3412, 42.9312]}},
+    {"type": "Feature", "properties": {"name": "Hyperscale Data Inc Michigan", "operator": "Hyperscale Data", "capacity": 340, "region": "michigan", "status": "announced", "year": 2028}, "geometry": {"type": "Point", "coordinates": [-84.5534, 42.7323]}},
+    {"type": "Feature", "properties": {"name": "Michigan AI Corridor 1", "operator": "Multiple", "capacity": 1600, "region": "michigan", "status": "anticipated", "year": 2030}, "geometry": {"type": "Point", "coordinates": [-83.7012, 42.3534]}},
+    {"type": "Feature", "properties": {"name": "Michigan AI Corridor 2", "operator": "Multiple", "capacity": 2000, "region": "michigan", "status": "anticipated", "year": 2032}, "geometry": {"type": "Point", "coordinates": [-84.2134, 42.5823]}},
+    {"type": "Feature", "properties": {"name": "MI AI Mega Campus 2034", "operator": "Multiple", "capacity": 2400, "region": "michigan", "status": "anticipated", "year": 2034}, "geometry": {"type": "Point", "coordinates": [-83.8534, 42.2123]}},
+
+    {"type": "Feature", "properties": {"name": "Meta Richland Parish", "operator": "Meta", "capacity": 2000, "region": "louisiana", "status": "construction", "year": 2027}, "geometry": {"type": "Point", "coordinates": [-91.7265, 32.4141]}},
+    {"type": "Feature", "properties": {"name": "Louisiana AI Hub 1", "operator": "Multiple", "capacity": 1000, "region": "louisiana", "status": "anticipated", "year": 2030}, "geometry": {"type": "Point", "coordinates": [-91.1534, 30.4507]}},
+    {"type": "Feature", "properties": {"name": "Louisiana AI Hub 2", "operator": "Multiple", "capacity": 1200, "region": "louisiana", "status": "anticipated", "year": 2032}, "geometry": {"type": "Point", "coordinates": [-90.0715, 29.9511]}},
+    {"type": "Feature", "properties": {"name": "LA AI Corridor 2034", "operator": "Multiple", "capacity": 1500, "region": "louisiana", "status": "anticipated", "year": 2034}, "geometry": {"type": "Point", "coordinates": [-91.8234, 32.5234]}}
   ]
 }

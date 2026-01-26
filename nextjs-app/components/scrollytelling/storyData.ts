@@ -71,12 +71,12 @@ export const steps: StoryStep[] = [
         mode: 'micro',
         visualState: 'rack-zoom',
         title: "A Server Rack",
-        text: "AI training requires thousands of GPUs working together. A single Vera Rubin server rack contains 72-144 GPUs and draws 120-130 kW—comparable to a mid-rise office building's entire electrical load.",
-        subtext: "By 2027, next-generation Kyber racks will draw up to 600 kW each.",
+        text: "AI training requires thousands of GPUs working together. A Rubin Ultra Kyber rack contains 576 GPU dies in a fully liquid-immersed, fanless design—drawing 600 kW continuously, equivalent to powering 500 homes.",
+        subtext: "These racks require full liquid immersion cooling and 40°C inlet water for heat extraction.",
         powerMetric: {
-            value: "120",
+            value: "600",
             unit: "kW",
-            comparison: "≈ 100 homes"
+            comparison: "≈ 500 homes"
         }
     },
     {
@@ -84,11 +84,11 @@ export const steps: StoryStep[] = [
         mode: 'micro',
         visualState: 'pod-zoom',
         title: "A Compute Pod",
-        text: "Multiple racks form a compute pod. A typical AI training cluster might have 10-20 racks, drawing 1-2 MW continuously. This single room uses as much power as a small downtown district.",
+        text: "Multiple Kyber racks form a compute pod. With 8 racks at 600 kW each, a single pod draws 4.8 MW continuously—as much power as a small downtown district.",
         powerMetric: {
-            value: "1-2",
+            value: "4.8",
             unit: "MW",
-            comparison: "≈ 1,000 homes"
+            comparison: "≈ 4,000 homes"
         }
     },
     {
@@ -96,24 +96,37 @@ export const steps: StoryStep[] = [
         mode: 'micro',
         visualState: 'building-iso',
         title: "A Data Center Facility",
-        text: "A modern hyperscale data center operates at 100-500 MW—equivalent to 10-50 Empire State Buildings running simultaneously. These facilities require dedicated substations and transmission lines.",
-        subtext: "A 100 MW facility serves roughly 80,000 homes' worth of continuous demand.",
+        text: "Multiple data halls form a facility drawing 100-500 MW—equivalent to a small city. Each hall with 60 Kyber racks draws 36 MW. These facilities require dedicated substations and transmission lines.",
+        subtext: "Modern hyperscale facilities typically have 3-5 data halls, each with 60 racks at 600 kW.",
         powerMetric: {
-            value: "100+",
+            value: "100-500",
             unit: "MW",
-            comparison: "≈ 80,000 homes"
+            comparison: "≈ 80,000-400,000 homes"
+        }
+    },
+    {
+        id: 'campus',
+        mode: 'micro',
+        visualState: 'campus-grid',
+        title: "A Hyperscale Campus",
+        text: "Multiple data halls with adjacent backup generators, liquid cooling distribution centers, and battery storage form a hyperscale campus. A 500 MW campus requires its own 345kV substation, transmission towers, and grid interconnection.",
+        subtext: "Kyber racks use full liquid immersion—no cooling towers needed. Heat exchangers transfer thermal energy to external loops.",
+        powerMetric: {
+            value: "500",
+            unit: "MW",
+            comparison: "≈ half a nuclear plant"
         }
     },
 
     // --- PHASE 2: TRANSITION - Infrastructure becomes visible (map starts here) ---
     {
-        id: 'campus',
+        id: 'grid-connection',
         mode: 'infrastructure',
         visualState: 'campus-grid',
         // Start zoomed in very tight on Ashburn data center campus for seamless 3D-to-map transition
         location: { lng: -77.4875, lat: 39.0437, zoom: 16, pitch: 55, bearing: -30 },
         title: "The Grid Connection",
-        text: "Large data centers connect directly to high-voltage transmission lines. A 500 MW campus draws power equivalent to a small nuclear reactor—requiring dedicated substations and often triggering grid upgrades paid by all ratepayers.",
+        text: "These massive campuses connect directly to high-voltage transmission lines. The transition from 3D model to satellite view shows real data center locations in Northern Virginia—the world's largest data center market.",
         powerMetric: {
             value: "500",
             unit: "MW",

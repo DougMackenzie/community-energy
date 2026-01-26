@@ -45,24 +45,21 @@ interface MapViewProps {
     };
 }
 
-// Status colors for data centers
-const statusColors: Record<string, string> = {
-    operational: '#06B6D4',    // Cyan - existing
-    construction: '#F59E0B',   // Amber - under construction
-    planned: '#22D3EE',        // Light cyan - planned
-    announced: '#818CF8',      // Purple - announced/future
-    anticipated: '#6366F1',    // Indigo - anticipated growth (2030-35)
+// Data Centers - Blue shades (unified scheme)
+const dcStatusColors: Record<string, string> = {
+    operational: '#1e40af',    // Dark blue - existing/operational
+    construction: '#3b82f6',   // Medium blue - under construction
+    planned: '#60a5fa',        // Light blue - planned
+    announced: '#60a5fa',      // Light blue - announced (same as planned)
+    anticipated: '#93c5fd',    // Lightest blue - anticipated 2030-35
 };
 
-// Power plant type colors
-const plantTypeColors: Record<string, string> = {
-    nuclear: '#8B5CF6',
-    gas: '#F59E0B',
-    coal: '#6B7280',
-    solar: '#FBBF24',
-    wind: '#34D399',
-    hydro: '#3B82F6',
-    geothermal: '#EF4444',
+// Power Plants - Green shades (unified scheme, no type differentiation)
+const ppStatusColors: Record<string, string> = {
+    operational: '#166534',    // Dark green - operational
+    construction: '#22c55e',   // Medium green - under construction
+    planned: '#4ade80',        // Light green - planned
+    anticipated: '#86efac',    // Lightest green - anticipated
 };
 
 /**
@@ -115,34 +112,13 @@ export default function MapView({ location, layerColor = '#EF4444', stepId, regi
                 console.log('New power plants loaded:', ppData.features?.length, 'features');
             }
 
-            // Add ISO regions
+            // Add ISO regions - only for data, transmission lines will show ISO colors
             if (!map.getSource('iso-regions')) {
                 map.addSource('iso-regions', {
                     type: 'geojson',
                     data: isoData
                 });
-
-                map.addLayer({
-                    id: 'iso-regions-fill',
-                    type: 'fill',
-                    source: 'iso-regions',
-                    paint: {
-                        'fill-color': ['get', 'color'],
-                        'fill-opacity': 0.15
-                    }
-                });
-
-                map.addLayer({
-                    id: 'iso-regions-outline',
-                    type: 'line',
-                    source: 'iso-regions',
-                    paint: {
-                        'line-color': ['get', 'color'],
-                        'line-width': 2,
-                        'line-opacity': 0.6,
-                        'line-dasharray': [2, 2]
-                    }
-                });
+                // No fill overlay - ISO is identified by transmission line colors only
             }
 
             // Add transmission lines (230kV+) colored by ISO region
@@ -195,7 +171,7 @@ export default function MapView({ location, layerColor = '#EF4444', stepId, regi
                     data: dcData
                 });
 
-                // Glow effect - color by status
+                // Glow effect - blue shades by status
                 map.addLayer({
                     id: 'data-centers-glow',
                     type: 'circle',
@@ -209,21 +185,21 @@ export default function MapView({ location, layerColor = '#EF4444', stepId, regi
                         ],
                         'circle-color': [
                             'match', ['get', 'status'],
-                            'operational', statusColors.operational,
-                            'construction', statusColors.construction,
-                            'planned', statusColors.planned,
-                            'announced', statusColors.announced,
-                            'anticipated', statusColors.anticipated,
-                            statusColors.operational
+                            'operational', dcStatusColors.operational,
+                            'construction', dcStatusColors.construction,
+                            'planned', dcStatusColors.planned,
+                            'announced', dcStatusColors.announced,
+                            'anticipated', dcStatusColors.anticipated,
+                            dcStatusColors.operational
                         ],
                         'circle-opacity': [
                             'match', ['get', 'status'],
-                            'operational', 0.35,
-                            'construction', 0.4,
-                            'planned', 0.3,
-                            'announced', 0.25,
-                            'anticipated', 0.2,
-                            0.3
+                            'operational', 0.4,
+                            'construction', 0.45,
+                            'planned', 0.35,
+                            'announced', 0.3,
+                            'anticipated', 0.25,
+                            0.35
                         ],
                         'circle-blur': 1
                     }
@@ -244,16 +220,16 @@ export default function MapView({ location, layerColor = '#EF4444', stepId, regi
                         ],
                         'circle-color': [
                             'match', ['get', 'status'],
-                            'operational', statusColors.operational,
-                            'construction', statusColors.construction,
-                            statusColors.operational
+                            'operational', dcStatusColors.operational,
+                            'construction', dcStatusColors.construction,
+                            dcStatusColors.operational
                         ],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#FFFFFF'
                     }
                 });
 
-                // Planned/announced/anticipated markers - hollow ring style
+                // Planned/announced/anticipated markers - hollow ring style (blue shades)
                 map.addLayer({
                     id: 'data-centers-planned',
                     type: 'circle',
@@ -276,10 +252,10 @@ export default function MapView({ location, layerColor = '#EF4444', stepId, regi
                         ],
                         'circle-stroke-color': [
                             'match', ['get', 'status'],
-                            'planned', statusColors.planned,
-                            'announced', statusColors.announced,
-                            'anticipated', statusColors.anticipated,
-                            statusColors.planned
+                            'planned', dcStatusColors.planned,
+                            'announced', dcStatusColors.announced,
+                            'anticipated', dcStatusColors.anticipated,
+                            dcStatusColors.planned
                         ],
                         'circle-stroke-opacity': [
                             'match', ['get', 'status'],
@@ -292,26 +268,14 @@ export default function MapView({ location, layerColor = '#EF4444', stepId, regi
                 });
             }
 
-            // Add NEW power plant markers (only announced/planned plants, not existing)
+            // Add power plant markers - ALL GREEN shades based on status only
             if (!map.getSource('power-plants') && ppData) {
-                // Add color property to features based on type
-                const featuresWithColor = ppData.features.map((f: { properties: { type: string } }) => ({
-                    ...f,
-                    properties: {
-                        ...f.properties,
-                        color: plantTypeColors[f.properties.type] || '#6B7280'
-                    }
-                }));
-
                 map.addSource('power-plants', {
                     type: 'geojson',
-                    data: {
-                        type: 'FeatureCollection',
-                        features: featuresWithColor
-                    }
+                    data: ppData
                 });
 
-                // Glow effect for new plants
+                // Glow effect for power plants - GREEN shades by status
                 map.addLayer({
                     id: 'power-plants-glow',
                     type: 'circle',
@@ -323,13 +287,21 @@ export default function MapView({ location, layerColor = '#EF4444', stepId, regi
                             8, ['interpolate', ['linear'], ['get', 'capacity'], 150, 10, 1500, 22],
                             12, ['interpolate', ['linear'], ['get', 'capacity'], 150, 14, 1500, 30]
                         ],
-                        'circle-color': ['get', 'color'],
-                        'circle-opacity': 0.5,
+                        'circle-color': [
+                            'match', ['get', 'status'],
+                            'operational', '#166534',
+                            'construction', '#22c55e',
+                            'announced', '#4ade80',
+                            'planned', '#4ade80',
+                            'anticipated', '#86efac',
+                            '#4ade80'
+                        ],
+                        'circle-opacity': 0.45,
                         'circle-blur': 1
                     }
                 });
 
-                // Core marker - ring style to indicate "new/planned"
+                // Core marker - GREEN shades by status with white border
                 map.addLayer({
                     id: 'power-plants-icon',
                     type: 'circle',
@@ -341,7 +313,15 @@ export default function MapView({ location, layerColor = '#EF4444', stepId, regi
                             8, ['interpolate', ['linear'], ['get', 'capacity'], 150, 5, 1500, 10],
                             12, ['interpolate', ['linear'], ['get', 'capacity'], 150, 7, 1500, 14]
                         ],
-                        'circle-color': ['get', 'color'],
+                        'circle-color': [
+                            'match', ['get', 'status'],
+                            'operational', '#166534',
+                            'construction', '#22c55e',
+                            'announced', '#4ade80',
+                            'planned', '#4ade80',
+                            'anticipated', '#86efac',
+                            '#4ade80'
+                        ],
                         'circle-stroke-width': 2,
                         'circle-stroke-color': '#FFFFFF'
                     }
@@ -483,15 +463,8 @@ export default function MapView({ location, layerColor = '#EF4444', stepId, regi
         const highlight = regionHighlights[stepId] || regionHighlights.usa;
 
         try {
-            // Keep transmission lines colored by ISO region (from GeoJSON 'color' property)
-            // Don't override with layerColor - the GeoJSON already has ISO-based colors
-
-            // Adjust ISO region visibility based on zoom level
-            if (map.getLayer('iso-regions-fill')) {
-                map.setPaintProperty('iso-regions-fill', 'fill-opacity',
-                    stepId === 'usa' ? 0.25 : 0.15
-                );
-            }
+            // Transmission lines are colored by ISO region (from GeoJSON 'color' property)
+            // No fill overlay - ISO identification is through transmission line colors only
 
             // Adjust data center visibility - all layers including planned
             if (map.getLayer('data-centers-core')) {
@@ -556,7 +529,7 @@ export default function MapView({ location, layerColor = '#EF4444', stepId, regi
 }
 
 /**
- * Map Legend - Enhanced with existing vs planned distinction
+ * Map Legend - Blue shades for data centers, green shades for power plants
  */
 function MapLegend({ stepId }: { stepId: string }) {
     const showLegend = ['nova', 'ohio', 'oklahoma', 'texas', 'usa'].includes(stepId);
@@ -572,52 +545,44 @@ function MapLegend({ stepId }: { stepId: string }) {
             <div className="text-gray-400 uppercase tracking-wider mb-2 font-medium text-[10px]">Data Centers</div>
             <div className="space-y-1.5 mb-3">
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-cyan-500 border-2 border-white" />
-                    <span className="text-gray-300">Existing (500MW+)</span>
+                    <div className="w-3 h-3 rounded-full border-2 border-white" style={{ backgroundColor: '#1e40af' }} />
+                    <span className="text-gray-300">Operational</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-amber-500 border-2 border-white" />
+                    <div className="w-3 h-3 rounded-full border-2 border-white" style={{ backgroundColor: '#3b82f6' }} />
                     <span className="text-gray-300">Under Construction</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full border-2 border-cyan-300 bg-transparent" />
-                    <span className="text-gray-300">Planned</span>
+                    <div className="w-3 h-3 rounded-full border-2 bg-transparent" style={{ borderColor: '#60a5fa' }} />
+                    <span className="text-gray-300">Planned / Announced</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full border-2 border-purple-400 bg-transparent" style={{ opacity: 0.7 }} />
-                    <span className="text-gray-300">Announced</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full border-2 border-indigo-400 bg-transparent" style={{ opacity: 0.5, borderStyle: 'dashed' }} />
+                    <div className="w-3 h-3 rounded-full border-2 bg-transparent" style={{ borderColor: '#93c5fd', opacity: 0.6 }} />
                     <span className="text-gray-300">Anticipated (2030-35)</span>
                 </div>
             </div>
 
-            <div className="text-gray-400 uppercase tracking-wider mb-2 font-medium text-[10px]">New Power Plants</div>
+            <div className="text-gray-400 uppercase tracking-wider mb-2 font-medium text-[10px]">Power Plants</div>
             <div className="space-y-1.5 mb-3">
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-purple-500 border border-white" />
-                    <span className="text-gray-300">Nuclear</span>
+                    <div className="w-3 h-3 rounded-full border-2 border-white" style={{ backgroundColor: '#166534' }} />
+                    <span className="text-gray-300">Operational</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-amber-500 border border-white" />
-                    <span className="text-gray-300">Natural Gas</span>
+                    <div className="w-3 h-3 rounded-full border-2 border-white" style={{ backgroundColor: '#22c55e' }} />
+                    <span className="text-gray-300">Under Construction</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-green-400 border border-white" />
-                    <span className="text-gray-300">Wind</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-yellow-400 border border-white" />
-                    <span className="text-gray-300">Solar</span>
+                    <div className="w-3 h-3 rounded-full border-2 border-white" style={{ backgroundColor: '#4ade80' }} />
+                    <span className="text-gray-300">Planned</span>
                 </div>
             </div>
 
             <div className="text-gray-400 uppercase tracking-wider mb-2 font-medium text-[10px]">Grid</div>
             <div className="space-y-1.5">
                 <div className="flex items-center gap-2">
-                    <div className="w-6 h-0.5 bg-gradient-to-r from-red-500 via-amber-500 to-blue-500" />
-                    <span className="text-gray-300">230kV+ Lines</span>
+                    <div className="w-6 h-0.5 bg-gradient-to-r from-red-500/60 via-amber-500/60 to-blue-500/60" />
+                    <span className="text-gray-300">230kV+ Lines (by ISO)</span>
                 </div>
             </div>
         </motion.div>

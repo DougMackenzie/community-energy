@@ -72,25 +72,21 @@ export default function ScrollyMap() {
                     </motion.div>
                 )}
 
-                {/* 3D Micro layer - on top, fades out seamlessly when transitioning to map */}
-                <AnimatePresence mode="wait">
+                {/* 3D Micro layer - continuous zoom, single focal point */}
+                <AnimatePresence>
                     {showMicro && (
                         <motion.div
-                            key={`micro-${currentStep.id}`}
+                            key="micro-view"
                             className="absolute inset-0"
-                            initial={{ opacity: 1, scale: 1 }}
+                            initial={{ opacity: 1 }}
                             animate={{
-                                opacity: currentStep.mode === 'infrastructure' ? 0.15 : 1,
-                                scale: currentStep.mode === 'infrastructure' ? 0.92 : 1,
-                                filter: currentStep.mode === 'infrastructure' ? 'blur(2px)' : 'blur(0px)'
+                                opacity: currentStep.mode === 'infrastructure' ? 0 : 1
                             }}
                             exit={{
                                 opacity: 0,
-                                scale: 0.85,
-                                filter: 'blur(4px)',
-                                transition: { duration: 1.5, ease: [0.4, 0, 0.2, 1] }
+                                transition: { duration: 0.8 }
                             }}
-                            transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
+                            transition={{ duration: 0.6 }}
                         >
                             <MicroView3D
                                 visualState={currentStep.visualState || 'chip-glow'}

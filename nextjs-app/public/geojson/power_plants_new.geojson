@@ -2,10 +2,11 @@
   "type": "FeatureCollection",
   "metadata": {
     "description": "New power generation announced/planned to support data center growth (2024-2035)",
-    "sources": ["EIA Form 860M", "FERC filings", "Utility IRPs", "Company announcements"],
-    "lastUpdated": "2025-01",
-    "notes": "Only NEW capacity additions to support 150GW+ data center load by 2035. Includes construction, announced, and anticipated projects.",
-    "totalNewCapacity": "100+ GW"
+    "sources": ["EIA Form 860M", "FERC filings", "Utility IRPs", "Company announcements", "State PUC dockets"],
+    "lastUpdated": "2026-01",
+    "notes": "Only NEW capacity additions to support 150GW+ data center load by 2035. Includes construction, announced, and anticipated projects across all major data center regions.",
+    "totalNewCapacity": "100+ GW",
+    "featureCount": 131
   },
   "features": [
     {"type": "Feature", "properties": {"name": "Three Mile Island Restart", "operator": "Constellation Energy", "type": "nuclear", "capacity": 837, "status": "announced", "year": 2028, "customer": "Microsoft"}, "geometry": {"type": "Point", "coordinates": [-76.7234, 40.1534]}},
@@ -113,6 +114,36 @@
     {"type": "Feature", "properties": {"name": "California Geothermal 2", "operator": "Various", "type": "geothermal", "capacity": 150, "status": "anticipated", "year": 2032, "customer": "CA DCs"}, "geometry": {"type": "Point", "coordinates": [-115.7534, 33.2534]}},
     {"type": "Feature", "properties": {"name": "Columbia River Hydro Expansion", "operator": "BPA", "type": "hydro", "capacity": 225, "status": "announced", "year": 2029, "customer": "PNW DCs"}, "geometry": {"type": "Point", "coordinates": [-121.1323, 45.6534]}},
     {"type": "Feature", "properties": {"name": "TVA Hydro Upgrade 1", "operator": "TVA", "type": "hydro", "capacity": 175, "status": "anticipated", "year": 2030, "customer": "SE DCs"}, "geometry": {"type": "Point", "coordinates": [-85.6234, 35.0534]}},
-    {"type": "Feature", "properties": {"name": "TVA Hydro Upgrade 2", "operator": "TVA", "type": "hydro", "capacity": 150, "status": "anticipated", "year": 2032, "customer": "SE DCs"}, "geometry": {"type": "Point", "coordinates": [-86.1234, 35.2534]}}
+    {"type": "Feature", "properties": {"name": "TVA Hydro Upgrade 2", "operator": "TVA", "type": "hydro", "capacity": 150, "status": "anticipated", "year": 2032, "customer": "SE DCs"}, "geometry": {"type": "Point", "coordinates": [-86.1234, 35.2534]}},
+
+    {"type": "Feature", "properties": {"name": "PPL Pennsylvania CCGT 1", "operator": "PPL", "type": "gas", "capacity": 850, "status": "announced", "year": 2028, "customer": "PA DCs"}, "geometry": {"type": "Point", "coordinates": [-76.3012, 40.0412]}},
+    {"type": "Feature", "properties": {"name": "PPL Pennsylvania CCGT 2", "operator": "PPL", "type": "gas", "capacity": 900, "status": "anticipated", "year": 2030, "customer": "PA DCs"}, "geometry": {"type": "Point", "coordinates": [-77.0534, 40.2823]}},
+    {"type": "Feature", "properties": {"name": "Homer City Energy Conversion", "operator": "Various", "type": "gas", "capacity": 1200, "status": "announced", "year": 2029, "customer": "PA DCs"}, "geometry": {"type": "Point", "coordinates": [-79.1834, 40.5234]}},
+    {"type": "Feature", "properties": {"name": "Pennsylvania Nuclear SMR 1", "operator": "Various", "type": "nuclear", "capacity": 450, "status": "anticipated", "year": 2033, "customer": "PJM East DCs"}, "geometry": {"type": "Point", "coordinates": [-76.8234, 40.1534]}},
+
+    {"type": "Feature", "properties": {"name": "Duke NC CCGT 1", "operator": "Duke Energy", "type": "gas", "capacity": 900, "status": "construction", "year": 2027, "customer": "NC DCs"}, "geometry": {"type": "Point", "coordinates": [-81.1234, 35.5823]}},
+    {"type": "Feature", "properties": {"name": "Duke NC CCGT 2", "operator": "Duke Energy", "type": "gas", "capacity": 950, "status": "announced", "year": 2029, "customer": "NC DCs"}, "geometry": {"type": "Point", "coordinates": [-80.5234, 35.3534]}},
+    {"type": "Feature", "properties": {"name": "Duke NC CCGT 3", "operator": "Duke Energy", "type": "gas", "capacity": 1000, "status": "anticipated", "year": 2031, "customer": "NC DCs"}, "geometry": {"type": "Point", "coordinates": [-79.8012, 35.8234]}},
+
+    {"type": "Feature", "properties": {"name": "Michigan Nuclear SMR 1", "operator": "DTE", "type": "nuclear", "capacity": 500, "status": "announced", "year": 2031, "customer": "MI DCs"}, "geometry": {"type": "Point", "coordinates": [-83.5234, 42.3234]}},
+    {"type": "Feature", "properties": {"name": "DTE Michigan CCGT 1", "operator": "DTE", "type": "gas", "capacity": 800, "status": "announced", "year": 2028, "customer": "MI DCs"}, "geometry": {"type": "Point", "coordinates": [-83.7534, 42.1823]}},
+    {"type": "Feature", "properties": {"name": "DTE Michigan CCGT 2", "operator": "DTE", "type": "gas", "capacity": 900, "status": "anticipated", "year": 2030, "customer": "MI DCs"}, "geometry": {"type": "Point", "coordinates": [-83.4234, 42.4534]}},
+    {"type": "Feature", "properties": {"name": "Consumers Energy CCGT 1", "operator": "Consumers", "type": "gas", "capacity": 750, "status": "anticipated", "year": 2029, "customer": "MI DCs"}, "geometry": {"type": "Point", "coordinates": [-85.6234, 42.9534]}},
+    {"type": "Feature", "properties": {"name": "Michigan Wind Farm 1", "operator": "DTE", "type": "wind", "capacity": 400, "status": "announced", "year": 2028, "customer": "MI DCs"}, "geometry": {"type": "Point", "coordinates": [-84.2534, 43.5234]}},
+    {"type": "Feature", "properties": {"name": "Michigan Wind Farm 2", "operator": "Consumers", "type": "wind", "capacity": 450, "status": "anticipated", "year": 2030, "customer": "MI DCs"}, "geometry": {"type": "Point", "coordinates": [-84.8534, 43.8234]}},
+
+    {"type": "Feature", "properties": {"name": "Entergy Arkansas CCGT 1", "operator": "Entergy", "type": "gas", "capacity": 650, "status": "announced", "year": 2028, "customer": "AR DCs"}, "geometry": {"type": "Point", "coordinates": [-92.2534, 34.8234]}},
+    {"type": "Feature", "properties": {"name": "Entergy Arkansas CCGT 2", "operator": "Entergy", "type": "gas", "capacity": 700, "status": "anticipated", "year": 2030, "customer": "AR DCs"}, "geometry": {"type": "Point", "coordinates": [-90.2534, 35.1234]}},
+    {"type": "Feature", "properties": {"name": "Arkansas Solar Farm 1", "operator": "Entergy", "type": "solar", "capacity": 400, "status": "announced", "year": 2028, "customer": "AR DCs"}, "geometry": {"type": "Point", "coordinates": [-92.4534, 34.6234]}},
+
+    {"type": "Feature", "properties": {"name": "Entergy Mississippi CCGT 1", "operator": "Entergy", "type": "gas", "capacity": 700, "status": "announced", "year": 2028, "customer": "MS DCs"}, "geometry": {"type": "Point", "coordinates": [-90.1234, 32.3534]}},
+    {"type": "Feature", "properties": {"name": "Entergy Mississippi CCGT 2", "operator": "Entergy", "type": "gas", "capacity": 750, "status": "anticipated", "year": 2030, "customer": "MS DCs"}, "geometry": {"type": "Point", "coordinates": [-89.5234, 33.4234]}},
+
+    {"type": "Feature", "properties": {"name": "Alabama Power CCGT 1", "operator": "Alabama Power", "type": "gas", "capacity": 600, "status": "anticipated", "year": 2029, "customer": "AL DCs"}, "geometry": {"type": "Point", "coordinates": [-86.7234, 34.7234]}},
+    {"type": "Feature", "properties": {"name": "Alabama Power CCGT 2", "operator": "Alabama Power", "type": "gas", "capacity": 650, "status": "anticipated", "year": 2031, "customer": "AL DCs"}, "geometry": {"type": "Point", "coordinates": [-86.4534, 33.5234]}},
+
+    {"type": "Feature", "properties": {"name": "Wyoming Wind Farm 1", "operator": "PacifiCorp", "type": "wind", "capacity": 500, "status": "construction", "year": 2027, "customer": "WY DCs"}, "geometry": {"type": "Point", "coordinates": [-105.2534, 41.3234]}},
+    {"type": "Feature", "properties": {"name": "Wyoming Wind Farm 2", "operator": "PacifiCorp", "type": "wind", "capacity": 600, "status": "anticipated", "year": 2029, "customer": "WY DCs"}, "geometry": {"type": "Point", "coordinates": [-104.9534, 41.0534]}},
+    {"type": "Feature", "properties": {"name": "Wyoming Wind Farm 3", "operator": "Various", "type": "wind", "capacity": 650, "status": "anticipated", "year": 2031, "customer": "WY DCs"}, "geometry": {"type": "Point", "coordinates": [-105.5534, 42.8534]}}
   ]
 }
