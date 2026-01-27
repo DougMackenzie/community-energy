@@ -372,7 +372,7 @@ export default function HomePage() {
                     <span className="text-sm font-bold text-amber-300">2</span>
                   </div>
                   <div>
-                    <span className="text-sm text-white font-medium">Mandatory flexibility and curtailment</span>
+                    <span className="text-sm text-white font-medium">Incentivized flexibility and curtailment</span>
                     <p className="text-xs text-slate-400 mt-1">Texas SB6 requires large loads to curtail during grid emergencies and reevaluates transmission cost allocation</p>
                   </div>
                 </div>
