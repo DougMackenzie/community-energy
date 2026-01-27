@@ -54,6 +54,8 @@ export interface DataCenter {
     generationCostPerMWh: number;
     demandChargeRate: number;
     energyMargin: number;
+    // Capital cost of onsite generation (for reference/transparency, not used in ratepayer calcs)
+    generationCapitalCostPerMW?: number;
 }
 
 export interface Scenario {
@@ -181,6 +183,14 @@ export const DEFAULT_DATA_CENTER: DataCenter = {
     generationCostPerMWh: 85,
     demandChargeRate: 9050,
     energyMargin: 4.88,
+    // Capital cost for onsite generation - NOT used in ratepayer bill calculations
+    // (DC pays this, not ratepayers) but included for transparency.
+    // Modern data centers often install onsite generation that provides:
+    // - Peak shaving / demand charge reduction
+    // - Backup power / islanding capability
+    // - Baseload operation with sufficient redundancy
+    // Cost range: $600-1,200k/MW for gas peakers/reciprocating engines
+    generationCapitalCostPerMW: 800000,
 };
 
 export const DC_CAPACITY_RANGE = {

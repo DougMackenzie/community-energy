@@ -484,7 +484,33 @@ const calculateNetResidentialImpact = (
         transmissionCost = Math.max(0, effectivePeakMW) * INFRASTRUCTURE_COSTS.transmissionCostPerMW;
     }
 
-    const distributionCost = Math.max(0, effectivePeakMW) * INFRASTRUCTURE_COSTS.distributionCostPerMW;
+    // ============================================
+    // DISTRIBUTION COSTS - Connection voltage matters
+    // ============================================
+    // Large data centers (typically >10-20 MW) connect at transmission voltage (69kV+)
+    // and build their own substations. They do NOT use the utility's distribution grid.
+    // Charging full distribution costs creates a "phantom cost" that inflates the model.
+    //
+    // - Large DCs (>20 MW): Transmission-level service, minimal distribution cost
+    //   (only interconnection fees, metering, some local upgrades)
+    // - Medium DCs (10-20 MW): May use subtransmission, partial distribution costs
+    // - Small DCs (<10 MW): May use distribution system, full costs apply
+    const LARGE_DC_THRESHOLD_MW = 20;
+    const MEDIUM_DC_THRESHOLD_MW = 10;
+
+    let distributionCostMultiplier: number;
+    if (dcCapacityMW >= LARGE_DC_THRESHOLD_MW) {
+        // Transmission-level connection: only ~10% for interconnection facilities
+        distributionCostMultiplier = 0.10;
+    } else if (dcCapacityMW >= MEDIUM_DC_THRESHOLD_MW) {
+        // Subtransmission: ~40% of distribution costs
+        distributionCostMultiplier = 0.40;
+    } else {
+        // Distribution-level connection: full costs
+        distributionCostMultiplier = 1.0;
+    }
+
+    const distributionCost = Math.max(0, effectivePeakMW) * INFRASTRUCTURE_COSTS.distributionCostPerMW * distributionCostMultiplier;
 
     // Annualize infrastructure costs (20-year recovery period)
     const annualizedTransmissionCost = utility?.marketType === 'ercot'
@@ -644,11 +670,26 @@ const calculateNetResidentialImpact = (
     // ============================================
     let adjustedAllocation = residentialAllocation;
 
+    // ERCOT 4CP Cost Causation Adjustment
+    // ------------------------------------
+    // In ERCOT, transmission costs are allocated via 4CP (Four Coincident Peak) methodology:
+    // - Each customer's transmission cost share = their load during 4 specific peak hours/year
+    // - If a DC curtails during those 4 hours, they pay dramatically less transmission
+    //
+    // KEY INSIGHT: This is about COST CAUSATION, not just cost allocation:
+    // - A flexible DC that avoids 4CP peaks is NOT driving transmission investment
+    // - The utility's transmission revenue requirement doesn't change, BUT
+    // - The DC is correctly paying less because they're not causing the peak-driven costs
+    // - This model reduces residential allocation because the DC's NET IMPACT on the system
+    //   is lower when they don't contribute to peaks that drive transmission buildout
+    //
+    // Note: If viewed purely as cost ALLOCATION (fixed pie), residential share would
+    // technically increase when DC pays less. But our model calculates NET IMPACT
+    // (costs caused minus revenue contributed), so reduced cost causation = reduced impact.
+    const ERCOT_4CP_COST_CAUSATION_FACTOR = 0.70;
+
     if (utility?.marketType === 'ercot') {
-        // ERCOT: Large loads face 4CP transmission costs directly
-        // This significantly reduces cost spillover to residential
-        // The 4CP methodology means DC pays for their own transmission needs
-        adjustedAllocation = residentialAllocation * 0.70; // Larger reduction than before
+        adjustedAllocation = residentialAllocation * ERCOT_4CP_COST_CAUSATION_FACTOR;
     }
     // Note: For capacity markets, we no longer adjust allocation here because
     // socializedCapacityCost is added explicitly below. This avoids double-counting.
@@ -945,6 +986,27 @@ export const calculateFlexibleTrajectory = (
     return trajectory;
 };
 
+/**
+ * Calculate trajectory for "Optimized" data center scenario with onsite generation
+ *
+ * IMPORTANT NOTE ON ONSITE GENERATION COSTS:
+ * This model calculates the impact on RATEPAYER bills, not DC economics.
+ * The onsite generation reduces peak grid draw (benefiting ratepayers by avoiding
+ * infrastructure costs), but the DC bears the capital cost of that generation.
+ *
+ * We assume the DC finds onsite generation economic because modern data centers
+ * often install generation that provides multiple value streams:
+ * - Peak shaving / demand charge avoidance (often $100-200k/MW-year in savings)
+ * - Backup power / islanding capability (required for Tier III/IV reliability)
+ * - Baseload operation with N+1 or N+2 redundancy
+ * - Grid services revenue (frequency response, capacity markets)
+ *
+ * Typical costs: $600-1,200k/MW capital for gas peakers/reciprocating engines
+ * (see DEFAULT_DATA_CENTER.generationCapitalCostPerMW in constants.ts)
+ *
+ * The ratepayer benefit shown here is real - the DC is paying to avoid grid costs
+ * that would otherwise be socialized. This is the "win-win" of optimized design.
+ */
 export const calculateDispatchableTrajectory = (
     utility: Utility = DEFAULT_UTILITY,
     dataCenter: DataCenter = DEFAULT_DATA_CENTER,
