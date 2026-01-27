@@ -109,12 +109,12 @@ export const steps: StoryStep[] = [
         mode: 'micro',
         visualState: 'campus-grid',
         title: "A Hyperscale Campus",
-        text: "Four data center buildings share a central 345kV substation, battery storage, and transmission corridor. At 600 MW total capacity, this campus rivals a small nuclear plant in power consumption.",
+        text: "Numerous data center buildings share a central substation, with power distribution routing electricity from the substation to each building. Campuses range from 300 MW to over 1 GW, rivaling small nuclear plants in total power consumption.",
         subtext: "Building a campus this size requires 3-5 years of planning, $2-4 billion in capital, and coordination with regional transmission operators.",
         powerMetric: {
-            value: "600",
+            value: "300–1,000+",
             unit: "MW",
-            comparison: "≈ small nuclear plant"
+            comparison: "≈ large power plant"
         }
     },
 
@@ -126,7 +126,7 @@ export const steps: StoryStep[] = [
         // Start zoomed in very tight on Ashburn data center campus for seamless 3D-to-map transition
         location: { lng: -77.4875, lat: 39.0437, zoom: 16, pitch: 55, bearing: -30 },
         title: "The Grid Connection",
-        text: "These massive campuses connect directly to high-voltage transmission lines. The transition from 3D model to satellite view shows real data center locations in Northern Virginia—the world's largest data center market.",
+        text: "These massive campuses connect directly to high-voltage transmission lines. The transition from 3D model to satellite view shows representative data center locations in Northern Virginia—the world's largest data center market.",
         powerMetric: {
             value: "600",
             unit: "MW",
@@ -141,9 +141,9 @@ export const steps: StoryStep[] = [
         mode: 'map',
         // Pull back to see the NOVA cluster, slight bearing shift for sweep feel
         location: { lng: -77.46, lat: 39.03, zoom: 10, pitch: 50, bearing: -20 },
-        title: "Northern Virginia: Data Center Alley",
-        text: "The world's largest data center market. With 5.6 GW of capacity, Northern Virginia hosts more computing power than most countries. This cluster alone consumes 25% of Virginia's electricity—more than all residential customers combined.",
-        subtext: "70% of global internet traffic flows through Loudoun County. Dominion Energy projects data center demand reaching 9 GW by 2035.",
+        title: "Northern Virginia",
+        text: "The world's largest data center market. With 5.6 GW of capacity today, Northern Virginia hosts more computing power than most countries. This cluster alone consumes 25% of Virginia's electricity—more than all residential customers combined.",
+        subtext: "70% of global internet traffic flows through Loudoun County. Dominion Energy projects data center demand in its service territory exceeding 9 GW by 2030.",
         powerMetric: {
             value: "5.6",
             unit: "GW",
@@ -161,7 +161,7 @@ export const steps: StoryStep[] = [
         mode: 'map',
         // Pan northwest to Ohio - bearing continues sweep
         location: { lng: -82.99, lat: 40.10, zoom: 8, pitch: 45, bearing: 10 },
-        title: "Ohio: The Emerging Frontier",
+        title: "Ohio",
         text: "Central Ohio is experiencing rapid data center growth as Virginia reaches capacity constraints. AEP Ohio has seen interconnection requests surge, with several gigawatts in the pipeline. Without careful planning, infrastructure costs flow to residential ratepayers.",
         region: {
             name: 'PJM Interconnection',
@@ -175,7 +175,7 @@ export const steps: StoryStep[] = [
         mode: 'map',
         // Pan southwest to Oklahoma - continuous westward motion
         location: { lng: -96.50, lat: 35.50, zoom: 7, pitch: 40, bearing: 25 },
-        title: "Oklahoma: Regulated Market Structure",
+        title: "Oklahoma",
         text: "In traditionally regulated markets like Oklahoma (PSO, SPP region), utilities and regulators can design tariff structures that assign infrastructure costs to the customers who cause them. This 'cost causation' principle protects existing ratepayers.",
         subtext: "Regulated utilities use integrated resource planning (IRP) to forecast and allocate costs over 15-20 year horizons.",
         region: {
@@ -190,7 +190,7 @@ export const steps: StoryStep[] = [
         mode: 'map',
         // Pan south to Texas - bearing rotates to face south
         location: { lng: -97.50, lat: 31.50, zoom: 6, pitch: 35, bearing: 15 },
-        title: "Texas: The ERCOT Model",
+        title: "Texas",
         text: "ERCOT's deregulated market uses '4CP' transmission charges that allocate costs based on usage during the four annual coincident peaks. Data centers that reduce load during these critical hours pay significantly less—creating strong incentives for flexibility.",
         subtext: "Flexible data centers acting as 'virtual power plants' can reduce their peak contribution by 25%, lowering both their own costs and grid stress.",
         region: {

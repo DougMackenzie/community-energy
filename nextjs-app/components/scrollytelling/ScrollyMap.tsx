@@ -121,6 +121,11 @@ export default function ScrollyMap() {
 
             {/* Scrolling narrative cards */}
             <div className="relative z-10 lg:w-[40%] pointer-events-none">
+                {/* Top disclaimer */}
+                <div className="min-h-[10vh] flex items-end justify-center pb-4">
+                    <DisclaimerBanner />
+                </div>
+
                 <Scrollama onStepEnter={onStepEnter} offset={0.5}>
                     {steps.map((step, index) => (
                         <Step key={step.id} data={index}>
@@ -135,6 +140,11 @@ export default function ScrollyMap() {
                         </Step>
                     ))}
                 </Scrollama>
+
+                {/* Bottom disclaimer */}
+                <div className="flex items-center justify-center py-8">
+                    <DisclaimerBanner />
+                </div>
 
                 {/* Call to action at the end */}
                 <div className="min-h-[50vh] flex items-center justify-center px-4 lg:px-8">
@@ -375,6 +385,32 @@ function ScrollHint({ currentIndex }: { currentIndex: number }) {
                 </motion.svg>
             </div>
         </motion.div>
+    );
+}
+
+/**
+ * Disclaimer Banner - Representative data caveat
+ */
+function DisclaimerBanner() {
+    return (
+        <div
+            className="w-full max-w-md mx-auto pointer-events-auto px-4 lg:px-0"
+        >
+            <div
+                className="backdrop-blur-sm rounded-lg px-4 py-3 border flex items-start gap-2"
+                style={{
+                    backgroundColor: `${NYT_COLORS.bgDeep}cc`,
+                    borderColor: NYT_COLORS.border,
+                }}
+            >
+                <svg className="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: NYT_COLORS.textMuted }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-xs italic leading-relaxed" style={{ color: NYT_COLORS.textMuted }}>
+                    Project locations shown are representative of the scale and type of development occurring across the U.S. They do not depict actual site locations or non-public project information.
+                </p>
+            </div>
+        </div>
     );
 }
 

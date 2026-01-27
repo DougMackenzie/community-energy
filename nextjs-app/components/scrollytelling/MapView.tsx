@@ -589,23 +589,19 @@ function MapLegend({ stepId }: { stepId: string }) {
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-transparent" style={{ border: `2px solid ${dcStatusColors.anticipated}`, opacity: 0.7 }} />
-                    <span style={{ color: '#a8a29e' }}>Anticipated (2030-35)</span>
+                    <span style={{ color: '#a8a29e' }}>Representative Growth</span>
                 </div>
             </div>
 
-            <div className="uppercase tracking-wider mb-2 font-medium text-[10px]" style={{ color: '#a8a29e' }}>Power Plants</div>
+            <div className="uppercase tracking-wider mb-2 font-medium text-[10px]" style={{ color: '#a8a29e' }}>New Power Plants</div>
             <div className="space-y-1.5 mb-3">
-                <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ppStatusColors.operational, border: '1.5px solid #f0ebe3' }} />
-                    <span style={{ color: '#f0ebe3' }}>Operational</span>
-                </div>
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ppStatusColors.construction, border: '1.5px solid #f0ebe3' }} />
                     <span style={{ color: '#f0ebe3' }}>Under Construction</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full" style={{ backgroundColor: ppStatusColors.planned, border: '1.5px solid #f0ebe3' }} />
-                    <span style={{ color: '#f0ebe3' }}>Planned</span>
+                    <span style={{ color: '#f0ebe3' }}>Representative Growth</span>
                 </div>
             </div>
 
