@@ -205,12 +205,12 @@ export const steps: StoryStep[] = [
         mode: 'map',
         // Pull way back to see full US - level view
         location: { lng: -96.00, lat: 38.50, zoom: 4, pitch: 0, bearing: 0 },
-        title: "The National Picture: 100–150 GW by 2035",
-        text: "U.S. data centers consumed 176 TWh in 2023—about 4.4% of national electricity. By 2030, data centers are projected to add 50–65 GW of new demand. By 2035, total capacity could reach 100–150 GW depending on AI adoption rates. How we structure rates and incentivize flexibility today determines whether this growth benefits or burdens residential ratepayers.",
+        title: "The National Picture: 100–150 GW of New Capacity by 2035",
+        text: "U.S. data centers consumed 176 TWh in 2023—about 4.4% of national electricity. By 2030, data centers are projected to add 50–65 GW of new demand. By 2035, total net new capacity for data centers could reach 100–150 GW depending on AI adoption rates. Uncertainty increases beyond 2030—growth could either accelerate or decelerate based on industry trends, policy decisions, and technology evolution. How we structure rates and incentivize flexibility today determines whether this growth benefits or burdens residential ratepayers.",
         subtext: "Meeting this demand will require a mix of nuclear restarts and SMRs, new gas plants, and massive renewable buildout. Flexible data center operation could defer $50+ billion in grid upgrades while enabling faster deployment. Sources: LBNL, DOE, EPRI, BloombergNEF, Grid Strategies.",
         powerMetric: {
             value: "100–150",
-            unit: "GW by 2035",
+            unit: "GW new capacity by 2035",
             comparison: "4–6x growth from 2024"
         },
         region: {
