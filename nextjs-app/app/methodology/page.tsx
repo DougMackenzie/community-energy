@@ -419,16 +419,16 @@ export default function MethodologyPage() {
 {`Price ($/MW-day)
     ^
     |
-$1,120 |                                              * Emergency
-    |                                           *
- $700 |                                      *    Severe Scarcity
-    |                                 *
- $420 |                           *          Scarcity
-    |                     *
- $280 |----------------*--------------------- Target (CONE)
+$1,120 | *  Emergency
+    |   *
+ $700 |      *                                Severe Scarcity
     |           *
-  $28 |     *                                 Abundant
-  $14 | *
+ $420 |                *                      Scarcity
+    |                     *
+ $280 |---------------------*---------------- Target (CONE)
+    |                           *
+  $28 |                                *      Abundant
+  $14 |                                    *
     +-----|-----|-----|-----|-----|-----|---> Reserve Margin
           0%    5%   10%   15%   20%   25%
                      ^
