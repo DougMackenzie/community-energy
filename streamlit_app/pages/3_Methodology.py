@@ -551,7 +551,7 @@ Where Market Multiplier:
         - Help translate to make accessible to more communities
         """)
 
-        st.code("github.com/DougMackenzie/community-energy")
+        st.code("github.com/DougMackenzie/power-insight")
         st.caption("Licensed under MIT License")
 
     st.divider()

@@ -484,7 +484,7 @@ export default function HomePage() {
             decisions.
           </p>
           <a
-            href="https://github.com/DougMackenzie/community-energy"
+            href="https://github.com/DougMackenzie/power-insight"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-3 px-6 py-3 bg-slate-800 text-white rounded-full hover:bg-slate-700 transition-all duration-200 hover:scale-105"

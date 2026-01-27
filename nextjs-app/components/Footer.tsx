@@ -40,7 +40,7 @@ const Footer = () => {
                         </p>
                         <div className="flex gap-4">
                             <a
-                                href="https://github.com/DougMackenzie/community-energy"
+                                href="https://github.com/DougMackenzie/power-insight"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-600 hover:text-primary-600 transition-colors"
@@ -102,7 +102,7 @@ const Footer = () => {
                         <ul className="space-y-3">
                             <li>
                                 <a
-                                    href="https://github.com/DougMackenzie/community-energy"
+                                    href="https://github.com/DougMackenzie/power-insight"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-gray-600 hover:text-primary-600 transition-colors"
@@ -112,7 +112,7 @@ const Footer = () => {
                             </li>
                             <li>
                                 <a
-                                    href="https://github.com/DougMackenzie/community-energy/issues"
+                                    href="https://github.com/DougMackenzie/power-insight/issues"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-gray-600 hover:text-primary-600 transition-colors"
@@ -122,7 +122,7 @@ const Footer = () => {
                             </li>
                             <li>
                                 <a
-                                    href="https://github.com/DougMackenzie/community-energy/blob/main/LICENSE"
+                                    href="https://github.com/DougMackenzie/power-insight/blob/main/LICENSE"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-gray-600 hover:text-primary-600 transition-colors"

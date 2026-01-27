@@ -323,7 +323,7 @@ def main():
     with col2:
         st.link_button(
             "⭐ View on GitHub",
-            "https://github.com/DougMackenzie/community-energy",
+            "https://github.com/DougMackenzie/power-insight",
             use_container_width=True
         )
 
@@ -332,7 +332,7 @@ def main():
     st.markdown("""
     <div style="text-align: center; color: #9ca3af; font-size: 0.8rem;">
         Community Energy Calculator | MIT License |
-        <a href="https://github.com/DougMackenzie/community-energy" style="color: #6b7280;">GitHub</a>
+        <a href="https://github.com/DougMackenzie/power-insight" style="color: #6b7280;">GitHub</a>
     </div>
     """, unsafe_allow_html=True)
 

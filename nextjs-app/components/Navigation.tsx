@@ -72,7 +72,7 @@ const Navigation = () => {
                             </Link>
                         ))}
                         <a
-                            href="https://github.com/DougMackenzie/community-energy"
+                            href="https://github.com/DougMackenzie/power-insight"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors duration-200"
@@ -137,7 +137,7 @@ const Navigation = () => {
                                 </Link>
                             ))}
                             <a
-                                href="https://github.com/DougMackenzie/community-energy"
+                                href="https://github.com/DougMackenzie/power-insight"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors w-fit"

@@ -1468,7 +1468,7 @@ $1,120 |                                              * Emergency
 
                         <div className="mt-6 p-4 bg-gray-100 rounded-lg">
                             <p className="font-mono text-sm text-gray-700">
-                                github.com/DougMackenzie/community-energy
+                                github.com/DougMackenzie/power-insight
                             </p>
                             <p className="text-xs text-gray-500 mt-1">
                                 Licensed under MIT License

@@ -111,7 +111,7 @@ export default function StoryPage() {
                             Learn More
                         </a>
                         <a
-                            href="https://github.com/DougMackenzie/community-energy"
+                            href="https://github.com/DougMackenzie/power-insight"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-gray-400 hover:text-white text-sm transition-colors"
