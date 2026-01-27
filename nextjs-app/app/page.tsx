@@ -354,52 +354,70 @@ export default function HomePage() {
           </h2>
 
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            {/* Key Messages */}
+            {/* What's Driving Better Outcomes */}
             <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-8 border border-white/20">
-              <h3 className="text-xl font-bold text-amber-300 mb-5">Key Messages</h3>
+              <h3 className="text-xl font-bold text-amber-300 mb-5">What's Driving Better Outcomes</h3>
               <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
+                <div className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-sm font-bold text-amber-300">1</span>
                   </div>
-                  <span className="text-sm text-slate-200">Peak demand drives infrastructure costs</span>
+                  <div>
+                    <span className="text-sm text-white font-medium">Separate rate classes for large loads</span>
+                    <p className="text-xs text-slate-400 mt-1">Virginia's new GS-5 rate class requires data centers to pay minimum demand charges of 85% for transmission and distribution</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
+                <div className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-sm font-bold text-amber-300">2</span>
                   </div>
-                  <span className="text-sm text-slate-200">Flexibility can cut impact dramatically</span>
+                  <div>
+                    <span className="text-sm text-white font-medium">Mandatory flexibility and curtailment</span>
+                    <p className="text-xs text-slate-400 mt-1">Texas SB6 requires large loads to curtail during grid emergencies and reevaluates transmission cost allocation</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
+                <div className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-sm font-bold text-amber-300">3</span>
                   </div>
-                  <span className="text-sm text-slate-200">Your voice at the Public Utility Commission (PUC) shapes outcomes</span>
+                  <div>
+                    <span className="text-sm text-white font-medium">Public pressure and regulatory oversight</span>
+                    <p className="text-xs text-slate-400 mt-1">60+ bills in 22 states focused on ratepayer protection; voter concerns are reshaping utility elections</p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Take Action */}
+            {/* How You Can Take Action */}
             <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-8 border border-white/20">
-              <h3 className="text-xl font-bold text-green-400 mb-5">Take Action</h3>
+              <h3 className="text-xl font-bold text-green-400 mb-5">How You Can Take Action</h3>
               <div className="space-y-4">
-                <div className="flex items-center gap-4">
-                  <svg className="w-6 h-6 text-green-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <div className="flex items-start gap-4">
+                  <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M9 12l2 2 4-4" />
                   </svg>
-                  <span className="text-sm text-slate-200">Attend utility commission hearings</span>
+                  <div>
+                    <span className="text-sm text-white font-medium">Comment on utility rate cases</span>
+                    <p className="text-xs text-slate-400 mt-1">Advocate for large loads to pay their fair share of infrastructure costs they create</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <svg className="w-6 h-6 text-green-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <div className="flex items-start gap-4">
+                  <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M9 12l2 2 4-4" />
                   </svg>
-                  <span className="text-sm text-slate-200">Ask about flexibility requirements</span>
+                  <div>
+                    <span className="text-sm text-white font-medium">Support state ratepayer protection bills</span>
+                    <p className="text-xs text-slate-400 mt-1">Contact your state legislators about data center cost allocation legislation</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <svg className="w-6 h-6 text-green-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <div className="flex items-start gap-4">
+                  <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                     <path d="M9 12l2 2 4-4" />
                   </svg>
-                  <span className="text-sm text-slate-200">Demand transparent cost allocation</span>
+                  <div>
+                    <span className="text-sm text-white font-medium">Ask about flexibility requirements</span>
+                    <p className="text-xs text-slate-400 mt-1">Advocate for incentive structures that promote load flexibility during grid stress events</p>
+                  </div>
                 </div>
               </div>
             </div>

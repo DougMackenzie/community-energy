@@ -495,12 +495,12 @@ export default function LearnMorePage() {
                         </div>
 
                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                            <h4 className="font-semibold text-blue-900 mb-2">The 3-Year Auction Lag</h4>
+                            <h4 className="font-semibold text-blue-900 mb-2">Capacity Costs Apply Quickly</h4>
                             <p className="text-sm text-gray-700">
-                                Capacity auctions clear about <strong>3 years before delivery</strong>. This means when a data center
-                                connects today, its impact on capacity prices won't hit ratepayer bills for roughly 3 years.
-                                Our calculator models this lag—infrastructure costs hit immediately, but socialized capacity costs
-                                are delayed.
+                                While capacity auctions historically cleared 3 years ahead, recent PJM schedule changes have compressed
+                                this timeline significantly. The 2025/26 auction cleared just 11 months ahead, and data center load growth
+                                is already reflected in current elevated capacity prices. Our calculator models both infrastructure costs
+                                and capacity costs applying when data centers connect, since the market has already priced in current demand.
                             </p>
                         </div>
 

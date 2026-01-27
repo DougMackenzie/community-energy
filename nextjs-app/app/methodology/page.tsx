@@ -241,9 +241,9 @@ export default function MethodologyPage() {
                                 and this price increase is paid by <em>all</em> existing customers on their existing load.
                             </p>
                             <p className="text-sm text-gray-600 mt-2">
-                                This cost is calculated using <strong>endogenous capacity pricing</strong> (see dedicated section below)
-                                and applies with a <strong>3-year auction lag</strong> to reflect the time between capacity auction clearing
-                                and delivery year. Direct infrastructure costs apply immediately.
+                                This cost is calculated using <strong>endogenous capacity pricing</strong> (see dedicated section below).
+                                Due to recent auction timeline compression (auctions now clear 11-18 months ahead rather than 3 years),
+                                capacity costs apply immediately when data centers connect—current prices already reflect demand growth.
                             </p>
                         </div>
 
@@ -627,14 +627,14 @@ $1,120 |                                              * Emergency
                             </ul>
                             <p className="text-sm text-amber-800 mt-3">
                                 Because data center load growth was already factored into these recent auctions, capacity costs
-                                are already elevated and flowing through to customer bills. Our model uses a <strong>1-year lag</strong> to
-                                reflect the time for retail rates to be updated, rather than the traditional 3-year forward assumption.
+                                are already elevated and flowing through to customer bills. Our model applies capacity costs <strong>immediately</strong> when
+                                data centers connect, rather than using a forward auction lag, since current prices already reflect demand growth.
                             </p>
                         </div>
 
                         <div className="grid md:grid-cols-2 gap-4">
                             <div className="border border-amber-200 rounded-lg p-4 bg-amber-50">
-                                <h4 className="font-semibold text-amber-900 mb-2">Direct Costs (Immediate)</h4>
+                                <h4 className="font-semibold text-amber-900 mb-2">Direct Infrastructure Costs</h4>
                                 <ul className="text-sm text-gray-700 space-y-1">
                                     <li>- Transmission infrastructure upgrades</li>
                                     <li>- Distribution system investments</li>
@@ -645,14 +645,14 @@ $1,120 |                                              * Emergency
                                 </p>
                             </div>
                             <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
-                                <h4 className="font-semibold text-slate-900 mb-2">Capacity Costs (1-Year Lag)</h4>
+                                <h4 className="font-semibold text-slate-900 mb-2">Capacity Costs (Immediate)</h4>
                                 <ul className="text-sm text-gray-700 space-y-1">
                                     <li>- Capacity auction price impacts</li>
                                     <li>- Applied to all existing load</li>
-                                    <li>- Flows through retail rate updates</li>
+                                    <li>- Already reflected in current prices</li>
                                 </ul>
                                 <p className="text-xs text-slate-700 mt-2 font-medium">
-                                    Apply ~1 year after connection
+                                    Apply when data center connects
                                 </p>
                             </div>
                         </div>
@@ -661,12 +661,17 @@ $1,120 |                                              * Emergency
                             <p className="text-sm font-semibold text-gray-900 mb-2">Model Implementation</p>
                             <div className="mt-3 font-mono text-xs bg-white p-3 rounded overflow-x-auto">
                                 <p className="text-gray-500">// In trajectory calculations:</p>
-                                <p>const marketLag = utility.hasCapacityMarket ? 1 : 0;</p>
-                                <p className="mt-2">// Direct costs apply immediately</p>
-                                <p>if (yearsOnline &gt;= 0) applyDirectCosts();</p>
-                                <p className="mt-2">// Capacity cost spillovers apply after lag</p>
-                                <p>if (yearsOnline &gt;= marketLag) applyCapacityCosts();</p>
+                                <p>const marketLag = 0; // Capacity costs apply immediately</p>
+                                <p className="mt-2">// Both direct and capacity costs apply when DC connects</p>
+                                <p>if (yearsOnline &gt;= 0) {`{`}</p>
+                                <p className="pl-4">applyDirectCosts();</p>
+                                <p className="pl-4">applyCapacityCosts();</p>
+                                <p>{`}`}</p>
                             </div>
+                            <p className="text-xs text-gray-500 mt-2">
+                                Note: We previously modeled a lag for capacity costs, but recent auction timing changes mean
+                                current prices already reflect data center demand growth.
+                            </p>
                         </div>
                     </div>
                 </Section>
@@ -771,13 +776,21 @@ $1,120 |                                              * Emergency
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
-                                        <td className="py-2">Distribution cost per MW</td>
+                                        <td className="py-2">Distribution cost per MW (base)</td>
                                         <td className="text-right font-medium">{formatCurrency(INFRASTRUCTURE_COSTS.distributionCostPerMW)}/MW</td>
                                         <td className="pl-4 text-xs">
                                             <a href="https://docs.nrel.gov/docs/fy18osti/70710.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                                                 NREL: The Cost of Distribution System Upgrades (2018)
                                             </a>
                                             <span className="block text-gray-400">Substation + feeder costs; <span className="px-1 bg-amber-100 text-amber-800 rounded">$150k inferred from study ranges</span></span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Distribution cost multiplier</td>
+                                        <td className="text-right font-medium">10-100%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium">Model Assumption</span>
+                                            <span className="block text-gray-400 mt-1">Large DCs (&gt;20 MW) connect at transmission voltage: 10%. Medium (10-20 MW): 40%. Small (&lt;10 MW): 100%</span>
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
