@@ -52,8 +52,7 @@ const cameraConfig: Record<string, {
         gpuScale: DETAIL_GPU_SCALE
     },
     'rack-zoom': { position: [3, 2.0, 3], target: [0, 1.0, 0], zoom: 100, gpuScale: RACK_GPU_PACKAGE_SIZE },
-    // Pod view: adjusted for tighter 2×4 SuperPOD layout (8 racks, ~8m × 6m footprint)
-    'pod-zoom': { position: [12, 8, 12], target: [0, 1.0, 0], zoom: 38, gpuScale: RACK_GPU_PACKAGE_SIZE },
+    'pod-zoom': { position: [18, 10.8, 18], target: [0, 1.0, 0], zoom: 28, gpuScale: RACK_GPU_PACKAGE_SIZE },
     'building-iso': { position: [80, 48, 80], target: [0, 1.0, 0], zoom: 5, gpuScale: RACK_GPU_PACKAGE_SIZE },
     'campus-grid': { position: [400, 240, 400], target: [0, 1.0, 0], zoom: 0.9, gpuScale: RACK_GPU_PACKAGE_SIZE },
 };
@@ -628,99 +627,64 @@ function LEDIndicator({ position }: { position: [number, number, number] }) {
 }
 
 /**
- * Compute Pod - NVIDIA DGX SuperPOD Configuration
- * Based on NVIDIA SuperPOD with Vera Rubin NVL72:
- * - 8 NVL72 racks form one SuperPOD (576 GPUs total)
- * - Racks are tightly interconnected via NVLink-6 and Spectrum-X networking
- * - Power: 8 × 600kW = ~4.8 MW (Kyber racks)
- *
- * Physical Layout: 2 rows of 4 racks for optimal cable runs
- * (50m max InfiniBand cable length constraint per NVIDIA docs)
+ * Compute Pod - Row of 8 racks
+ * Power: 8 × 130kW = ~1 MW (standard) or 8 × 600kW = ~5 MW (Kyber)
  */
 function ComputePod() {
-    // SuperPOD: 2 rows of 4 racks each, tight spacing (~1.0m between racks)
-    // This matches NVIDIA's "deployment-scale unit" for AI factories
+    // 8 racks in a row, 1.8m spacing
     const rackPositions = useMemo(() => {
         const positions: [number, number, number][] = [];
-        const rackSpacing = 1.0;  // Tighter spacing for SuperPOD (connected via blind-mate connectors)
-        const rowSpacing = 2.5;   // Hot/cold aisle spacing
-
-        // Front row: 4 racks
-        for (let i = 0; i < 4; i++) {
-            // Skip position 1 or 2 where main detailed rack is
-            if (i === 1 || i === 2) continue;
-            positions.push([(i - 1.5) * rackSpacing, 0, -rowSpacing / 2]);
-        }
-        // Back row: 4 racks
-        for (let i = 0; i < 4; i++) {
-            positions.push([(i - 1.5) * rackSpacing, 0, rowSpacing / 2]);
+        for (let i = 0; i < 8; i++) {
+            // Skip center position where main detailed rack is (positions 3 and 4)
+            if (i === 3 || i === 4) continue;
+            positions.push([(i - 3.5) * 1.8, 0, 0]);
         }
         return positions;
     }, []);
 
     return (
         <group position={[0, 0, 0]}>
-            {/* Raised floor - sized for 2×4 pod layout */}
+            {/* Raised floor - 0.6m × 0.6m tiles */}
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.02, 0]}>
-                <planeGeometry args={[8, 6]} />
+                <planeGeometry args={[18, 8]} />
                 <meshStandardMaterial color="#1e293b" />
             </mesh>
 
             {/* Floor tile grid pattern */}
-            <gridHelper args={[8, 16, '#334155', '#1e293b']} position={[0, -0.01, 0]} />
+            <gridHelper args={[18, 30, '#334155', '#1e293b']} position={[0, -0.01, 0]} />
 
-            {/* Simplified racks in 2×4 SuperPOD configuration */}
+            {/* Simplified racks in the row */}
             {rackPositions.map((pos, i) => (
                 <SimplifiedRack key={i} position={pos} />
             ))}
 
-            {/* NVLink Switch spine connecting all racks (central to pod) */}
-            <mesh position={[0, 2.3, 0]}>
-                <boxGeometry args={[0.3, 0.4, 3.5]} />
-                <meshStandardMaterial
-                    color={NYT_COLORS.accentCyan}
-                    emissive={NYT_COLORS.accentCyan}
-                    emissiveIntensity={0.3}
-                    metalness={0.6}
-                />
-            </mesh>
-
-            {/* Overhead liquid cooling distribution - runs between rows */}
+            {/* Overhead liquid cooling distribution */}
             <mesh position={[0, 2.8, 0]} rotation={[0, 0, Math.PI / 2]}>
-                <cylinderGeometry args={[0.06, 0.06, 5]} />
-                <meshStandardMaterial color={NYT_COLORS.accentCyan} metalness={0.5} />
-            </mesh>
-            {/* Return line */}
-            <mesh position={[0, 2.6, 0]} rotation={[0, 0, Math.PI / 2]}>
-                <cylinderGeometry args={[0.06, 0.06, 5]} />
-                <meshStandardMaterial color={NYT_COLORS.accentCoral} metalness={0.5} />
+                <cylinderGeometry args={[0.08, 0.08, 16]} />
+                <meshStandardMaterial color="#0891b2" metalness={0.5} />
             </mesh>
 
-            {/* Cross-rack interconnect cables (NVLink fabric) */}
-            {[-1.5, -0.5, 0.5, 1.5].map((x, i) => (
-                <mesh key={`nvlink-${i}`} position={[x, 2.5, 0]}>
-                    <boxGeometry args={[0.02, 0.02, 2.8]} />
-                    <meshStandardMaterial
-                        color={NYT_COLORS.accentYellow}
-                        emissive={NYT_COLORS.accentYellow}
-                        emissiveIntensity={0.4}
-                    />
+            {/* Overhead cable trays */}
+            <mesh position={[0, 2.6, 1.5]}>
+                <boxGeometry args={[16, 0.1, 0.6]} />
+                <meshStandardMaterial color="#475569" metalness={0.4} />
+            </mesh>
+            <mesh position={[0, 2.6, -1.5]}>
+                <boxGeometry args={[16, 0.1, 0.6]} />
+                <meshStandardMaterial color="#475569" metalness={0.4} />
+            </mesh>
+
+            {/* Power distribution units between racks */}
+            {[-5.4, -1.8, 1.8, 5.4].map((x, i) => (
+                <mesh key={i} position={[x, 0.5, -2]}>
+                    <boxGeometry args={[0.4, 1.0, 0.3]} />
+                    <meshStandardMaterial color="#374151" />
                 </mesh>
             ))}
 
-            {/* Power distribution bus bar (800V DC for Kyber) */}
-            <mesh position={[2.5, 0.3, 0]}>
-                <boxGeometry args={[0.15, 0.6, 4]} />
-                <meshStandardMaterial color="#374151" metalness={0.7} />
-            </mesh>
-            <mesh position={[-2.5, 0.3, 0]}>
-                <boxGeometry args={[0.15, 0.6, 4]} />
-                <meshStandardMaterial color="#374151" metalness={0.7} />
-            </mesh>
-
-            {/* Cooling distribution units at ends of pod */}
-            <CRAHUnit position={[-4, 0, 0]} />
-            <CRAHUnit position={[4, 0, 0]} />
+            {/* CRAH units at ends */}
+            <CRAHUnit position={[-10, 0, 0]} />
+            <CRAHUnit position={[10, 0, 0]} />
         </group>
     );
 }
@@ -1348,7 +1312,7 @@ function PowerIndicator({ visualState, powerMetric }: {
     const data: Record<string, { label: string; value: string; unit: string; comparison: string; color: string }> = {
         'chip-glow': { label: 'NVIDIA Rubin GPU', value: '2.3', unit: 'kW', comparison: '≈ 2 homes', color: NYT_COLORS.accentYellow },
         'rack-zoom': { label: 'Vera Rubin NVL72 Rack', value: '600', unit: 'kW', comparison: '≈ 500 homes', color: NYT_COLORS.accentYellow },
-        'pod-zoom': { label: 'DGX SuperPOD (8 racks)', value: '4.8', unit: 'MW', comparison: '≈ 4,000 homes', color: NYT_COLORS.accentYellow },
+        'pod-zoom': { label: 'Compute Pod (8 racks)', value: '4.8', unit: 'MW', comparison: '≈ 4,000 homes', color: NYT_COLORS.accentYellow },
         'building-iso': { label: 'Data Center Facility', value: '75-150', unit: 'MW', comparison: '≈ 60,000-125,000 homes', color: NYT_COLORS.accentYellow },
         'campus-grid': { label: 'Hyperscale Campus', value: '300-1,000+', unit: 'MW', comparison: '≈ large power plant', color: NYT_COLORS.accentYellow },
     };
