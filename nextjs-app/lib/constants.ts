@@ -214,9 +214,9 @@ export const UTILITY_PEAK_RANGE = {
 export const SCENARIOS: Record<string, Scenario> = {
     baseline: {
         id: 'baseline',
-        name: 'Baseline',
+        name: 'Standard Escalation',
         shortName: 'No Data Center',
-        description: 'Current cost trajectory with normal infrastructure aging',
+        description: 'Baseline cost growth from inflation and aging infrastructure',
         color: '#6B7280',
         colorLight: '#E5E7EB',
     },

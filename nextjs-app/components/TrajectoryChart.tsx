@@ -14,7 +14,6 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    ReferenceLine,
 } from 'recharts';
 import { SCENARIOS } from '@/lib/constants';
 import { useCalculator } from '@/hooks/useCalculator';
@@ -94,7 +93,7 @@ const TrajectoryChart = ({
     showTooltip = true,
     interactive = true,
 }: TrajectoryChartProps) => {
-    const { chartData, selectedScenarios, toggleScenario, utility } = useCalculator();
+    const { chartData, selectedScenarios, toggleScenario } = useCalculator();
 
     const yDomain = useMemo(() => {
         if (!chartData.length) return [0, 200];
@@ -138,17 +137,6 @@ const TrajectoryChart = ({
                     />
 
                     {showTooltip && <Tooltip content={<CustomTooltip />} />}
-
-                    <ReferenceLine
-                        y={utility.averageMonthlyBill}
-                        stroke="#9ca3af"
-                        strokeDasharray="5 5"
-                        label={{
-                            value: 'Current',
-                            position: 'right',
-                            style: { fill: '#9ca3af', fontSize: 11 },
-                        }}
-                    />
 
                     {Object.values(SCENARIOS).map((scenario) => {
                         if (!selectedScenarios.includes(scenario.id)) return null;
