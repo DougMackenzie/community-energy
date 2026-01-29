@@ -15,6 +15,7 @@ import {
     type EscalationConfig,
 } from '@/lib/calculations';
 import { UTILITY_PROFILES, getUtilityById, getUtilitiesSortedByState, type UtilityProfile } from '@/lib/utilityData';
+import { MARKET_FORECASTS, calculateUtilityMarketShare, type ForecastScenario } from '@/lib/marketForecasts';
 
 interface CalculatorContextType {
     utility: Utility;
@@ -40,6 +41,9 @@ interface CalculatorContextType {
     setInflationRate: (rate: number) => void;
     setInfrastructureAgingEnabled: (enabled: boolean) => void;
     setInfrastructureAgingRate: (rate: number) => void;
+    // Forecast scenario
+    forecastScenario: ForecastScenario;
+    setForecastScenario: (scenario: ForecastScenario) => void;
     // Actions
     updateUtility: (updates: Partial<Utility>) => void;
     updateDataCenter: (updates: Partial<DataCenter>) => void;
@@ -70,6 +74,9 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
     const [inflationRate, setInflationRate] = useState(ESCALATION_RANGES.inflation.default);
     const [infrastructureAgingEnabled, setInfrastructureAgingEnabled] = useState(false);
     const [infrastructureAgingRate, setInfrastructureAgingRate] = useState(ESCALATION_RANGES.infrastructureAging.default);
+
+    // Forecast scenario state - default to aggressive
+    const [forecastScenario, setForecastScenario] = useState<ForecastScenario>('aggressive');
 
     const selectedUtilityProfile = useMemo(() => {
         return getUtilityById(selectedUtilityId);
@@ -136,14 +143,32 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
                 totalGenerationCapacityMW: profile.totalGenerationCapacityMW,
                 currentReserveMargin: profile.currentReserveMargin,
             });
+
+            // Calculate DC capacity from market forecast or use profile default
+            let defaultCapacityMW = profile.defaultDataCenterMW;
+
+            // If market forecast is available and profile doesn't have a utility-specific forecast,
+            // calculate based on market share
+            if (profile.market?.type) {
+                const marketForecast = MARKET_FORECASTS[profile.market.type];
+                if (marketForecast && !profile.defaultDataCenterMW) {
+                    const share = calculateUtilityMarketShare(
+                        profile.systemPeakMW,
+                        marketForecast,
+                        forecastScenario
+                    );
+                    defaultCapacityMW = Math.round(share.utilityNetGrowthMW);
+                }
+            }
+
             // Auto-populate data center capacity
             setDataCenter((prev) => ({
                 ...prev,
-                capacityMW: profile.defaultDataCenterMW,
-                onsiteGenerationMW: Math.round(profile.defaultDataCenterMW * 0.2),
+                capacityMW: defaultCapacityMW,
+                onsiteGenerationMW: Math.round(defaultCapacityMW * 0.2),
             }));
         }
-    }, [utility]);
+    }, [utility, forecastScenario]);
 
     const resetToDefaults = useCallback(() => {
         setUtility(DEFAULT_UTILITY);
@@ -156,6 +181,8 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
         setInflationRate(ESCALATION_RANGES.inflation.default);
         setInfrastructureAgingEnabled(false);
         setInfrastructureAgingRate(ESCALATION_RANGES.infrastructureAging.default);
+        // Reset forecast scenario to aggressive (default)
+        setForecastScenario('aggressive');
     }, []);
 
     const value: CalculatorContextType = {
@@ -177,6 +204,9 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
         setInflationRate,
         setInfrastructureAgingEnabled,
         setInfrastructureAgingRate,
+        // Forecast scenario
+        forecastScenario,
+        setForecastScenario,
         // Actions
         updateUtility,
         updateDataCenter,

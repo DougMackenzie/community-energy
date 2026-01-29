@@ -8,6 +8,7 @@ import { useCalculator } from '@/hooks/useCalculator';
 import { formatCurrency, formatMW, SUPPLY_CURVE } from '@/lib/constants';
 import { getUtilitiesGroupedByState } from '@/lib/utilityData';
 import { calculateDynamicCapacityPrice, type CapacityPriceResult } from '@/lib/calculations';
+import { MARKET_FORECASTS } from '@/lib/marketForecasts';
 
 // Reserve Margin Indicator - Shows capacity scarcity warning
 interface ReserveMarginIndicatorProps {
@@ -190,13 +191,15 @@ export default function CalculatorPage() {
         selectedUtilityProfile,
         selectUtilityProfile,
         utilityProfiles,
+        forecastScenario,
+        setForecastScenario,
     } = useCalculator();
 
     const [activeSection, setActiveSection] = useState('utility');
 
     const DC_CAPACITY_RANGE = {
         min: 500,
-        max: 10000,
+        max: 30000,  // Increased to accommodate macro-level growth projections
         step: 100,
     };
 
@@ -243,11 +246,51 @@ export default function CalculatorPage() {
                         {selectedUtilityProfile && selectedUtilityProfile.id !== 'custom' && (
                             <div className="mt-3 text-xs text-slate-600 space-y-1">
                                 <p><strong>{selectedUtilityProfile.residentialCustomers.toLocaleString()}</strong> residential customers in rate base</p>
-                                {selectedUtilityProfile.hasDataCenterActivity && selectedUtilityProfile.dataCenterNotes && (
-                                    <p className="text-slate-500 italic">{selectedUtilityProfile.dataCenterNotes}</p>
-                                )}
                             </div>
                         )}
+
+                        {/* Growth Forecast Scenario Toggle */}
+                        <div className="mt-3 p-3 bg-white rounded-lg border border-slate-200">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-xs font-semibold text-slate-700">Growth Forecast</span>
+                                <div className="flex rounded-md overflow-hidden border border-slate-300">
+                                    <button
+                                        onClick={() => setForecastScenario('conservative')}
+                                        className={`px-2.5 py-1 text-[10px] font-medium transition-colors ${
+                                            forecastScenario === 'conservative'
+                                                ? 'bg-blue-600 text-white'
+                                                : 'bg-white text-slate-600 hover:bg-slate-50'
+                                        }`}
+                                    >
+                                        Conservative
+                                    </button>
+                                    <button
+                                        onClick={() => setForecastScenario('aggressive')}
+                                        className={`px-2.5 py-1 text-[10px] font-medium transition-colors ${
+                                            forecastScenario === 'aggressive'
+                                                ? 'bg-blue-600 text-white'
+                                                : 'bg-white text-slate-600 hover:bg-slate-50'
+                                        }`}
+                                    >
+                                        Aggressive
+                                    </button>
+                                </div>
+                            </div>
+
+                            {selectedUtilityProfile && selectedUtilityProfile.market?.type && (
+                                <div className="text-[10px] text-slate-600 space-y-0.5">
+                                    <p className="font-medium text-slate-700">
+                                        {MARKET_FORECASTS[selectedUtilityProfile.market.type]?.marketName || selectedUtilityProfile.market.type.toUpperCase()}
+                                    </p>
+                                    <p>
+                                        Projected DC growth: <span className="font-semibold">{(dataCenter.capacityMW / 1000).toFixed(1)} GW</span> by 2035
+                                    </p>
+                                    <p className="text-slate-400">
+                                        Phased 2027-2035 (~{Math.round(dataCenter.capacityMW / 9).toLocaleString()} MW/year)
+                                    </p>
+                                </div>
+                            )}
+                        </div>
 
                         {/* Scarcity Warning - Hockey Stick Indicator */}
                         {utility.hasCapacityMarket && utility.totalGenerationCapacityMW && (
@@ -335,7 +378,7 @@ export default function CalculatorPage() {
                             <h3 className="font-semibold text-gray-900">Data Center Parameters</h3>
 
                             <SliderField
-                                label="Data Center Capacity"
+                                label="Projected DC Growth by 2035"
                                 value={dataCenter.capacityMW}
                                 onChange={(v) => {
                                     const currentRatio =
@@ -518,8 +561,10 @@ export default function CalculatorPage() {
                     <div className="bg-white rounded-xl border border-gray-200 p-6">
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">Projected Monthly Bill</h3>
                         <p className="text-sm text-gray-600 mb-4">
-                            For a {utility.residentialCustomers.toLocaleString()}-customer utility with a{' '}
-                            {dataCenter.capacityMW} MW data center
+                            Projected impact of {(dataCenter.capacityMW / 1000).toFixed(1)} GW data center growth by 2035
+                            <span className="block text-xs text-gray-400 mt-1">
+                                For {utility.residentialCustomers.toLocaleString()} residential customers • Growth phased 2027-2035
+                            </span>
                         </p>
                         <TrajectoryChart height={350} />
                     </div>

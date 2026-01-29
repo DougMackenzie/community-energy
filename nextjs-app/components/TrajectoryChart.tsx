@@ -129,7 +129,7 @@ const TrajectoryChart = ({
         const range = max - min;
         const padding = range * 0.1;
         // Floor to nearest $10 for clean axis labels
-        const flooredMin = Math.floor((min - padding) / 10) * 10;
+        const flooredMin = Math.floor((min - padding) / 5) * 5;
         return [Math.max(0, flooredMin), max + padding];
     }, [chartData, selectedScenarios]);
 

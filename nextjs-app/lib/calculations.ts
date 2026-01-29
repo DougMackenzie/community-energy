@@ -34,6 +34,74 @@ import {
 } from './utilityData';
 
 // ============================================
+// GRADUAL DC GROWTH MODEL
+// Models annual phased growth from 2027-2035
+// ============================================
+
+export interface CumulativeCapacityResult {
+    // Total capacity online at this year index
+    cumulativeMW: number;
+    // New capacity added this year
+    yearlyIncrementMW: number;
+    // Fraction of total growth (0-1)
+    phaseInFraction: number;
+}
+
+/**
+ * Calculate cumulative DC capacity at a given year using gradual growth model
+ *
+ * Growth model (default):
+ * - Year 0 (2025): 0 MW (base year)
+ * - Year 1 (2026): 0 MW (12-month lag)
+ * - Year 2 (2027): 1/9 of total
+ * - Year 3 (2028): 2/9 of total
+ * - ...
+ * - Year 10 (2035): 9/9 = 100%
+ *
+ * @param yearIndex - Year index (0 = base year 2025)
+ * @param totalGrowthMW - Total projected DC growth by end year
+ * @param growthStartYear - Year index when growth begins (default: 2 = 2027)
+ * @param growthEndYear - Year index when growth completes (default: 10 = 2035)
+ */
+export function calculateCumulativeDCCapacity(
+    yearIndex: number,
+    totalGrowthMW: number,
+    growthStartYear: number = 2,
+    growthEndYear: number = 10
+): CumulativeCapacityResult {
+    const growthYears = growthEndYear - growthStartYear + 1;
+    const annualGrowthMW = totalGrowthMW / growthYears;
+
+    // Before growth starts
+    if (yearIndex < growthStartYear) {
+        return {
+            cumulativeMW: 0,
+            yearlyIncrementMW: 0,
+            phaseInFraction: 0
+        };
+    }
+
+    // After growth completes
+    if (yearIndex > growthEndYear) {
+        return {
+            cumulativeMW: totalGrowthMW,
+            yearlyIncrementMW: 0,
+            phaseInFraction: 1.0
+        };
+    }
+
+    // During growth period
+    const yearsOfGrowth = yearIndex - growthStartYear + 1;
+    const cumulativeMW = annualGrowthMW * yearsOfGrowth;
+
+    return {
+        cumulativeMW,
+        yearlyIncrementMW: annualGrowthMW,
+        phaseInFraction: cumulativeMW / totalGrowthMW
+    };
+}
+
+// ============================================
 // ENDOGENOUS CAPACITY PRICING
 // Models "Hockey Stick" dynamics in capacity markets
 // ============================================
@@ -330,6 +398,8 @@ export interface TrajectoryPoint {
         base?: number;
         inflation?: number;
         annualIncreaseRate?: number;
+        cumulativeCapacityMW?: number;
+        phaseInFraction?: number;
     };
     parameters?: {
         loadFactor?: number;
@@ -337,6 +407,8 @@ export interface TrajectoryPoint {
         residentialAllocation?: number;
         curtailablePercent?: number;
         onsiteGenerationMW?: number;
+        cumulativeCapacityMW?: number;
+        phaseInFraction?: number;
     };
     metrics?: any;
 }
@@ -863,13 +935,16 @@ export const calculateUnoptimizedTrajectory = (
         let currentAllocation = utility.baseResidentialAllocation;
         let yearMetrics = null;
 
-        if (year >= 2) {
-            const phaseIn = year === 2 ? 0.5 : 1.0;
+        // Use gradual growth model: DC capacity builds up 2027-2035
+        const growthResult = calculateCumulativeDCCapacity(year, dataCenter.capacityMW, 2, 10);
+        const effectiveCapacityMW = growthResult.cumulativeMW;
+
+        if (effectiveCapacityMW > 0) {
             const yearsOnline = year - 2;
 
             const allocationResult = calculateResidentialAllocation(
                 utility,
-                dataCenter.capacityMW,
+                effectiveCapacityMW,
                 firmLF,
                 firmPeakCoincidence,
                 yearsOnline
@@ -877,7 +952,7 @@ export const calculateUnoptimizedTrajectory = (
             currentAllocation = allocationResult.allocation;
 
             const yearImpact = calculateNetResidentialImpact(
-                dataCenter.capacityMW,
+                effectiveCapacityMW,
                 firmLF,
                 firmPeakCoincidence,
                 utility.residentialCustomers,
@@ -895,13 +970,13 @@ export const calculateUnoptimizedTrajectory = (
             const socializedPerCustomerMonthly = yearImpact.socializedCapacityCost / utility.residentialCustomers / 12;
             const baseImpactPerCustomerMonthly = yearImpact.perCustomerMonthly - socializedPerCustomerMonthly;
 
-            // Direct infrastructure costs apply immediately
-            let directImpact = baseImpactPerCustomerMonthly * phaseIn;
+            // Direct infrastructure costs apply with gradual growth (no separate phase-in needed)
+            let directImpact = baseImpactPerCustomerMonthly;
 
             // Socialized capacity cost only applies after auction lag
             let socializedImpact = 0;
             if (yearsOnline >= marketLag) {
-                socializedImpact = socializedPerCustomerMonthly * phaseIn;
+                socializedImpact = socializedPerCustomerMonthly;
             }
 
             dcImpact = directImpact + socializedImpact;
@@ -921,15 +996,17 @@ export const calculateUnoptimizedTrajectory = (
             monthlyBill,
             annualBill: monthlyBill * 12,
             scenario: 'unoptimized',
-            dcOnline: year >= 2,
+            dcOnline: effectiveCapacityMW > 0,
             components: {
                 baseline: baseline[year].monthlyBill,
                 dcImpact,
+                cumulativeCapacityMW: effectiveCapacityMW,
+                phaseInFraction: growthResult.phaseInFraction,
             },
             parameters: {
                 loadFactor: firmLF,
                 peakCoincidence: firmPeakCoincidence,
-                residentialAllocation: year >= 2 ? currentAllocation : utility.baseResidentialAllocation,
+                residentialAllocation: effectiveCapacityMW > 0 ? currentAllocation : utility.baseResidentialAllocation,
             },
             metrics: yearMetrics,
         });
@@ -960,13 +1037,16 @@ export const calculateFlexibleTrajectory = (
         let currentAllocation = utility.baseResidentialAllocation;
         let yearMetrics = null;
 
-        if (year >= 2) {
-            const phaseIn = year === 2 ? 0.5 : 1.0;
+        // Use gradual growth model: DC capacity builds up 2027-2035
+        const growthResult = calculateCumulativeDCCapacity(year, dataCenter.capacityMW, 2, 10);
+        const effectiveCapacityMW = growthResult.cumulativeMW;
+
+        if (effectiveCapacityMW > 0) {
             const yearsOnline = year - 2;
 
             const allocationResult = calculateResidentialAllocation(
                 utility,
-                dataCenter.capacityMW,
+                effectiveCapacityMW,
                 flexLF,
                 flexPeakCoincidence,
                 yearsOnline
@@ -974,7 +1054,7 @@ export const calculateFlexibleTrajectory = (
             currentAllocation = allocationResult.allocation;
 
             const yearImpact = calculateNetResidentialImpact(
-                dataCenter.capacityMW,
+                effectiveCapacityMW,
                 flexLF,
                 flexPeakCoincidence,
                 utility.residentialCustomers,
@@ -991,13 +1071,13 @@ export const calculateFlexibleTrajectory = (
             const socializedPerCustomerMonthly = yearImpact.socializedCapacityCost / utility.residentialCustomers / 12;
             const baseImpactPerCustomerMonthly = yearImpact.perCustomerMonthly - socializedPerCustomerMonthly;
 
-            // Direct infrastructure costs apply immediately
-            let directImpact = baseImpactPerCustomerMonthly * phaseIn;
+            // Direct infrastructure costs apply with gradual growth
+            let directImpact = baseImpactPerCustomerMonthly;
 
             // Socialized capacity cost only applies after auction lag
             let socializedImpact = 0;
             if (yearsOnline >= marketLag) {
-                socializedImpact = socializedPerCustomerMonthly * phaseIn;
+                socializedImpact = socializedPerCustomerMonthly;
             }
 
             dcImpact = directImpact + socializedImpact;
@@ -1017,7 +1097,7 @@ export const calculateFlexibleTrajectory = (
             monthlyBill,
             annualBill: monthlyBill * 12,
             scenario: 'flexible',
-            dcOnline: year >= 2,
+            dcOnline: effectiveCapacityMW > 0,
             components: {
                 baseline: baseline[year].monthlyBill,
                 dcImpact,
@@ -1025,8 +1105,10 @@ export const calculateFlexibleTrajectory = (
             parameters: {
                 loadFactor: flexLF,
                 peakCoincidence: flexPeakCoincidence,
-                residentialAllocation: year >= 2 ? currentAllocation : utility.baseResidentialAllocation,
+                residentialAllocation: effectiveCapacityMW > 0 ? currentAllocation : utility.baseResidentialAllocation,
                 curtailablePercent: 1 - flexPeakCoincidence,
+                cumulativeCapacityMW: effectiveCapacityMW,
+                phaseInFraction: growthResult.phaseInFraction,
             },
             metrics: yearMetrics,
         });
@@ -1079,14 +1161,21 @@ export const calculateDispatchableTrajectory = (
         let currentAllocation = utility.baseResidentialAllocation;
         let yearMetrics = null;
 
-        if (year >= 2) {
-            const phaseIn = year === 2 ? 0.5 : 1.0;
+        // Use gradual growth model: DC capacity builds up 2027-2035
+        const growthResult = calculateCumulativeDCCapacity(year, dataCenter.capacityMW, 2, 10);
+        const effectiveCapacityMW = growthResult.cumulativeMW;
+        // Scale onsite generation proportionally to cumulative capacity
+        const effectiveOnsiteGenMW = effectiveCapacityMW > 0
+            ? onsiteGenMW * (effectiveCapacityMW / dataCenter.capacityMW)
+            : 0;
+
+        if (effectiveCapacityMW > 0) {
             const yearsOnline = year - 2;
 
             const effectivePeakCoincidence = Math.max(0, flexPeakCoincidence - (onsiteGenMW / dataCenter.capacityMW));
             const allocationResult = calculateResidentialAllocation(
                 utility,
-                dataCenter.capacityMW,
+                effectiveCapacityMW,
                 flexLF,
                 effectivePeakCoincidence,
                 yearsOnline
@@ -1094,20 +1183,20 @@ export const calculateDispatchableTrajectory = (
             currentAllocation = allocationResult.allocation;
 
             const yearImpact = calculateNetResidentialImpact(
-                dataCenter.capacityMW,
+                effectiveCapacityMW,
                 flexLF,
                 flexPeakCoincidence,
                 utility.residentialCustomers,
                 currentAllocation,
                 true,
-                onsiteGenMW,
+                effectiveOnsiteGenMW,
                 utility,
                 tariff
             );
 
             yearMetrics = {
                 ...yearImpact.metrics,
-                onsiteGenMW,
+                onsiteGenMW: effectiveOnsiteGenMW,
                 netPeakDraw: yearImpact.metrics.effectivePeakMW,
             };
 
@@ -1115,13 +1204,13 @@ export const calculateDispatchableTrajectory = (
             const socializedPerCustomerMonthly = yearImpact.socializedCapacityCost / utility.residentialCustomers / 12;
             const baseImpactPerCustomerMonthly = yearImpact.perCustomerMonthly - socializedPerCustomerMonthly;
 
-            // Direct infrastructure costs apply immediately
-            let directImpact = baseImpactPerCustomerMonthly * phaseIn;
+            // Direct infrastructure costs apply with gradual growth
+            let directImpact = baseImpactPerCustomerMonthly;
 
             // Socialized capacity cost only applies after auction lag
             let socializedImpact = 0;
             if (yearsOnline >= marketLag) {
-                socializedImpact = socializedPerCustomerMonthly * phaseIn;
+                socializedImpact = socializedPerCustomerMonthly;
             }
 
             dcImpact = directImpact + socializedImpact;
@@ -1141,16 +1230,18 @@ export const calculateDispatchableTrajectory = (
             monthlyBill,
             annualBill: monthlyBill * 12,
             scenario: 'dispatchable',
-            dcOnline: year >= 2,
+            dcOnline: effectiveCapacityMW > 0,
             components: {
                 baseline: baseline[year].monthlyBill,
                 dcImpact,
+                cumulativeCapacityMW: effectiveCapacityMW,
+                phaseInFraction: growthResult.phaseInFraction,
             },
             parameters: {
                 loadFactor: flexLF,
                 peakCoincidence: flexPeakCoincidence,
-                onsiteGenerationMW: onsiteGenMW,
-                residentialAllocation: year >= 2 ? currentAllocation : utility.baseResidentialAllocation,
+                onsiteGenerationMW: effectiveOnsiteGenMW,
+                residentialAllocation: effectiveCapacityMW > 0 ? currentAllocation : utility.baseResidentialAllocation,
             },
             metrics: yearMetrics,
         });

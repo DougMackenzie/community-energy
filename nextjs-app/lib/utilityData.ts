@@ -541,9 +541,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     market: { ...REGULATED_MARKET },
     tariff: { ...GENERIC_REGULATED_TARIFF },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Phoenix metro data center growth; projecting 40% peak demand growth to 13,000 MW by 2031',
-    defaultDataCenterMW: 800,
-    sources: ['APS 2024 peak demand records', 'Arizona Corporation Commission filings']
+    dataCenterNotes: 'Phoenix metro data center growth; projecting 40% peak demand growth to 13,000 MW by 2031. Aggressive: 3-4 GW DC growth by 2035.',
+    defaultDataCenterMW: 4000,
+    sources: ['APS 2024 peak demand records', 'Arizona Corporation Commission filings', 'SemiAnalysis 2025']
   },
 
   // --- ARKANSAS ---
@@ -624,9 +624,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     market: { ...REGULATED_MARKET },
     tariff: { ...GEORGIA_POWER_TARIFF },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Projecting 8,200 MW of load growth by 2030, including significant data center demand in Atlanta metro',
-    defaultDataCenterMW: 1200,
-    sources: ['Georgia Power 2024 Facts & Figures', 'Georgia PSC filings', 'Southern Company annual reports']
+    dataCenterNotes: 'Projecting 8,200 MW of load growth by 2030. 51 GW in Georgia queue. Aggressive scenario: 6-8 GW DC growth by 2035.',
+    defaultDataCenterMW: 8000,
+    sources: ['Georgia Power 2024 Facts & Figures', 'Georgia PSC filings', 'Southern Company annual reports', 'SemiAnalysis 2025']
   },
 
   // --- INDIANA ---
@@ -715,9 +715,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     market: { ...REGULATED_MARKET },
     tariff: { ...GENERIC_REGULATED_TARIFF },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Data centers requesting to triple peak demand; 4,000+ MW of AI data center projects planned in Reno area',
-    defaultDataCenterMW: 1500,
-    sources: ['NV Energy company facts', 'Nevada PUC filings', 'Greenlink transmission project documents']
+    dataCenterNotes: 'Data centers requesting to triple peak demand; 4,000+ MW of AI data center projects planned in Reno area. Aggressive: 4-5 GW by 2035.',
+    defaultDataCenterMW: 4000,
+    sources: ['NV Energy company facts', 'Nevada PUC filings', 'Greenlink transmission project documents', 'SemiAnalysis 2025']
   },
 
   // --- NEW YORK ---
@@ -800,9 +800,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     market: { ...REGULATED_MARKET },
     tariff: { ...DUKE_TARIFF },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Growing data center presence in Charlotte metro area',
-    defaultDataCenterMW: 1000,
-    sources: ['Duke Energy 2024 annual report', 'NC Utilities Commission filings']
+    dataCenterNotes: 'Growing data center presence in Charlotte metro area. NC has 42 GW in queue. Aggressive: 3-4 GW growth by 2035.',
+    defaultDataCenterMW: 4000,
+    sources: ['Duke Energy 2024 annual report', 'NC Utilities Commission filings', 'SemiAnalysis 2025']
   },
   {
     id: 'duke-progress',
@@ -844,9 +844,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     },
     tariff: { ...AEP_OHIO_TARIFF },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Ohio seeing significant data center growth; AEP proposed new rate class for data centers to PUCO',
-    defaultDataCenterMW: 1000,
-    sources: ['AEP Ohio rate filings', 'PUCO documents', 'PJM capacity auction results']
+    dataCenterNotes: 'Ohio seeing significant data center growth; AEP proposed new rate class for data centers to PUCO. PJM share: ~2.4 GW by 2035.',
+    defaultDataCenterMW: 2400,
+    sources: ['AEP Ohio rate filings', 'PUCO documents', 'PJM capacity auction results', 'SemiAnalysis 2025']
   },
 
   // --- OKLAHOMA ---
@@ -864,9 +864,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     market: { ...SPP_MARKET },
     tariff: { ...PSO_TARIFF },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Multiple large data center proposals; PSO facing 31% power deficit by 2031 with 779MW of new large load requests',
-    defaultDataCenterMW: 1000,
-    sources: ['PSO 2024 IRP Report', 'Oklahoma Corporation Commission filings', 'AEP annual reports', 'PSO LPL Schedule 242/244/246']
+    dataCenterNotes: 'Multiple large data center proposals; PSO facing 31% power deficit by 2031. Large load queue exceeds 6 GW including hyperscale AI facilities.',
+    defaultDataCenterMW: 6000,
+    sources: ['PSO 2024 IRP Report', 'Oklahoma Corporation Commission filings', 'AEP annual reports', 'PSO LPL Schedule 242/244/246', 'SemiAnalysis 2025']
   },
   // --- SOUTH DAKOTA ---
   {
@@ -926,9 +926,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     },
     tariff: { ...ERCOT_TARIFF },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Data centers account for 46% of projected load growth; demand projected to grow from 87 GW to 145 GW by 2031. 230GW of large load interconnection requests.',
-    defaultDataCenterMW: 3000,
-    sources: ['ERCOT load forecasts', 'EIA Texas electricity data', 'Texas PUC filings', 'Potomac Economics 2024 State of the Market']
+    dataCenterNotes: 'Data centers account for 46% of projected load growth; 200+ GW in large load queue. Aggressive scenario: 15-25 GW DC growth by 2035.',
+    defaultDataCenterMW: 25000,
+    sources: ['ERCOT load forecasts', 'EIA Texas electricity data', 'Texas PUC filings', 'Potomac Economics 2024 State of the Market', 'SemiAnalysis 2025']
   },
   {
     id: 'aep-swepco',
@@ -976,9 +976,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     },
     tariff: { ...DOMINION_TARIFF },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Data center capital of the world; 933MW connected in 2023, forecasting 9GW DC peak in 10 years (25% system increase)',
-    defaultDataCenterMW: 1500,
-    sources: ['Dominion Energy 2024 IRP', 'Virginia SCC filings', 'JLARC Virginia Data Center Study 2024', 'PJM capacity auction results']
+    dataCenterNotes: 'Data center capital of the world; 933MW connected in 2023, forecasting 9-12 GW DC growth by 2035. NoVA hosts 70% of global internet traffic.',
+    defaultDataCenterMW: 12000,
+    sources: ['Dominion Energy 2024 IRP', 'Virginia SCC filings', 'JLARC Virginia Data Center Study 2024', 'PJM capacity auction results', 'SemiAnalysis 2025']
   },
   {
     id: 'aep-appalachian-va',
@@ -1075,9 +1075,9 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     market: { ...REGULATED_MARKET, notes: 'Cheyenne Light, Fuel & Power operates in SPP. Major data center partnerships with Meta, Microsoft. Large Power Contract Service for 5MW+ loads with negotiated rates.' },
     tariff: { ...BHE_WYOMING_TARIFF },
     hasDataCenterActivity: true,
-    dataCenterNotes: 'Major data center hub; Crusoe/Tallgrass 1,800-10,000 MW campus; Prometheus 1,200 MW; Meta and Microsoft facilities',
-    defaultDataCenterMW: 500,
-    sources: ['CLFP Wyo. P.S.C. Tariff No. 13', 'BHE Data Centers 2024', 'WyoFile Jan 2025 data center report']
+    dataCenterNotes: 'Major data center hub; Crusoe/Tallgrass 1,800-10,000 MW campus; Prometheus 1,200 MW; Meta and Microsoft facilities. Aggressive: 2-3 GW by 2035.',
+    defaultDataCenterMW: 2000,
+    sources: ['CLFP Wyo. P.S.C. Tariff No. 13', 'BHE Data Centers 2024', 'WyoFile Jan 2025 data center report', 'SemiAnalysis 2025']
   },
 
   // ============================================

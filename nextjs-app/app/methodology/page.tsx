@@ -12,6 +12,7 @@ import {
     formatCurrency,
     calculateAggregateFlexibility,
 } from '@/lib/constants';
+import { MARKET_FORECASTS, getNationalGrowthProjection } from '@/lib/marketForecasts';
 
 interface SectionProps {
     id: string;
@@ -1005,6 +1006,161 @@ $1,120 | *  Emergency
                                     </a>
                                     <span className="block text-xs text-gray-500 ml-0">Regional reserve margin projections and reliability assessments</span>
                                 </li>
+                                <li>
+                                    <a href="https://www.semianalysis.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        SemiAnalysis Large Load Queue Analysis (2025)
+                                    </a>
+                                    <span className="block text-xs text-gray-500 ml-0">Primary source for data center queue data by market; ERCOT 200+ GW, PJM 60+ GW</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.dominionenergy.com/projects-and-facilities/electric-projects/integrated-resource-plan" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        Dominion Energy Integrated Resource Plan (2024)
+                                    </a>
+                                    <span className="block text-xs text-gray-500 ml-0">Virginia data center growth forecast: 9+ GW by 2035</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.ercot.com/gridinfo/load/forecast" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        ERCOT Long-Term Load Forecast
+                                    </a>
+                                    <span className="block text-xs text-gray-500 ml-0">Texas grid planning and large load interconnection data</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </Section>
+
+                {/* REGIONAL DEMAND FORECASTS */}
+                <Section
+                    id="demand-forecasts"
+                    title="Regional Data Center Demand Forecasts"
+                    expandedSection={expandedSection}
+                    toggleSection={toggleSection}
+                    badge="2027-2035"
+                    badgeColor="bg-blue-100 text-blue-800"
+                >
+                    <div className="space-y-6 text-gray-600">
+                        {/* Introduction */}
+                        <p>
+                            Our calculator models data center growth at the <strong>market level</strong>, not individual projects.
+                            This macro-level approach reflects how grid planners and utilities forecast capacity needs across their
+                            entire service territory. Growth is phased annually from 2027-2035 (with a 12-month construction lag from 2026).
+                        </p>
+
+                        <p className="text-sm bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <strong>Two Scenarios:</strong> The calculator offers <strong>Conservative</strong> (utility IRP-based) and{' '}
+                            <strong>Aggressive</strong> (queue data with realistic completion rates) forecasts.
+                            <span className="font-medium"> Aggressive is the default</span>, reflecting the rapid growth in interconnection
+                            queues observed by SemiAnalysis and other market analysts.
+                        </p>
+
+                        {/* Market Forecast Table */}
+                        <div className="border border-gray-200 rounded-lg p-4 overflow-x-auto">
+                            <h4 className="font-semibold text-gray-900 mb-2">
+                                Market-Level Growth Projections (2027-2035)
+                            </h4>
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Market</th>
+                                        <th className="text-right py-2 font-medium">Current</th>
+                                        <th className="text-right py-2 font-medium">Conservative</th>
+                                        <th className="text-right py-2 font-medium">Aggressive</th>
+                                        <th className="text-left py-2 pl-4 font-medium">Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {Object.entries(MARKET_FORECASTS).map(([key, market]) => (
+                                        <tr key={key} className="border-b border-gray-100">
+                                            <td className="py-2 font-medium">{market.marketName}</td>
+                                            <td className="text-right">{market.currentCapacityGW.toFixed(1)} GW</td>
+                                            <td className="text-right">{market.conservativeGrowthGW} GW</td>
+                                            <td className="text-right font-semibold text-blue-700">{market.aggressiveGrowthGW} GW</td>
+                                            <td className="pl-4 text-xs text-gray-500">{market.notes}</td>
+                                        </tr>
+                                    ))}
+                                    <tr className="border-t-2 border-gray-300 font-semibold bg-gray-50">
+                                        <td className="py-2">National Total</td>
+                                        <td className="text-right">~20 GW</td>
+                                        <td className="text-right">{getNationalGrowthProjection('conservative').totalGrowthGW} GW</td>
+                                        <td className="text-right text-blue-700">{getNationalGrowthProjection('aggressive').totalGrowthGW} GW</td>
+                                        <td className="pl-4 text-xs">Sum of market projections</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Methodology */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2">Growth Allocation Methodology</h4>
+                            <ul className="space-y-2 text-sm">
+                                <li><strong>Utility Share Calculation:</strong> Utility Peak MW ÷ Market Total Peak MW × Market Growth</li>
+                                <li><strong>Annual Growth Rate:</strong> Total Growth ÷ 9 years (2027-2035)</li>
+                                <li><strong>Phase-In Model:</strong> Linear cumulative ramp starting Year 2 (2027) through Year 10 (2035)</li>
+                                <li><strong>Construction Lag:</strong> 12-month lag from 2026 to account for interconnection and construction timelines</li>
+                            </ul>
+                        </div>
+
+                        {/* Sources with hyperlinks */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2">Data Sources & References</h4>
+                            <ul className="space-y-3 text-sm">
+                                <li>
+                                    <a href="https://www.semianalysis.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        SemiAnalysis Large Load Queue Reports (2025)
+                                    </a>
+                                    <span className="block text-xs text-gray-500">Primary source for queue data. ERCOT 200+ GW in queue (46% from data centers).</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.dominionenergy.com/projects-and-facilities/electric-projects/integrated-resource-plan" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        Dominion Energy IRP 2024
+                                    </a>
+                                    <span className="block text-xs text-gray-500">Virginia data center forecast: 9+ GW by 2035 in Northern Virginia alone.</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.ercot.com/gridinfo/load/forecast" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        ERCOT Long-Term Load Forecast (2024)
+                                    </a>
+                                    <span className="block text-xs text-gray-500">Texas grid planning documents and large load analysis.</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.psoklahoma.com/company/about/rates/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        PSO Oklahoma IRP & Rate Filings
+                                    </a>
+                                    <span className="block text-xs text-gray-500">6+ GW in large load queue; 31% power deficit projected by 2031.</span>
+                                </li>
+                                <li>
+                                    <a href="https://gridstrategiesllc.com/wp-content/uploads/National-Load-Growth-Report-2024.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        Grid Strategies: National Load Growth Report (Dec 2024)
+                                    </a>
+                                    <span className="block text-xs text-gray-500">63% of PJM load growth attributed to data centers.</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.nerc.com/pa/RAPA/ra/Reliability%20Assessments%20DL/NERC_LTRA_2024.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        NERC Long-Term Reliability Assessment 2024
+                                    </a>
+                                    <span className="block text-xs text-gray-500">Regional reserve margin and reliability projections.</span>
+                                </li>
+                                <li>
+                                    <a href="https://cdn.misoenergy.org/MTEP23%20Executive%20Summary630586.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        MISO MTEP23 Transmission Expansion Plan
+                                    </a>
+                                    <span className="block text-xs text-gray-500">Midwest transmission planning and load forecasts.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Model Assumptions */}
+                        <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <h4 className="font-semibold text-amber-900 mb-2">
+                                <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium text-xs mr-2">Model Assumptions</span>
+                                Forecast Methodology Notes
+                            </h4>
+                            <ul className="list-disc list-inside text-sm text-amber-800 space-y-1">
+                                <li><strong>Queue completion rates:</strong> Historical average of 10-15% used for aggressive scenario (per NERC and ISO studies)</li>
+                                <li><strong>Aggressive default rationale:</strong> Queue data from SemiAnalysis suggests higher growth than utility IRPs capture</li>
+                                <li><strong>Conservative scenario:</strong> Based on utility IRPs and formal load forecasts filed with regulators</li>
+                                <li><strong>Regional concentration:</strong> NoVA (Dominion), Texas (ERCOT), and Oklahoma (SPP) have disproportionate growth</li>
+                                <li><strong>Uncertainty:</strong> Forecasts are estimates; actual buildout depends on financing, permits, power availability, and interconnection timelines</li>
                             </ul>
                         </div>
                     </div>
@@ -1476,8 +1632,14 @@ $1,120 | *  Emergency
                                 based on fuel costs, weather, and demand patterns.
                             </li>
                             <li>
-                                <strong>Simplified model:</strong> We use linear projections and don't capture
+                                <strong>Simplified model:</strong> We use linear projections and don&apos;t capture
                                 all feedback effects, step changes, or non-linear dynamics.
+                            </li>
+                            <li>
+                                <strong>Demand forecast uncertainty:</strong> Queue data represents interconnection
+                                requests, not firm commitments. Historical completion rates (10-15%) are applied,
+                                but actual buildout depends on financing, permits, land availability, and utility
+                                interconnection capacity.
                             </li>
                             <li>
                                 <strong>VRR curve simplified:</strong> Actual ISO implementations have more complex formulations.
