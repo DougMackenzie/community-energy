@@ -97,7 +97,7 @@ export const EscalationControls = ({
 
             {/* Combined rate display when both enabled */}
             {(inflationEnabled || infrastructureAgingEnabled) && (
-                <div className="text-xs text-gray-500 pt-1 border-t border-gray-200">
+                <div className="text-xs text-gray-500 pt-2 border-t border-gray-200">
                     Combined annual escalation:{' '}
                     <span className="font-medium text-gray-700">
                         {(
@@ -109,6 +109,15 @@ export const EscalationControls = ({
                     </span>
                 </div>
             )}
+
+            {/* Historic context and methodology link */}
+            <div className="text-xs text-gray-500 pt-2 border-t border-gray-200">
+                <span className="text-gray-600">Historic ranges:</span> U.S. electricity prices have risen 2-4% annually over the past decade.
+                Infrastructure reinvestment adds 1-2% as utilities upgrade aging grids.{' '}
+                <a href="/methodology" className="text-blue-600 hover:underline">
+                    Learn more →
+                </a>
+            </div>
         </div>
     );
 };
