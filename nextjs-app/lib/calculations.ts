@@ -634,49 +634,53 @@ const calculateNetResidentialImpact = (
     const grossAnnualInfraCost = annualizedInfraCost + capacityCostOrCredit;
 
     // ============================================
-    // REVENUE OFFSET CALCULATION
+    // REVENUE OFFSET CALCULATION - Cost Causation Principle
     // ============================================
-    // Energy margin flows through to benefit ratepayers, but with significant friction:
-    // - Regulated utilities: Revenue goes to utility, benefits flow through rate cases over years
-    // - ISO markets: More direct connection but still regulatory friction
-    // - ERCOT: Most direct since competitive retail, but still not 1:1
+    // In proper cost-of-service ratemaking, industrial tariffs are DESIGNED to recover
+    // the cost of serving that customer class. If the DC pays its tariff rates:
+    // - Demand charges cover their share of capacity/transmission costs
+    // - Energy charges cover fuel + variable costs + overhead allocation
+    // - The utility's revenue requirement is MET, not exceeded
     //
-    // CRITICAL UPDATE: For regulated markets with proper cost-of-service ratemaking,
-    // large industrial loads paying their allocated share should NOT increase residential rates.
-    // The DC's demand charges and energy payments cover their cost causation.
-    // Revenue flow-through should be HIGHER for regulated markets because:
-    // 1. DC revenue reduces the utility's revenue requirement directly
-    // 2. This flows through at rate cases (with lag, but higher certainty)
-    // 3. The utility must justify rates based on cost of service
+    // KEY INSIGHT: In regulated markets, DC tariff revenue should nearly FULLY offset
+    // DC-caused costs because that's how cost-of-service ratemaking works.
+    // The PUC sets rates to recover costs - if DC pays those rates, costs are recovered.
     //
-    // We use a higher flow-through for regulated markets to reflect proper cost causation:
-    // - Regulated: DC pays tariff rates designed to cover their costs → high flow-through
-    // - Capacity markets: DC pays market rates that may not fully cover costs → medium flow-through
-    // - ERCOT: Direct market exposure → medium-high flow-through
-    const baseFlowThrough = utility?.marketType === 'ercot' ? 0.55 :
-                            utility?.hasCapacityMarket ? 0.45 :
-                            0.60; // Regulated markets: higher because tariff = cost recovery
+    // Revenue offset components:
+    // 1. DEMAND CHARGES (CP + NCP): These ARE the cost recovery mechanism for fixed costs
+    //    - CP charges cover generation/capacity costs
+    //    - NCP charges cover distribution/customer costs
+    //    - These should offset infrastructure costs nearly 1:1 in regulated markets
+    //
+    // 2. ENERGY MARGIN: Covers variable costs plus contributes to fixed cost recovery
+    //
+    // Flow-through rates by market type:
+    // - Regulated: ~90% - tariff IS cost recovery; small friction for rate case lag
+    // - ERCOT: ~70% - market-based, some mismatch between wholesale and retail
+    // - Capacity markets: ~60% - capacity price volatility creates mismatch
 
-    // Scale down for very small utilities where DC revenue dominates
-    // and regulatory mechanisms are less refined
-    const customerScaleFactor = Math.min(1.0, residentialCustomers / 200000);
-    const energyMarginFlowThrough = baseFlowThrough * (0.3 + 0.7 * customerScaleFactor);
+    const isRegulatedMarket = !utility?.hasCapacityMarket && utility?.marketType !== 'ercot';
 
-    // NCP/Max demand charges provide fixed cost spreading benefit
-    // (The DC is paying toward system costs regardless of when they use power)
-    // Reduced from 0.20 to 0.10 - demand charges cover utility costs, not ratepayer relief
-    const ncpDemandBenefit = dcRevenue.ncpDemandRevenue * 0.10;
+    // Demand charge flow-through: how much of demand revenue offsets infrastructure costs
+    // In regulated markets, demand charges ARE the cost recovery mechanism
+    const demandChargeFlowThrough = isRegulatedMarket ? 0.90 :
+                                    utility?.marketType === 'ercot' ? 0.70 :
+                                    0.60; // Capacity markets
+
+    // Energy margin flow-through: energy charges beyond fuel cost
+    const energyMarginFlowThrough = isRegulatedMarket ? 0.85 :
+                                    utility?.marketType === 'ercot' ? 0.65 :
+                                    0.50;
 
     // Total revenue offset
-    let revenueOffset = (dcRevenue.energyMargin * energyMarginFlowThrough) + ncpDemandBenefit;
+    // Demand charges (both CP and NCP) offset fixed infrastructure costs
+    const demandRevenueOffset = dcRevenue.demandRevenue * demandChargeFlowThrough;
+    const energyRevenueOffset = dcRevenue.energyMargin * energyMarginFlowThrough;
+    let revenueOffset = demandRevenueOffset + energyRevenueOffset;
 
     // Apply tariff-specific flexibility benefit if using tariff-based calculations
-    // This captures the savings from avoiding peak demand charges in TOU tariffs
     if (tariff && isFlexible && flexibilityBenefitFromTariff > 0) {
-        // The flexibility benefit represents reduced demand charges paid by DC
-        // This is a cost the DC avoids, which reduces the total cost impact
-        // Apply the tariff's flexibility benefit multiplier to scale the benefit appropriately
-        const scaledFlexBenefit = flexibilityBenefitFromTariff * tariff.flexibilityBenefitMultiplier * 0.15;
+        const scaledFlexBenefit = flexibilityBenefitFromTariff * tariff.flexibilityBenefitMultiplier * 0.20;
         revenueOffset += scaledFlexBenefit;
     }
 
@@ -687,41 +691,46 @@ const calculateNetResidentialImpact = (
     // ============================================
     let adjustedAllocation = residentialAllocation;
 
-    // COST CAUSATION ADJUSTMENT
-    // -------------------------
-    // In proper cost-of-service ratemaking, costs are allocated based on causation:
-    // - The DC should only be allocated costs they actually cause
-    // - If they pay demand charges covering their peak contribution, that cost is "paid for"
-    // - Residential allocation should reflect only UNRECOVERED costs, not total costs
+    // COST CAUSATION PRINCIPLE
+    // ------------------------
+    // In regulated markets with proper cost-of-service ratemaking:
+    // - Industrial tariffs are designed to recover the cost of serving industrial customers
+    // - If DC pays their tariff rates, they ARE paying for their cost causation
+    // - Any "net impact" should only be from costs NOT covered by tariff (rare)
     //
-    // For regulated markets: If the DC pays tariff rates designed to recover their cost of service,
-    // the net impact on residential customers should be minimal or even positive (rate spreading).
-    // The higher the DC's cost recovery through tariff charges, the lower the residential impact.
+    // The key question: What share of NET costs (after DC revenue offset) should residential bear?
+    // Answer: Only the share of costs that the DC didn't pay for through their tariff.
     //
-    // Cost causation factor: reduces allocation based on how well DC revenue covers DC costs
-    const dcCostRecoveryRatio = Math.min(1.0, dcRevenue.total / Math.max(1, grossAnnualInfraCost));
-    const COST_CAUSATION_BASE = 0.85; // 85% base - some overhead always shared
+    // If DC revenue >= DC costs caused → residential allocation should be ~0 or negative (benefit)
+    // If DC revenue < DC costs caused → residential bears share of the gap
+
+    // Calculate how well DC revenue covers DC-caused costs
+    const dcCostRecoveryRatio = Math.min(1.5, revenueOffset / Math.max(1, grossAnnualInfraCost));
 
     // ERCOT 4CP Cost Causation Adjustment
-    // ------------------------------------
-    // In ERCOT, transmission costs are allocated via 4CP (Four Coincident Peak) methodology:
-    // - Each customer's transmission cost share = their load during 4 specific peak hours/year
-    // - If a DC curtails during those 4 hours, they pay dramatically less transmission
-    //
-    // KEY INSIGHT: This is about COST CAUSATION, not just cost allocation:
-    // - A flexible DC that avoids 4CP peaks is NOT driving transmission investment
-    // - The utility's transmission revenue requirement doesn't change, BUT
-    // - The DC is correctly paying less because they're not causing the peak-driven costs
-    const ERCOT_4CP_COST_CAUSATION_FACTOR = 0.70;
+    const ERCOT_4CP_COST_CAUSATION_FACTOR = 0.60;
 
     if (utility?.marketType === 'ercot') {
         adjustedAllocation = residentialAllocation * ERCOT_4CP_COST_CAUSATION_FACTOR;
-    } else if (!utility?.hasCapacityMarket) {
-        // REGULATED MARKETS: Apply cost causation adjustment
-        // The higher the DC's cost recovery ratio, the less impact on residential rates
-        // If DC revenue = DC costs, residential allocation drops significantly
-        const regulatedCostCausationFactor = COST_CAUSATION_BASE - (dcCostRecoveryRatio * 0.40);
-        adjustedAllocation = residentialAllocation * Math.max(0.35, regulatedCostCausationFactor);
+    } else if (isRegulatedMarket) {
+        // REGULATED MARKETS: Aggressive cost causation adjustment
+        // If DC revenue covers costs, residential allocation approaches zero
+        // The formula: allocation = base * (1 - costRecoveryRatio)^0.5
+        // At 100% cost recovery: allocation drops to ~0
+        // At 50% cost recovery: allocation is ~30% of base
+        // At 0% cost recovery: allocation is 100% of base
+        const costRecoveryCapped = Math.min(1.0, dcCostRecoveryRatio);
+        const regulatedCostCausationFactor = Math.pow(1 - costRecoveryCapped, 0.5);
+        adjustedAllocation = residentialAllocation * Math.max(0.05, regulatedCostCausationFactor);
+
+        // RATE SPREADING BENEFIT for high load factor loads
+        // A high LF industrial load spreads fixed costs over more kWh
+        // This benefits all ratepayers through lower average costs
+        // Effect: ~5-15% reduction in residential allocation for high LF loads
+        if (loadFactor >= 0.80) {
+            const loadFactorBenefit = (loadFactor - 0.80) * 0.5; // 0-10% benefit
+            adjustedAllocation = adjustedAllocation * (1 - loadFactorBenefit);
+        }
     }
     // Note: For capacity markets, we no longer adjust allocation here because
     // socializedCapacityCost is added explicitly below. This avoids double-counting.
