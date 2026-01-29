@@ -113,19 +113,24 @@ const TrajectoryChart = ({
     const yDomain = useMemo(() => {
         if (!chartData.length) return [0, 200];
 
+        let min = Infinity;
         let max = -Infinity;
 
         chartData.forEach((point) => {
             selectedScenarios.forEach((scenario) => {
                 const value = point[scenario];
                 if (value !== undefined) {
+                    min = Math.min(min, value);
                     max = Math.max(max, value);
                 }
             });
         });
 
-        const padding = max * 0.1;
-        return [0, max + padding];
+        const range = max - min;
+        const padding = range * 0.1;
+        // Floor to nearest $10 for clean axis labels
+        const flooredMin = Math.floor((min - padding) / 10) * 10;
+        return [Math.max(0, flooredMin), max + padding];
     }, [chartData, selectedScenarios]);
 
     return (

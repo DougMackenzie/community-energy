@@ -233,6 +233,43 @@ export default function MethodologyPage() {
                             <p className="mt-2 text-gray-500">+ Socialized Capacity Cost / Customers / 12 <span className="text-xs">(capacity markets only)</span></p>
                         </div>
 
+                        <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                            <p className="text-sm font-semibold text-green-900 mb-2">Revenue Flow-Through (Cost Causation Principle)</p>
+                            <p className="text-sm text-gray-700 mb-2">
+                                Data center tariff payments offset infrastructure costs. The flow-through rate varies by market structure:
+                            </p>
+                            <table className="w-full text-sm mb-2">
+                                <thead>
+                                    <tr className="border-b border-green-200">
+                                        <th className="text-left py-1 font-medium">Market Type</th>
+                                        <th className="text-right py-1 font-medium">Demand Charges</th>
+                                        <th className="text-right py-1 font-medium">Energy Margin</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-gray-600">
+                                    <tr className="border-b border-green-100">
+                                        <td className="py-1">Regulated (cost-of-service)</td>
+                                        <td className="text-right font-medium">90%</td>
+                                        <td className="text-right font-medium">85%</td>
+                                    </tr>
+                                    <tr className="border-b border-green-100">
+                                        <td className="py-1">ERCOT (energy-only)</td>
+                                        <td className="text-right">70%</td>
+                                        <td className="text-right">65%</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-1">Capacity Markets (PJM/MISO)</td>
+                                        <td className="text-right">60%</td>
+                                        <td className="text-right">50%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="text-xs text-gray-500">
+                                In regulated markets, PUC-approved tariffs are designed to recover the utility's cost of serving each customer class.
+                                When a data center pays its industrial tariff rates, those costs are considered "recovered"—not shifted to residential customers.
+                            </p>
+                        </div>
+
                         <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
                             <p className="text-sm font-semibold text-amber-900 mb-2">Capacity Market Addition (PJM/NYISO/MISO)</p>
                             <p className="text-sm text-gray-700">
@@ -376,22 +413,23 @@ export default function MethodologyPage() {
 
                         <p className="mt-6"><strong>Residential Cost Allocation:</strong></p>
                         <p className="text-sm mb-3">
-                            The share of net costs allocated to residential customers depends on the utility's market structure.
+                            The share of net costs allocated to residential customers depends on the utility's market structure
+                            and how well the data center's tariff payments cover its cost of service.
                             See the <strong>"Market Structures & Cost Allocation Framework"</strong> section below for detailed
                             allocation factors by market type (regulated, PJM, ERCOT, etc.).
                         </p>
                         <ul className="list-disc list-inside space-y-1 ml-4 text-sm">
                             <li><strong>Base allocation:</strong> Varies by market (30-40% typical)</li>
-                            <li><strong>Calculation method:</strong> Weighted blend of 40% volumetric (kWh), 40% demand (peak MW), 20% customer count</li>
-                            <li><strong>Dynamic adjustment:</strong> As data center adds energy and peak, residential shares shift</li>
+                            <li><strong>Cost causation adjustment:</strong> In regulated markets, allocation reduced based on DC cost recovery ratio (formula: Base × √(1 - Cost Recovery))</li>
+                            <li><strong>Rate spreading benefit:</strong> High load factor (≥80%) industrial loads spread fixed costs over more kWh, benefiting all ratepayers</li>
                             <li><strong>Regulatory lag:</strong> Changes phase in over ~5 years through rate case proceedings</li>
-                            <li><strong>Market multipliers:</strong> ERCOT applies 0.70x (large loads face 4CP transmission costs directly); capacity markets use endogenous pricing model</li>
+                            <li><strong>Market multipliers:</strong> ERCOT applies 0.60x (4CP transmission costs); capacity markets use endogenous pricing model</li>
                         </ul>
 
                         <p className="mt-4 text-sm text-gray-500">
-                            The baseline trajectory includes {(TIME_PARAMS.generalInflation * 100).toFixed(1)}% annual
+                            The baseline trajectory includes optional escalation factors: {(TIME_PARAMS.generalInflation * 100).toFixed(1)}% annual
                             inflation and {(INFRASTRUCTURE_COSTS.annualBaselineUpgradePercent * 100).toFixed(1)}% annual
-                            infrastructure replacement costs.
+                            infrastructure replacement costs. Toggle these in the calculator to see their effect on future bills.
                         </p>
                     </div>
                 </Section>
@@ -1133,6 +1171,14 @@ $1,120 | *  Emergency
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Revenue Flow-Through</td>
+                                        <td className="text-right">90%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-green-100 text-green-800 rounded">Cost Causation</span>
+                                            <span className="block text-gray-400">Cost-of-service tariffs designed to recover costs directly</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
                                         <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
                                         <td className="text-right">40%</td>
                                         <td className="pl-4 text-xs">
@@ -1152,12 +1198,16 @@ $1,120 | *  Emergency
                                 </tbody>
                             </table>
                             <p className="mt-3 text-sm text-gray-500">
-                                <strong>Allocation Method:</strong> Infrastructure costs allocated through traditional rate base using
-                                cost-of-service methodology per{' '}
-                                <a href="https://www.ferc.gov/industries-data/electric/industry-activities/open-access-transmission-tariff-oatt-reform" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                    FERC open access principles
-                                </a>. State PUC sets rates based on embedded costs. Residential share based on
-                                weighted blend: 40% volumetric (kWh), 40% demand (peak contribution), 20% customer count.
+                                <strong>Cost Causation Principle:</strong> In regulated markets, PUC-approved tariffs are designed to recover
+                                the utility's cost of serving each customer class. When a data center pays its industrial tariff rates
+                                (demand charges + energy charges), those costs are considered "recovered"—not shifted to residential customers.
+                            </p>
+                            <p className="mt-2 text-sm text-gray-500">
+                                <strong>Allocation Formula:</strong> Residential Allocation = Base × (1 - Cost Recovery Ratio)<sup>0.5</sup>
+                            </p>
+                            <p className="mt-2 text-sm text-gray-500">
+                                <strong>Rate Spreading Benefit:</strong> High load factor industrial loads (≥80%) spread fixed system costs
+                                over more kWh, reducing average costs for all customers (5-10% additional reduction).
                             </p>
                         </div>
 
