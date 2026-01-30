@@ -165,11 +165,11 @@ const ERCOT_MARKET: MarketStructure = {
   type: 'ercot',
   hasCapacityMarket: false,
   baseResidentialAllocation: 0.30,
-  capacityCostPassThrough: 0.25, // Lower - energy-only market
+  capacityCostPassThrough: 0.50, // Scarcity pricing flows through REP risk premiums to ratepayers
   transmissionAllocation: 0.35,
   utilityOwnsGeneration: false,
   marginalEnergyCost: 45, // $/MWh - volatile, scarcity pricing, 2024 average
-  notes: 'Energy-only market with no capacity payments. Price signals drive investment. $5,000/MWh cap. Lower baseline costs but more volatile. Transmission costs still allocated to ratepayers.'
+  notes: 'Energy-only market with no capacity payments. Price signals drive investment. $5,000/MWh cap. Scarcity pricing risk premiums flow through to ratepayers via retail electricity providers (REPs).'
 };
 
 const MISO_MARKET: MarketStructure = {
