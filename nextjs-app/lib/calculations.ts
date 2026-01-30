@@ -277,6 +277,11 @@ export interface RevenueAdequacyResult {
  * - If = 1.0: Neutral impact
  * - If < 1.0: Cost subsidy from other ratepayers
  *
+ * Note: Uses calculateTariffBasedDemandCharges for accurate revenue calculation.
+ * Some tariffs (like PSO's LPL) have very low energy rates that are essentially
+ * wholesale pass-through - the demand charges are the primary revenue driver.
+ * Fuel costs are a straight pass-through and not included in margin calculations.
+ *
  * @param dcCapacityMW - Data center interconnection capacity
  * @param loadFactor - Average load factor (0-1)
  * @param peakCoincidence - Peak coincidence factor (0-1)
@@ -292,22 +297,34 @@ export function calculateRevenueAdequacy(
     utility: Utility | undefined
 ): RevenueAdequacyResult {
     const annualMWh = dcCapacityMW * loadFactor * 8760;
+    const peakDemandMW = dcCapacityMW * peakCoincidence;
 
     // ============================================
     // REVENUE CALCULATION (what DC pays)
+    // Use tariff-based calculation for accurate demand charge modeling
     // ============================================
 
-    // Demand charges (CP + NCP)
-    const peakDemandMW = dcCapacityMW * peakCoincidence;
-    const peakDemandCharge = tariff?.peakDemandCharge ?? DC_RATE_STRUCTURE.coincidentPeakChargePerMWMonth;
-    const maxDemandCharge = tariff?.maxDemandCharge ?? DC_RATE_STRUCTURE.nonCoincidentPeakChargePerMWMonth;
+    let demandChargeRevenue: number;
+    let energyChargeRevenue: number;
 
-    const demandChargeRevenue = (peakDemandMW * peakDemandCharge * 12) +
-                                (dcCapacityMW * maxDemandCharge * 12);
-
-    // Energy charges
-    const energyRate = tariff?.energyCharge ?? 30; // $/MWh
-    const energyChargeRevenue = annualMWh * energyRate;
+    if (tariff) {
+        // Use the comprehensive tariff-based calculation
+        const tariffRevenue = calculateTariffBasedDemandCharges(
+            dcCapacityMW,
+            loadFactor,
+            peakCoincidence,
+            tariff
+        );
+        demandChargeRevenue = tariffRevenue.totalDemandRevenue;
+        energyChargeRevenue = tariffRevenue.energyRevenue;
+    } else {
+        // Fallback to default calculation
+        const peakDemandCharge = DC_RATE_STRUCTURE.coincidentPeakChargePerMWMonth;
+        const maxDemandCharge = DC_RATE_STRUCTURE.nonCoincidentPeakChargePerMWMonth;
+        demandChargeRevenue = (peakDemandMW * peakDemandCharge * 12) +
+                              (dcCapacityMW * maxDemandCharge * 12);
+        energyChargeRevenue = annualMWh * 30; // Default $30/MWh
+    }
 
     // Customer charges (estimated as ~$500/month for large power)
     const customerChargeRevenue = 500 * 12;
@@ -316,6 +333,7 @@ export function calculateRevenueAdequacy(
 
     // ============================================
     // COST CALCULATION (marginal cost to serve)
+    // Note: Fuel costs are pass-through and net out in margin calculation
     // ============================================
 
     // Capacity cost
@@ -328,7 +346,8 @@ export function calculateRevenueAdequacy(
         marginalCapacityCost = peakDemandMW * INFRASTRUCTURE_COSTS.capacityCostPerMWYear;
     }
 
-    // Energy cost (wholesale)
+    // Energy cost (wholesale) - this is the marginal generation cost
+    // Fuel costs are a direct pass-through and cancel out
     const wholesaleEnergyCost = utility?.marginalEnergyCost ?? 38; // $/MWh
     const marginalEnergyCost = annualMWh * wholesaleEnergyCost;
 

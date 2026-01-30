@@ -235,6 +235,7 @@ export default function CalculatorPage() {
     } = useCalculator();
 
     const [activeSection, setActiveSection] = useState('utility');
+    const [showAssumptions, setShowAssumptions] = useState(false);
 
     const DC_CAPACITY_RANGE = {
         min: 500,
@@ -339,6 +340,39 @@ export default function CalculatorPage() {
                                 peakCoincidence={dataCenter.firmPeakCoincidence}
                             />
                         )}
+
+                        {/* Market Assumptions Panel */}
+                        <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                            <button
+                                onClick={() => setShowAssumptions(!showAssumptions)}
+                                className="w-full flex items-center justify-between text-left"
+                            >
+                                <span className="text-xs font-semibold text-slate-700">Calculation Assumptions</span>
+                                <svg
+                                    className={`w-4 h-4 text-slate-500 transition-transform ${showAssumptions ? 'rotate-180' : ''}`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+                            {showAssumptions && (
+                                <div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-600 space-y-1">
+                                    <p>Market: <span className="font-medium text-slate-800">{utility.marketType?.toUpperCase() || 'REGULATED'}</span></p>
+                                    <p>Wholesale Energy: <span className="font-medium text-slate-800">${utility.marginalEnergyCost || 38}/MWh</span></p>
+                                    <p>CIAC Recovery: <span className="font-medium text-slate-800">{((utility.interconnection?.ciacRecoveryFraction || 0.60) * 100).toFixed(0)}%</span>
+                                        <span className="text-slate-400 ml-1">(DC pays upfront)</span>
+                                    </p>
+                                    <p>Network Upgrades: <span className="font-medium text-slate-800">${((utility.interconnection?.networkUpgradeCostPerMW || 140000) / 1000).toFixed(0)}k/MW</span>
+                                        <span className="text-slate-400 ml-1">(socialized)</span>
+                                    </p>
+                                    {utility.hasCapacityMarket && (
+                                        <p>Capacity Price: <span className="font-medium text-slate-800">${utility.capacityPrice2024?.toFixed(0) || 'N/A'}/MW-day</span></p>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                     </div>
 
                     {/* Section tabs */}
