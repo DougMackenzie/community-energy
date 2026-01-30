@@ -230,10 +230,10 @@ export default function HomePage() {
               <strong className="text-slate-800"> lower bills for everyone</strong> by bringing new revenue to the grid.
             </p>
 
-            {/* Two Key Findings Cards */}
-            <div className="flex flex-col md:flex-row items-stretch justify-center gap-6 mb-6">
+            {/* Three Key Findings Cards */}
+            <div className="grid md:grid-cols-3 gap-6 mb-6">
               {/* Tariff Protection */}
-              <div className="flex-1 max-w-sm p-6 bg-green-50 rounded-xl border border-green-200">
+              <div className="p-6 bg-green-50 rounded-xl border border-green-200">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3 border border-green-200">
                   <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -248,7 +248,7 @@ export default function HomePage() {
               </div>
 
               {/* Revenue Adequacy */}
-              <div className="flex-1 max-w-sm p-6 bg-blue-50 rounded-xl border border-blue-200">
+              <div className="p-6 bg-blue-50 rounded-xl border border-blue-200">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-100 rounded-full mb-3 border border-blue-200">
                   <svg className="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
@@ -259,6 +259,20 @@ export default function HomePage() {
                   When large customers like data centers join the grid, they help pay for
                   shared infrastructure. This spreads fixed costs across more users,
                   which can reduce the cost per household.
+                </p>
+              </div>
+
+              {/* Flexible Load Revenue */}
+              <div className="p-6 bg-amber-50 rounded-xl border border-amber-200">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mb-3 border border-amber-200">
+                  <svg className="w-6 h-6 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M4 4v16h16M8 16l4-8 4 4 4-8" />
+                  </svg>
+                </div>
+                <p className="text-sm font-medium text-amber-700 mb-2">Flexible Load Increases Revenue</p>
+                <p className="text-sm text-slate-600">
+                  When data centers reduce usage during peak times, they help avoid expensive
+                  infrastructure upgrades and can generate ancillary revenue for the grid.
                 </p>
               </div>
             </div>
@@ -349,180 +363,85 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* What Determines Your Bill Impact */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
-          <h2 className="text-2xl md:text-3xl font-bold text-slate-800 mb-2 text-center">
-            What Determines Your Bill Impact
-          </h2>
-          <p className="text-slate-600 text-center mb-8 max-w-2xl mx-auto">
-            Two factors matter most: whether data centers pay their fair share, and whether they operate flexibly.
-          </p>
-
-          {/* Two Factor Visual Cards */}
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            {/* Factor 1: Cost Allocation */}
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-6 border border-slate-200">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-slate-800">Who Pays for Infrastructure?</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 12l2 2 4-4" />
-                    <circle cx="12" cy="12" r="9" />
-                  </svg>
-                  <span className="text-sm text-slate-700">Data centers pay full cost → Bills stay stable or decrease</span>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
-                  <svg className="w-5 h-5 text-red-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M15 9l-6 6M9 9l6 6" />
-                  </svg>
-                  <span className="text-sm text-slate-700">Costs shift to homeowners → Bills increase</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Factor 2: Flexibility */}
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl p-6 border border-slate-200">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M4 4v16h16M8 16l4-8 4 4 4-8" />
-                  </svg>
-                </div>
-                <h3 className="font-semibold text-slate-800">How Do They Operate?</h3>
-              </div>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                  <svg className="w-5 h-5 text-green-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 12l2 2 4-4" />
-                    <circle cx="12" cy="12" r="9" />
-                  </svg>
-                  <span className="text-sm text-slate-700">Reduce load during peaks → Less infrastructure needed</span>
-                </div>
-                <div className="flex items-center gap-3 p-3 bg-red-50 rounded-lg border border-red-200">
-                  <svg className="w-5 h-5 text-red-600 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="9" />
-                    <path d="M15 9l-6 6M9 9l6 6" />
-                  </svg>
-                  <span className="text-sm text-slate-700">Always-on at full power → More infrastructure costs</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Data Center Design Types - Visual Spectrum */}
-          <div className="bg-gradient-to-r from-red-50 via-amber-50 to-green-50 rounded-xl p-6 border border-slate-200">
-            <p className="text-sm text-slate-600 text-center mb-4">Data Center Design Spectrum</p>
-            <div className="flex items-center justify-between gap-2 max-w-lg mx-auto">
-              <div className="text-center flex-1">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-2 border border-red-200">
-                  <svg className="w-6 h-6 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M18.364 5.636a9 9 0 11-12.728 0M12 9v4" />
-                  </svg>
-                </div>
-                <p className="text-xs font-medium text-red-700">Always-On</p>
-                <p className="text-[10px] text-slate-500">Higher impact</p>
-              </div>
-              <div className="flex-1 h-1 bg-gradient-to-r from-red-300 via-amber-300 to-green-300 rounded-full" />
-              <div className="text-center flex-1">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-amber-100 rounded-full mb-2 border border-amber-200">
-                  <svg className="w-6 h-6 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M4 4v16h16M8 16l4-8 4 4 4-8" />
-                  </svg>
-                </div>
-                <p className="text-xs font-medium text-amber-700">Flexible</p>
-                <p className="text-[10px] text-slate-500">Moderate</p>
-              </div>
-              <div className="flex-1 h-1 bg-gradient-to-r from-amber-300 to-green-300 rounded-full" />
-              <div className="text-center flex-1">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-2 border border-green-200">
-                  <svg className="w-6 h-6 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 12l2 2 4-4" />
-                    <circle cx="12" cy="12" r="9" />
-                  </svg>
-                </div>
-                <p className="text-xs font-medium text-green-700">Optimized</p>
-                <p className="text-[10px] text-slate-500">Lower impact</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Policy Progress & Take Action - Combined */}
+      {/* Advocate for Your Community */}
       <section className="bg-gradient-to-br from-slate-700 to-slate-800 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 text-center">
-            What's Being Done & How to Get Involved
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">
+            Advocate for Your Community
           </h2>
-          <p className="text-slate-300 text-center mb-8 max-w-2xl mx-auto">
-            States are taking action to protect ratepayers. Here's what's working and how you can help.
-          </p>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-8">
-            {/* Policy Progress */}
-            <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-6 border border-white/20">
-              <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center mb-4">
-                <svg className="w-5 h-5 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            {/* What's Driving Better Outcomes */}
+            <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-8 border border-white/20">
+              <h3 className="text-xl font-bold text-amber-300 mb-5">What's Driving Better Outcomes</h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-sm font-bold text-amber-300">1</span>
+                  </div>
+                  <div>
+                    <span className="text-sm text-white font-medium">Separate rate classes for large loads</span>
+                    <p className="text-xs text-slate-400 mt-1">Utilities are creating dedicated tariffs that require data centers to pay minimum demand charges for transmission and distribution</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-sm font-bold text-amber-300">2</span>
+                  </div>
+                  <div>
+                    <span className="text-sm text-white font-medium">Incentivized flexibility and curtailment</span>
+                    <p className="text-xs text-slate-400 mt-1">Texas SB6 requires large loads to curtail during grid emergencies and reevaluates transmission cost allocation</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-sm font-bold text-amber-300">3</span>
+                  </div>
+                  <div>
+                    <span className="text-sm text-white font-medium">Public pressure and regulatory oversight</span>
+                    <p className="text-xs text-slate-400 mt-1">60+ bills in 22 states focused on ratepayer protection; voter concerns are reshaping utility elections</p>
+                  </div>
+                </div>
               </div>
-              <h3 className="text-lg font-semibold text-amber-300 mb-2">60+ Bills in 22 States</h3>
-              <p className="text-sm text-slate-300">Focused on ratepayer protection and fair cost allocation for large loads.</p>
             </div>
 
-            {/* Flexibility Requirements */}
-            <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-6 border border-white/20">
-              <div className="w-10 h-10 rounded-full bg-green-400/20 border border-green-400/30 flex items-center justify-center mb-4">
-                <svg className="w-5 h-5 text-green-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-green-300 mb-2">Grid Emergency Rules</h3>
-              <p className="text-sm text-slate-300">Texas SB6 and similar laws require large loads to curtail during emergencies.</p>
-            </div>
-
-            {/* Rate Classes */}
-            <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-6 border border-white/20">
-              <div className="w-10 h-10 rounded-full bg-blue-400/20 border border-blue-400/30 flex items-center justify-center mb-4">
-                <svg className="w-5 h-5 text-blue-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold text-blue-300 mb-2">New Rate Classes</h3>
-              <p className="text-sm text-slate-300">Utilities creating dedicated tariffs that require large loads to cover their costs.</p>
-            </div>
-          </div>
-
-          {/* Action Items - Compact */}
-          <div className="bg-white/5 rounded-xl p-6 border border-white/10 max-w-2xl mx-auto">
-            <h3 className="text-lg font-semibold text-white mb-4 text-center">How You Can Help</h3>
-            <div className="grid sm:grid-cols-3 gap-4 text-center">
-              <div>
-                <p className="text-sm font-medium text-green-400">Comment on rate cases</p>
-                <p className="text-xs text-slate-400">Voice support for fair cost allocation</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-green-400">Contact legislators</p>
-                <p className="text-xs text-slate-400">Support ratepayer protection bills</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-green-400">Stay informed</p>
-                <p className="text-xs text-slate-400">Use tools like this calculator</p>
+            {/* How You Can Take Action */}
+            <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-8 border border-white/20">
+              <h3 className="text-xl font-bold text-green-400 mb-5">How You Can Take Action</h3>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 12l2 2 4-4" />
+                  </svg>
+                  <div>
+                    <span className="text-sm text-white font-medium">Comment on utility rate cases</span>
+                    <p className="text-xs text-slate-400 mt-1">Advocate for large loads to pay their fair share of infrastructure costs they create</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 12l2 2 4-4" />
+                  </svg>
+                  <div>
+                    <span className="text-sm text-white font-medium">Support state ratepayer protection bills</span>
+                    <p className="text-xs text-slate-400 mt-1">Contact your state legislators about data center cost allocation legislation</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M9 12l2 2 4-4" />
+                  </svg>
+                  <div>
+                    <span className="text-sm text-white font-medium">Ask about flexibility requirements</span>
+                    <p className="text-xs text-slate-400 mt-1">Advocate for incentive structures that promote load flexibility during grid stress events</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Learn More Button */}
-          <div className="text-center mt-8">
+          <div className="text-center">
             <Link
               href="/learn-more"
               className="inline-block px-8 py-4 bg-amber-400 text-slate-900 font-semibold rounded-full hover:bg-amber-300 transition-all duration-200 hover:scale-105"
