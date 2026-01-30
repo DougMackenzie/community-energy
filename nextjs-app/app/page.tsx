@@ -101,9 +101,8 @@ export default function HomePage() {
             </p>
             <p>
               This growth, driven by the AI revolution, has led to a backlog of power demand. U.S.
-              utilities have received interconnection requests totaling over <strong className="text-slate-800">1,000 GW</strong> —
-              though historically only about 13% of such requests reach commercial operation. Even so,
-              the scale creates a supply-constrained market where infrastructure planning is critical.
+              utilities have received interconnection requests totaling over <strong className="text-slate-800">1,000 GW</strong>.
+              The scale creates a supply-constrained market where infrastructure planning is critical.
             </p>
           </div>
 

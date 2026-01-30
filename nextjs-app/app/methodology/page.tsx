@@ -1265,50 +1265,60 @@ $1,120 | *  Emergency
                             </div>
                         </div>
 
-                        {/* Historical Context: Aluminum Smelter Case */}
-                        <div className="border border-gray-200 rounded-lg p-5">
-                            <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Historical Context: The Aluminum Smelter Case
+                        {/* Cost-Shift Study Assumptions Detail */}
+                        <div className="border border-amber-200 rounded-lg p-4 bg-amber-50/20">
+                            <h4 className="font-semibold text-gray-900 mb-3">
+                                What Drives Higher Cost Estimates in These Studies?
                             </h4>
-                            <p className="text-sm text-gray-700 mb-3">
-                                Post-1977 electricity deregulation led to the decline of the U.S. aluminum smelting
-                                industry, offering lessons for data center policy. In 1980, the U.S. had 33 operating
-                                smelters relying on cheap hydropower. After deregulation:
+                            <p className="text-sm text-gray-600 mb-4">
+                                Understanding the key assumptions in each study helps explain the variation in projected cost impacts:
                             </p>
-                            <ul className="space-y-2 text-sm text-gray-700 mb-4">
-                                <li className="flex items-start gap-2">
-                                    <span className="text-gray-400">-</span>
-                                    <span>Plant closures when electricity prices rose above contractual rates</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-gray-400">-</span>
-                                    <span>Stranded infrastructure costs borne by remaining ratepayers</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-gray-400">-</span>
-                                    <span>Today, smelters compete with data centers that can pay up to $115/MWh vs smelter viability of ~$40/MWh</span>
-                                </li>
-                            </ul>
-                            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                                <p className="text-sm text-blue-900">
-                                    <strong>Lesson for Data Centers:</strong> Long-term rate structures should account
-                                    for both parties&apos; exit risks and include mechanisms for cost recovery if loads
-                                    depart before infrastructure is depreciated.
-                                </p>
+
+                            {/* Study-specific assumptions */}
+                            <div className="space-y-4 mb-4">
+                                <div className="p-3 bg-white rounded-lg border border-amber-100">
+                                    <p className="font-medium text-gray-900 text-sm mb-2">Virginia JLARC (E3 modeling)</p>
+                                    <ul className="text-xs text-gray-600 space-y-1 list-disc list-inside">
+                                        <li><strong>Load factor:</strong> 82% (Dominion&apos;s 2024 assumption for large data centers)</li>
+                                        <li><strong>Load type:</strong> Modeled as &quot;flat, inflexible/non-interruptible load&quot;</li>
+                                        <li><strong>Capacity market:</strong> Dominion is in PJM; study includes capacity market price impacts</li>
+                                        <li><strong>Growth scenario:</strong> &quot;Unconstrained&quot; growth through 2040</li>
+                                        <li><strong>Key driver:</strong> New generation and transmission infrastructure built for data centers creates fixed costs socialized across all ratepayers</li>
+                                    </ul>
+                                </div>
+
+                                <div className="p-3 bg-white rounded-lg border border-amber-100">
+                                    <p className="font-medium text-gray-900 text-sm mb-2">Carnegie Mellon (TEMOA model)</p>
+                                    <ul className="text-xs text-gray-600 space-y-1 list-disc list-inside">
+                                        <li><strong>Growth scenario:</strong> 350% increase in data center/crypto demand by 2030</li>
+                                        <li><strong>Cost metric:</strong> Wholesale electricity costs (demand-weighted marginal generation costs)</li>
+                                        <li><strong>Generation mix:</strong> Rapid growth forces system to run more expensive, aging coal generators</li>
+                                        <li><strong>Regional variation:</strong> Virginia at 25% because it relies more on expensive generation sources vs. 8% nationally</li>
+                                        <li><strong>Key driver:</strong> Data center growth outpaces new generation buildout, forcing reliance on higher-cost existing plants</li>
+                                    </ul>
+                                </div>
+
+                                <div className="p-3 bg-white rounded-lg border border-amber-100">
+                                    <p className="font-medium text-gray-900 text-sm mb-2">Harvard ELI (Regulatory analysis)</p>
+                                    <ul className="text-xs text-gray-600 space-y-1 list-disc list-inside">
+                                        <li><strong>Methodology:</strong> Qualitative analysis of ~50 utility rate proceedings (not a quantitative model)</li>
+                                        <li><strong>Cost-shifting mechanisms:</strong> Special contracts, transmission/retail disconnect, colocation effects</li>
+                                        <li><strong>Key concern:</strong> Infrastructure costs built in anticipation of growth; if demand doesn&apos;t materialize, ratepayers bear stranded costs</li>
+                                        <li><strong>Regulatory capture:</strong> Utilities may over-build infrastructure and recover costs from all ratepayers before DC-specific tariffs mature</li>
+                                    </ul>
+                                </div>
                             </div>
-                            <p className="text-xs text-gray-500 mt-3">
-                                Sources:{' '}
-                                <a href="https://www.canarymedia.com/articles/clean-aluminum/us-manufacturing-power-challenges" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                    Canary Media
-                                </a>
-                                {', '}
-                                <a href="https://www.fastmarkets.com/insights/us-aluminium-smelting-and-energy-costs-3-key-growth-factors/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                    Fastmarkets
-                                </a>
-                            </p>
+
+                            {/* Common factors */}
+                            <div className="p-3 bg-amber-100/50 rounded-lg border border-amber-200">
+                                <p className="font-medium text-amber-900 text-sm mb-2">Common Factors Driving Higher Estimates</p>
+                                <ul className="text-xs text-amber-800 space-y-1 list-disc list-inside">
+                                    <li><strong>Inflexible load assumption:</strong> Studies assume firm/non-interruptible operations (no demand response credit)</li>
+                                    <li><strong>Capacity market exposure:</strong> In PJM, large loads trigger capacity price spikes that affect all existing load</li>
+                                    <li><strong>Infrastructure anticipation:</strong> Utilities build generation/transmission before demand materializes</li>
+                                    <li><strong>Long time horizons:</strong> 15-25 year projections allow cost impacts to compound</li>
+                                </ul>
+                            </div>
                         </div>
 
                         {/* Policy Mechanisms Table */}
@@ -1361,12 +1371,12 @@ $1,120 | *  Emergency
                                             </td>
                                         </tr>
                                         <tr className="border-b border-gray-100">
-                                            <td className="py-2 font-medium">Large Customer Tariff</td>
+                                            <td className="py-2 font-medium">Data Center Tariff</td>
                                             <td className="py-2">AEP Ohio</td>
-                                            <td className="py-2">Proposed 90% of max demand for 10 years; includes transmission cost recovery</td>
+                                            <td className="py-2">85% minimum demand for 12 years (4-year ramp to 90%); approved July 2025</td>
                                             <td className="pl-4 text-xs">
-                                                <a href="https://eelp.law.harvard.edu/wp-content/uploads/2025/03/Harvard-ELI-Extracting-Profits-from-the-Public.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                                    Harvard ELI
+                                                <a href="https://www.aepohio.com/company/about/rates/data-center-tariff/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    AEP Ohio
                                                 </a>
                                             </td>
                                         </tr>
@@ -1578,7 +1588,6 @@ $1,120 | *  Emergency
                                 Forecast Methodology Notes
                             </h4>
                             <ul className="list-disc list-inside text-sm text-amber-800 space-y-1">
-                                <li><strong>Queue completion rates:</strong> Historical average of 10-15% used for aggressive scenario (per NERC and ISO studies)</li>
                                 <li><strong>Aggressive default rationale:</strong> Queue data from SemiAnalysis suggests higher growth than utility IRPs capture</li>
                                 <li><strong>Conservative scenario:</strong> Based on utility IRPs and formal load forecasts filed with regulators</li>
                                 <li><strong>Regional concentration:</strong> NoVA (Dominion), Texas (ERCOT), and Oklahoma (SPP) have disproportionate growth</li>

@@ -5,11 +5,10 @@
  * - SemiAnalysis large load queue data (2025)
  * - Utility IRPs and load forecasts
  * - PJM/ERCOT/MISO resource adequacy reports
- * - Historical interconnection completion rates (~10-15%)
  *
  * Two scenarios provided:
  * - Conservative: Based on utility IRPs and documented forecasts
- * - Aggressive (default): Based on queue data with realistic completion rates
+ * - Aggressive (default): Based on queue data with utility-specific assumptions
  */
 
 import { MarketType } from './utilityData';
