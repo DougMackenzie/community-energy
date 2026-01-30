@@ -906,9 +906,10 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     },
     tariff: { ...AEP_OHIO_TARIFF },
     // AEP Ohio with 85% minimum demand for 12 years - strong CIAC recovery
+    // PJM "Deep Grid" transmission upgrades are socialized across all customers
     interconnection: {
-      ciacRecoveryFraction: 0.55, // 55% via CIAC (85% min demand tariff)
-      networkUpgradeCostPerMW: 157500, // Moderate network upgrade needs
+      ciacRecoveryFraction: 0.95, // DCs pay for own substations and direct facilities
+      networkUpgradeCostPerMW: 250000, // PJM socialized transmission upgrades
     },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Ohio seeing significant data center growth; AEP proposed new rate class for data centers to PUCO. PJM share: ~2.4 GW by 2035.',
@@ -1054,9 +1055,10 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     },
     tariff: { ...DOMINION_TARIFF },
     // Dominion has significant network upgrade requirements due to congestion in NoVA
+    // PJM "Deep Grid" transmission upgrades are socialized across all customers
     interconnection: {
-      ciacRecoveryFraction: 0.50, // 50% direct facility costs via CIAC
-      networkUpgradeCostPerMW: 175000, // Higher due to NoVA congestion
+      ciacRecoveryFraction: 0.95, // DCs pay for own substations and direct facilities
+      networkUpgradeCostPerMW: 250000, // PJM "Deep Grid" socialized transmission upgrades
     },
     hasDataCenterActivity: true,
     dataCenterNotes: 'Data center capital of the world; 933MW connected in 2023, forecasting 9-12 GW DC growth by 2035. NoVA hosts 70% of global internet traffic.',

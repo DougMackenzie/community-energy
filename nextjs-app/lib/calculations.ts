@@ -332,7 +332,7 @@ export function calculateRevenueAdequacy(
     // Customer charges (estimated as ~$500/month for large power)
     const customerChargeRevenue = 500 * 12;
 
-    const totalRevenue = demandChargeRevenue + energyChargeRevenue + customerChargeRevenue;
+    // Note: totalRevenue calculated after fuel rider adjustment below
 
     // ============================================
     // COST CALCULATION (marginal cost to serve)
@@ -367,22 +367,33 @@ export function calculateRevenueAdequacy(
         marginalCapacityCost = peakDemandMW * INFRASTRUCTURE_COSTS.capacityCostPerMWYear;
     }
 
-    // Energy cost (wholesale) - this is the marginal generation cost
-    // For wholesale pass-through tariffs (like PSO's LPL), the energy component nets out:
-    // - DC pays wholesale rate as pass-through
-    // - Utility pays wholesale rate to generators
-    // - Net margin on energy = 0 (by design for large power tariffs)
+    // Energy cost and revenue adjustment for fuel rider tariffs
     //
-    // We detect pass-through tariffs when energy charge < 150% of wholesale cost
-    // In this case, use the SAME rate for both revenue and cost to net them out
+    // Many large power tariffs (like PSO's LPL) have a "fuel rider" structure:
+    // - Base energy rate in tariff is low (e.g., $15/MWh)
+    // - Fuel rider passes through wholesale energy costs separately
+    // - Total revenue = base rate + fuel rider ≈ base rate + wholesale
+    //
+    // Detection: If tariff energy charge < 80% of wholesale, it's likely a fuel rider structure
+    // In this case, add wholesale cost to revenue (fuel rider collection) AND to cost (wholesale payment)
     const wholesaleEnergyCost = utility?.marginalEnergyCost ?? 38; // $/MWh
     const tariffEnergyCost = tariff?.energyCharge ?? 30; // $/MWh
 
-    // If tariff energy charge is near or below wholesale, it's a pass-through rate
-    // Use energy revenue as cost (nets to zero margin), not wholesale cost
-    const isWholesalePassThrough = tariffEnergyCost < wholesaleEnergyCost * 1.5;
-    const effectiveEnergyCostRate = isWholesalePassThrough ? tariffEnergyCost : wholesaleEnergyCost;
-    const marginalEnergyCost = annualMWh * effectiveEnergyCostRate;
+    const isFuelRiderTariff = tariffEnergyCost < wholesaleEnergyCost * 0.8;
+
+    // Adjust energy revenue for fuel rider collection
+    if (isFuelRiderTariff) {
+        // Fuel rider tariff: actual revenue = base tariff + fuel rider (≈ wholesale)
+        const effectiveEnergyRevenueRate = tariffEnergyCost + wholesaleEnergyCost;
+        energyChargeRevenue = annualMWh * effectiveEnergyRevenueRate;
+    }
+    // Note: If not a fuel rider tariff, energyChargeRevenue already set from tariff calculation above
+
+    // Calculate total revenue AFTER fuel rider adjustment
+    const totalRevenue = demandChargeRevenue + energyChargeRevenue + customerChargeRevenue;
+
+    // Energy cost is always wholesale (what utility pays generators)
+    const marginalEnergyCost = annualMWh * wholesaleEnergyCost;
 
     // Network upgrade cost (only socialized portion, not CIAC)
     const interconnection = utility?.interconnection ?? {
@@ -955,6 +966,25 @@ const calculateNetResidentialImpact = (
     // RESIDENTIAL ALLOCATION - Market-adjusted with Cost Causation
     // ============================================
     let adjustedAllocation = residentialAllocation;
+
+    // ERCOT: Dynamic residential allocation based on DC penetration
+    // As DC capacity grows, residential share of system load decreases proportionally
+    // This reflects that DCs are a larger portion of total system load, not that they're reducing costs
+    if (utility?.marketType === 'ercot') {
+        const baseAllocation = utility.baseResidentialAllocation || 0.30;
+
+        // Calculate DC penetration as % of ERCOT total capacity (~90 GW)
+        const ercotTotalCapacity = 90000; // MW - approximate ERCOT system capacity
+        const dcPenetration = dcCapacityMW / ercotTotalCapacity;
+
+        // Scale down residential allocation as DCs grow
+        // At 0 GW DC: base allocation (30%)
+        // At 9 GW DC (10% penetration): ~27% allocation
+        // At 25 GW DC (~28% penetration): ~22% allocation
+        // At 45 GW DC (50% penetration): ~15% allocation (floor at 50% of base)
+        const scaleFactor = 1 - (dcPenetration * 0.3); // 30% reduction at full penetration
+        adjustedAllocation = baseAllocation * Math.max(0.5, scaleFactor);
+    }
 
     // COST CAUSATION PRINCIPLE
     // ------------------------
