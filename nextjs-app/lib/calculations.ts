@@ -1044,9 +1044,9 @@ const calculateNetResidentialImpact = (
 
         // Scale down residential allocation as DCs grow
         // At 0 GW DC: base allocation (30%)
-        // At 9 GW DC (10% penetration): ~27% allocation
-        // At 25 GW DC (~28% penetration): ~22% allocation
-        // At 45 GW DC (50% penetration): ~15% allocation (floor at 50% of base)
+        // At 9 GW DC (10% penetration): ~29% allocation
+        // At 25 GW DC (~28% penetration): ~27% allocation
+        // At 45 GW DC (50% penetration): ~26% allocation
         const scaleFactor = 1 - (dcPenetration * 0.3); // 30% reduction at full penetration
         adjustedAllocation = baseAllocation * Math.max(0.5, scaleFactor);
     }

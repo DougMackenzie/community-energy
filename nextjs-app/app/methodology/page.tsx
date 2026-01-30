@@ -1052,8 +1052,8 @@ $1,120 | *  Emergency
                                     </tr>
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2 text-green-700 font-medium">SPP / Regulated</td>
-                                        <td className="text-xs text-gray-600">Embedded cost minus demand charge recovery</td>
-                                        <td className="text-xs text-gray-500">Demand charges ARE the capacity recovery mechanism in cost-of-service ratemaking</td>
+                                        <td className="text-xs text-gray-600">Full embedded capacity cost</td>
+                                        <td className="text-xs text-gray-500">Revenue vs. gross cost comparison avoids double-netting demand charges</td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2 text-purple-700 font-medium">MISO</td>
@@ -2352,12 +2352,12 @@ $1,120 | *  Emergency
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2">9 GW</td>
                                         <td className="text-xs">10%</td>
-                                        <td className="text-xs">~27%</td>
+                                        <td className="text-xs">~29%</td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2">25 GW</td>
                                         <td className="text-xs">~28%</td>
-                                        <td className="text-xs">~22%</td>
+                                        <td className="text-xs">~27%</td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2">45 GW</td>
