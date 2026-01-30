@@ -121,6 +121,66 @@ export const SUPPLY_CURVE = {
 };
 
 // ============================================
+// ISO/RTO CAPACITY DATA
+// For capacity market reserve margin calculations
+// Capacity markets operate at ISO level, not individual utility level
+// ============================================
+
+export interface ISOCapacityData {
+    totalPeakMW: number;           // ISO-wide peak demand (MW)
+    totalCapacityMW: number;       // ISO-wide installed capacity (MW)
+    targetReserveMargin: number;   // Target reserve margin (e.g., 0.15 = 15%)
+    capacityPrice2024: number;     // Current capacity price ($/MW-day)
+    dataSource: string;            // Documentation reference
+}
+
+export const ISO_CAPACITY_DATA: Record<string, ISOCapacityData> = {
+    pjm: {
+        totalPeakMW: 150000,           // ~150 GW summer peak
+        totalCapacityMW: 180000,       // ~180 GW installed capacity
+        targetReserveMargin: 0.15,     // 15% Installed Reserve Margin (IRM)
+        capacityPrice2024: 269.92,     // 2025/26 BRA cleared price
+        dataSource: 'PJM 2024 State of the Market Report',
+    },
+    miso: {
+        totalPeakMW: 127000,           // ~127 GW summer peak
+        totalCapacityMW: 155000,       // ~155 GW installed capacity
+        targetReserveMargin: 0.20,     // Higher reserve target than PJM
+        capacityPrice2024: 30.00,      // Lower capacity prices than PJM
+        dataSource: 'MISO 2024 LOLE Study',
+    },
+    nyiso: {
+        totalPeakMW: 32000,            // ~32 GW summer peak
+        totalCapacityMW: 40000,        // ~40 GW installed capacity
+        targetReserveMargin: 0.15,     // 15% IRM
+        capacityPrice2024: 180.00,     // NYISO capacity prices
+        dataSource: 'NYISO 2024 Gold Book',
+    },
+    ercot: {
+        totalPeakMW: 90000,            // ~90 GW peak (aligns with calculations.ts:977)
+        totalCapacityMW: 100000,       // ~100 GW available capacity
+        targetReserveMargin: 0.10,     // ERCOT has tighter margins (energy-only market)
+        capacityPrice2024: 0,          // No capacity market - energy-only
+        dataSource: 'ERCOT 2024 CDR Report',
+    },
+};
+
+/**
+ * Get ISO capacity data for a given market type
+ * Returns null for markets without centralized capacity markets (regulated, SPP, TVA)
+ */
+export function getISODataForMarket(marketType: MarketType): ISOCapacityData | null {
+    const mapping: Record<string, string> = {
+        pjm: 'pjm',
+        miso: 'miso',
+        nyiso: 'nyiso',
+        ercot: 'ercot',
+    };
+    const isoKey = mapping[marketType];
+    return isoKey ? ISO_CAPACITY_DATA[isoKey] : null;
+}
+
+// ============================================
 // SCENARIO PARAMETERS
 // ============================================
 

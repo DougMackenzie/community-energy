@@ -13,10 +13,20 @@ import {
     SUPPLY_CURVE,
     ESCALATION_RANGES,
     calculateDCRevenueOffset,
+    getISODataForMarket,
     type Utility,
     type DataCenter,
     type InterconnectionCosts,
+    type MarketType,
 } from './constants';
+
+// ============================================
+// RESIDENTIAL ALLOCATION CONSTANTS
+// ============================================
+
+// Residential share of system peak demand
+// Based on typical utility class allocation studies (range: 30-45%)
+const RESIDENTIAL_PEAK_SHARE = 0.35;
 
 // ============================================
 // ESCALATION CONFIG TYPE
@@ -131,6 +141,11 @@ export interface CapacityPriceResult {
         dcPeakContributionMW: number;
         newSystemPeakMW: number;
         conePrice: number;
+        // ISO-level calculation fields (for capacity markets)
+        isoLevelCalculation?: boolean;
+        isoTotalPeakMW?: number;
+        isoTotalCapacityMW?: number;
+        utilitySystemPeakMW?: number;
     };
 }
 
@@ -180,23 +195,40 @@ function interpolateCapacityPrice(reserveMargin: number): number {
  * 3. Higher capacity prices are paid by ALL load (socialization)
  * 4. Existing ratepayers bear the cost increase on their existing load
  *
+ * For capacity markets (PJM, MISO, NYISO), reserve margin is calculated at the
+ * ISO level since capacity markets operate regionally, not at individual utility level.
+ * For regulated/SPP/TVA markets, utility-level calculations are used.
+ *
  * @param utility - Utility with current capacity and peak data
  * @param dcPeakContributionMW - Data center's peak contribution to system
+ * @param marketType - Optional market type for ISO-level calculations
  * @returns Capacity price result with old/new prices and socialized impact
  */
 export function calculateDynamicCapacityPrice(
     utility: Utility,
-    dcPeakContributionMW: number
+    dcPeakContributionMW: number,
+    marketType?: MarketType
 ): CapacityPriceResult {
-    const systemPeakMW = utility.systemPeakMW;
+    // For capacity markets (PJM, MISO, NYISO), use ISO-level data for reserve margin
+    // Reserve margin impacts occur at the ISO level, not individual utility level
+    const isoData = marketType ? getISODataForMarket(marketType) : null;
+    const useISOLevel = !!(isoData && utility.hasCapacityMarket);
 
-    // Calculate total generation capacity
-    // If not specified, estimate from reserve margin (default 15%)
-    const currentReserveMargin = utility.currentReserveMargin ?? 0.15;
-    const totalCapacityMW = utility.totalGenerationCapacityMW ??
-        (systemPeakMW * (1 + currentReserveMargin));
+    // Choose appropriate system peak and capacity for reserve margin calculation
+    // ISO-level for capacity markets, utility-level for regulated markets
+    const systemPeakMW = useISOLevel
+        ? isoData.totalPeakMW
+        : utility.systemPeakMW;
 
-    // Calculate old reserve margin
+    const currentReserveMargin = useISOLevel
+        ? isoData.targetReserveMargin
+        : utility.currentReserveMargin ?? 0.15;
+
+    const totalCapacityMW = useISOLevel
+        ? isoData.totalCapacityMW
+        : utility.totalGenerationCapacityMW ?? (utility.systemPeakMW * (1 + currentReserveMargin));
+
+    // Calculate old reserve margin (before DC addition)
     const oldReserveMargin = (totalCapacityMW - systemPeakMW) / systemPeakMW;
 
     // Calculate new system peak with DC
@@ -218,9 +250,9 @@ export function calculateDynamicCapacityPrice(
 
     // Calculate socialized cost impact on existing customers
     // This is the key "capacity cost spillover" - existing load now pays higher prices
-    // Existing residential MW * (NewPrice - OldPrice) * 365 days
-    const residentialPeakShare = 0.35; // ~35% of peak is residential
-    const existingResidentialPeakMW = systemPeakMW * residentialPeakShare;
+    // Note: We use the UTILITY's residential peak (their customers pay the increased price)
+    // The price increase is determined at ISO level, but the cost impact is on this utility's customers
+    const existingResidentialPeakMW = utility.systemPeakMW * RESIDENTIAL_PEAK_SHARE;
     const dailyPriceIncrease = priceIncrease; // Already in $/MW-day
     const annualSocializedCost = existingResidentialPeakMW * dailyPriceIncrease * 365;
 
@@ -239,6 +271,11 @@ export function calculateDynamicCapacityPrice(
             dcPeakContributionMW,
             newSystemPeakMW,
             conePrice: SUPPLY_CURVE.costOfNewEntry,
+            // ISO-level calculation transparency
+            isoLevelCalculation: useISOLevel,
+            isoTotalPeakMW: useISOLevel ? isoData.totalPeakMW : undefined,
+            isoTotalCapacityMW: useISOLevel ? isoData.totalCapacityMW : undefined,
+            utilitySystemPeakMW: useISOLevel ? utility.systemPeakMW : undefined,
         },
     };
 }
@@ -673,8 +710,8 @@ const calculateResidentialAllocation = (
 
     const estimatedSystemLF = 0.55;
     const preDCPeakMW = utility.systemPeakMW || (preDCSystemEnergyMWh / 8760 / estimatedSystemLF);
-    const residentialPeakShare = 0.45;
-    const residentialPeakMW = preDCPeakMW * residentialPeakShare;
+    // Use consistent residential peak share across all calculations
+    const residentialPeakMW = preDCPeakMW * RESIDENTIAL_PEAK_SHARE;
     const dcPeakContribution = dcCapacityMW * dcPeakCoincidence * phaseInFactor;
     const postDCPeakMW = preDCPeakMW + dcPeakContribution;
     const residentialDemandShare = residentialPeakMW / postDCPeakMW;
@@ -819,7 +856,8 @@ const calculateNetResidentialImpact = (
 
     if (utility?.hasCapacityMarket) {
         // Calculate dynamic capacity price based on reserve margin impact
-        capacityPriceResult = calculateDynamicCapacityPrice(utility, effectivePeakMW);
+        // Pass marketType to enable ISO-level reserve margin calculation for capacity markets
+        capacityPriceResult = calculateDynamicCapacityPrice(utility, effectivePeakMW, utility.marketType);
 
         // The DC pays the new capacity price for its own load
         const dcCapacityPriceAnnual = capacityPriceResult.newPrice * 365;

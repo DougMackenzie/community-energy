@@ -551,6 +551,56 @@ $1,120 | *  Emergency
                                 <p className="text-red-600 mt-2">Result: Reserve margin drops from 10% to 1.5% - Capacity prices spike</p>
                             </div>
                         </div>
+
+                        {/* ISO-Level vs Utility-Level Calculations */}
+                        <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+                            <h4 className="font-semibold text-green-900 mb-3">ISO-Level vs Utility-Level Reserve Margin</h4>
+                            <p className="text-sm text-gray-700 mb-3">
+                                Capacity markets (PJM, MISO, NYISO) operate at the <strong>ISO/RTO level</strong>, not individual utility level.
+                                Reserve margin calculations must reflect this regional scope to accurately model price impacts.
+                            </p>
+                            <table className="w-full text-sm mb-3">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Market Type</th>
+                                        <th className="text-left py-2 font-medium">Reserve Margin Scope</th>
+                                        <th className="text-left py-2 font-medium">System Peak Used</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-blue-700 font-medium">PJM</td>
+                                        <td className="text-xs">ISO-level (PJM-wide)</td>
+                                        <td className="text-xs">~150 GW total PJM peak</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-purple-700 font-medium">MISO</td>
+                                        <td className="text-xs">ISO-level (MISO-wide)</td>
+                                        <td className="text-xs">~127 GW total MISO peak</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-indigo-700 font-medium">NYISO</td>
+                                        <td className="text-xs">ISO-level (NYISO-wide)</td>
+                                        <td className="text-xs">~32 GW total NYISO peak</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-amber-700 font-medium">ERCOT</td>
+                                        <td className="text-xs">ISO-level (energy-only market)</td>
+                                        <td className="text-xs">~90 GW total ERCOT peak</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-green-700 font-medium">Regulated/SPP/TVA</td>
+                                        <td className="text-xs">Utility-level</td>
+                                        <td className="text-xs">Individual utility peak (no shared capacity market)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="text-xs text-gray-600">
+                                <strong>Why this matters:</strong> A 10 GW data center added to a 5 GW utility in PJM impacts the
+                                ~150 GW PJM reserve margin (~7% increase), not the utility's margin alone. The price
+                                increase is then borne by that utility's customers at their share of the ISO-wide impact.
+                            </p>
+                        </div>
                     </div>
                 </Section>
 
