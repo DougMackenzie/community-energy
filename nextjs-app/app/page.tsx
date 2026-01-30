@@ -161,7 +161,7 @@ export default function HomePage() {
                     <line x1="4" y1="14" x2="20" y2="14" />
                   </svg>
                 </div>
-                <span className="text-xs text-slate-700 leading-tight">Data Center Connects</span>
+                <span className="text-xs text-slate-700 leading-tight">Data Center Requests Power</span>
               </div>
               <svg className="w-5 h-5 text-slate-400 rotate-90 md:rotate-0 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                 <path d="M5 12h14M12 5l7 7-7 7" />
@@ -215,9 +215,6 @@ export default function HomePage() {
                 <span className="text-xs text-slate-700 leading-tight">Your Bill Reflects Net</span>
               </div>
             </div>
-            <p className="text-xs text-slate-500 text-center mt-4 max-w-2xl mx-auto">
-              When data centers pay their fair share through electricity rates, that revenue helps cover infrastructure costs — potentially lowering what you pay.
-            </p>
           </div>
 
           {/* What Research Shows */}
@@ -432,7 +429,7 @@ export default function HomePage() {
                     <path d="M9 12l2 2 4-4" />
                   </svg>
                   <div>
-                    <span className="text-sm text-white font-medium">Ask about flexibility requirements</span>
+                    <span className="text-sm text-white font-medium">Ask about incentives for flexibility</span>
                     <p className="text-xs text-slate-400 mt-1">Advocate for incentive structures that promote load flexibility during grid stress events</p>
                   </div>
                 </div>
