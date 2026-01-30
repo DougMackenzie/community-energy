@@ -924,7 +924,7 @@ $1,120 | *  Emergency
                                 Revenue Adequacy Calculation
                             </h4>
                             <p className="text-sm text-gray-600 mb-3">
-                                Following E3 methodology, we calculate whether data center revenue (what they pay through tariffs)
+                                Following E3 "Tailored for Scale" methodology, we calculate whether data center revenue (what they pay through tariffs)
                                 covers their marginal cost-to-serve. A ratio above 1.0 indicates surplus revenue that can
                                 benefit other ratepayers.
                             </p>
@@ -939,6 +939,89 @@ $1,120 | *  Emergency
                                     Cost = Marginal Capacity + Marginal Energy + Network Upgrades (annualized)
                                 </p>
                             </div>
+
+                            {/* Market-Specific Capacity Cost Treatment */}
+                            <h5 className="font-medium text-gray-800 mt-4 mb-2">Capacity Cost by Market Structure</h5>
+                            <p className="text-xs text-gray-600 mb-2">
+                                Different market structures have fundamentally different capacity cost mechanisms. Our model aligns
+                                Revenue Adequacy calculations with the Bill Forecast to ensure consistent results:
+                            </p>
+                            <table className="w-full text-sm mb-4">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Market</th>
+                                        <th className="text-left py-2 font-medium">Capacity Cost Method</th>
+                                        <th className="text-left py-2 font-medium">Rationale</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-amber-700 font-medium">ERCOT</td>
+                                        <td className="text-xs text-gray-600">50% of embedded capacity cost</td>
+                                        <td className="text-xs text-gray-500">Energy-only market - generators recover capacity through energy margins, not separate payments</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-blue-700 font-medium">PJM / NYISO</td>
+                                        <td className="text-xs text-gray-600">Capacity market price × peak demand × 365</td>
+                                        <td className="text-xs text-gray-500">Capacity markets set explicit prices for reliability (~$60-150/MW-day)</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-green-700 font-medium">SPP / Regulated</td>
+                                        <td className="text-xs text-gray-600">Embedded cost minus demand charge recovery</td>
+                                        <td className="text-xs text-gray-500">Demand charges ARE the capacity recovery mechanism in cost-of-service ratemaking</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-purple-700 font-medium">MISO</td>
+                                        <td className="text-xs text-gray-600">Mix of capacity market and embedded costs</td>
+                                        <td className="text-xs text-gray-500">Smaller capacity market with regulated utilities</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            {/* CIAC Recovery Explanation */}
+                            <h5 className="font-medium text-gray-800 mt-4 mb-2">CIAC Recovery Percentages</h5>
+                            <p className="text-xs text-gray-600 mb-2">
+                                <strong>CIAC (Contribution in Aid of Construction)</strong> represents the upfront payment data centers make
+                                for interconnection infrastructure. Based on E3 study cost-causation principles, the percentage varies by market:
+                            </p>
+                            <table className="w-full text-sm mb-3">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Market</th>
+                                        <th className="text-left py-2 font-medium">CIAC %</th>
+                                        <th className="text-left py-2 font-medium">Explanation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">SPP / Regulated (PSO)</td>
+                                        <td className="text-xs font-medium text-green-600">95%</td>
+                                        <td className="text-xs text-gray-500">Vertically integrated, minimal interconnection queue, DC pays nearly full cost</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">ERCOT</td>
+                                        <td className="text-xs font-medium text-amber-600">70%</td>
+                                        <td className="text-xs text-gray-500">Competitive market, moderate queue costs, some network upgrades socialized</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">MISO</td>
+                                        <td className="text-xs font-medium text-purple-600">60%</td>
+                                        <td className="text-xs text-gray-500">Moderate queue, mix of direct assignment and socialization</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">PJM / NYISO</td>
+                                        <td className="text-xs font-medium text-blue-600">50-55%</td>
+                                        <td className="text-xs text-gray-500">Large interconnection queues, significant network upgrades socialized to load</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="text-xs text-gray-500 mb-3">
+                                The remaining percentage (non-CIAC) represents network upgrades that benefit multiple users and are
+                                socialized across ratepayers over a 20-year recovery period.
+                            </p>
+
+                            {/* Original Cost Components Table */}
+                            <h5 className="font-medium text-gray-800 mt-4 mb-2">Cost Components</h5>
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-gray-200">
@@ -949,7 +1032,7 @@ $1,120 | *  Emergency
                                 <tbody>
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2">Marginal Capacity Cost</td>
-                                        <td className="text-xs text-gray-600">Capacity market price (PJM, NYISO) or embedded cost (regulated)</td>
+                                        <td className="text-xs text-gray-600">Market-specific (see table above)</td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2">Marginal Energy Cost</td>
@@ -957,13 +1040,13 @@ $1,120 | *  Emergency
                                     </tr>
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2">Network Upgrade Cost</td>
-                                        <td className="text-xs text-gray-600">Annualized over 20-year recovery period</td>
+                                        <td className="text-xs text-gray-600">Annualized over 20-year recovery period (non-CIAC portion only)</td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <p className="text-xs text-gray-500 mt-2">
+                            <p className="text-xs text-gray-500 mt-3">
                                 E3's analysis found typical data centers generate $33,500-$60,650/MW annual surplus when paying
-                                standard industrial tariffs.
+                                standard industrial tariffs with appropriate demand charges.
                             </p>
                         </div>
 

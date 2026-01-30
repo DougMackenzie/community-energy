@@ -338,14 +338,25 @@ export function calculateRevenueAdequacy(
     // Note: Fuel costs are pass-through and net out in margin calculation
     // ============================================
 
-    // Capacity cost - in regulated markets, demand charges ARE the capacity recovery mechanism
-    // We should not double-count by applying both demand charge revenue AND capacity cost
+    // Capacity cost - MUST align with calculateNetResidentialImpact() methodology
+    // Different market structures have different capacity cost treatment:
+    // - ERCOT: Energy-only market, capacity costs embedded in wholesale energy (50% of embedded)
+    // - PJM/NYISO: Capacity market prices determine marginal capacity cost
+    // - SPP/Regulated: Demand charges ARE the capacity recovery mechanism
     let marginalCapacityCost: number;
-    if (utility?.hasCapacityMarket && utility?.capacityPrice2024) {
+
+    if (utility?.marketType === 'ercot') {
+        // ERCOT: Energy-only market - capacity costs are embedded in wholesale energy prices
+        // Use 50% of embedded capacity cost to match calculateNetResidentialImpact() (line 815)
+        // This reflects that generators recover capacity through energy margins, not capacity payments
+        const ercotCapacityCost = INFRASTRUCTURE_COSTS.capacityCostPerMWYear * 0.50;
+        marginalCapacityCost = peakDemandMW * ercotCapacityCost;
+    } else if (utility?.hasCapacityMarket && utility?.capacityPrice2024) {
         // Capacity market (PJM, NYISO): use market price since retail rates may not fully reflect
+        // Capacity price is $/MW-day, convert to annual
         marginalCapacityCost = peakDemandMW * utility.capacityPrice2024 * 365;
     } else if (tariff) {
-        // Regulated market with tariff: demand charges are designed to recover capacity costs
+        // Regulated/SPP market with tariff: demand charges are designed to recover capacity costs
         // Calculate net capacity cost NOT already covered by demand charges
         const demandChargeRecovery = (tariff.peakDemandCharge + (tariff.maxDemandCharge || 0)) * 12;
         const embeddedCapacityCost = INFRASTRUCTURE_COSTS.capacityCostPerMWYear;

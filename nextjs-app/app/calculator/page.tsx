@@ -180,10 +180,28 @@ const RevenueAdequacyIndicator = ({ utility, tariff, dcCapacityMW, loadFactor, p
                     <div className="font-medium text-gray-600 pt-2">Infrastructure Costs:</div>
                     <p>• CIAC Recovery: {ciacPercent}%
                        <span className="text-gray-400 ml-1">(DC pays upfront)</span></p>
+                    <p className="text-gray-400 text-[10px] ml-2">
+                        Based on E3 study cost-causation principles and {utility?.marketType?.toUpperCase() || 'regulated'} market
+                    </p>
                     <p>• Network Upgrades: ${networkCost}k/MW
-                       <span className="text-gray-400 ml-1">(socialized portion)</span></p>
+                       <span className="text-gray-400 ml-1">(socialized portion after CIAC)</span></p>
+
+                    {/* Market-specific capacity cost treatment */}
+                    <div className="font-medium text-gray-600 pt-2">Capacity Cost Treatment:</div>
+                    {utility?.marketType === 'ercot' && (
+                        <p className="text-amber-600 text-xs">
+                            ERCOT: Energy-only market - capacity costs (50%) embedded in wholesale prices
+                        </p>
+                    )}
                     {utility?.hasCapacityMarket && (
-                        <p>• Capacity Price: ${utility.capacityPrice2024?.toFixed(0) || 'N/A'}/MW-day</p>
+                        <p className="text-blue-600 text-xs">
+                            Capacity Market: Using ${utility.capacityPrice2024?.toFixed(0) || 'N/A'}/MW-day market price
+                        </p>
+                    )}
+                    {!utility?.marketType?.includes('ercot') && !utility?.hasCapacityMarket && (
+                        <p className="text-gray-600 text-xs">
+                            Regulated: Demand charges offset embedded capacity costs
+                        </p>
                     )}
 
                     {/* Methodology Link */}
@@ -738,6 +756,7 @@ export default function CalculatorPage() {
                                 <p className="text-xs text-gray-500">optimized vs firm load, all households</p>
                             </div>
                             <RevenueAdequacyIndicator
+                                key={`ra-${dataCenter.capacityMW}-${dataCenter.onsiteGenerationMW}-${selectedUtilityId}`}
                                 utility={utility}
                                 tariff={selectedUtilityProfile?.tariff}
                                 dcCapacityMW={dataCenter.capacityMW}
