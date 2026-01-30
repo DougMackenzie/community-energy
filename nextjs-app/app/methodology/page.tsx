@@ -897,9 +897,9 @@ $1,120 | *  Emergency
                                 </thead>
                                 <tbody>
                                     <tr className="border-b border-gray-100">
-                                        <td className="py-2">Regulated (traditional)</td>
-                                        <td className="text-right font-medium">60%</td>
-                                        <td className="text-right font-medium">$140,000/MW</td>
+                                        <td className="py-2">SPP / Regulated (PSO-like)</td>
+                                        <td className="text-right font-medium">95%</td>
+                                        <td className="text-right font-medium">$100,000/MW</td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2">PJM (Dominion, AEP Ohio)</td>
@@ -910,6 +910,11 @@ $1,120 | *  Emergency
                                         <td className="py-2">ERCOT (4CP allocation)</td>
                                         <td className="text-right font-medium">70%</td>
                                         <td className="text-right font-medium">$105,000/MW</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">MISO / Other Regulated</td>
+                                        <td className="text-right font-medium">55-60%</td>
+                                        <td className="text-right font-medium">$140,000-165,000/MW</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -1018,9 +1023,14 @@ $1,120 | *  Emergency
                                 </thead>
                                 <tbody>
                                     <tr className="border-b border-gray-100">
-                                        <td className="py-2">SPP / Regulated (PSO)</td>
+                                        <td className="py-2">SPP / Regulated (PSO-like)</td>
                                         <td className="text-xs font-medium text-green-600">95%</td>
                                         <td className="text-xs text-gray-500">Vertically integrated, minimal interconnection queue, DC pays nearly full cost</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">PJM (Dominion, AEP Ohio)</td>
+                                        <td className="text-xs font-medium text-green-600">95%</td>
+                                        <td className="text-xs text-gray-500">DCs pay for own substations; &quot;Deep Grid&quot; transmission upgrades ($250k/MW)</td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
                                         <td className="py-2">ERCOT</td>
@@ -1028,14 +1038,9 @@ $1,120 | *  Emergency
                                         <td className="text-xs text-gray-500">Competitive market, moderate queue costs, some network upgrades socialized</td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
-                                        <td className="py-2">MISO</td>
-                                        <td className="text-xs font-medium text-purple-600">60%</td>
-                                        <td className="text-xs text-gray-500">Moderate queue, mix of direct assignment and socialization</td>
-                                    </tr>
-                                    <tr className="border-b border-gray-100">
-                                        <td className="py-2">PJM (Dominion, AEP Ohio)</td>
-                                        <td className="text-xs font-medium text-green-600">95%</td>
-                                        <td className="text-xs text-gray-500">DCs pay for own substations; &quot;Deep Grid&quot; transmission upgrades ($250k/MW)</td>
+                                        <td className="py-2">MISO / Traditional Regulated</td>
+                                        <td className="text-xs font-medium text-purple-600">55-60%</td>
+                                        <td className="text-xs text-gray-500">Moderate queue, mix of direct assignment and socialization; varies by utility policy</td>
                                     </tr>
                                 </tbody>
                             </table>
