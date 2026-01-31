@@ -345,10 +345,10 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-white mb-1">&quot;Will my electric bill go up?&quot;</h3>
-                  <p className="text-sm text-amber-300 mb-2">It depends on rate design and policy choices.</p>
+                  <p className="text-sm text-amber-300 mb-2">With the right policy, data centers apply downward pressure on rates.</p>
                   <p className="text-xs text-slate-300">
-                    Without proper protections, large new loads can shift infrastructure costs to residential customers.
-                    With the right policies, they can help lower bills by spreading fixed costs across more users.{' '}
+                    Large customers bring new revenue that helps cover shared infrastructure costs.
+                    The E3 study found data centers can lower nearby bills by 1-2%.{' '}
                     <Link href="/methodology#market-structures" className="text-amber-300 hover:underline">See our model →</Link>
                   </p>
                 </div>
@@ -365,10 +365,10 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-white mb-1">&quot;Who pays for all the new infrastructure?&quot;</h3>
-                  <p className="text-sm text-amber-300 mb-2">This is the key question to ask.</p>
+                  <p className="text-sm text-amber-300 mb-2">Industrial tariffs ensure data centers pay their full cost of service.</p>
                   <p className="text-xs text-slate-300">
-                    New transmission lines and grid upgrades can cost billions. Whether data centers pay their fair share—or
-                    costs get socialized to all ratepayers—is determined by utility rate cases and state policy.{' '}
+                    Utilities are creating dedicated rate classes with demand charges that recover transmission and
+                    distribution costs directly from large loads.{' '}
                     <Link href="/methodology#revenue-adequacy" className="text-amber-300 hover:underline">See cost allocation →</Link>
                   </p>
                 </div>
@@ -380,15 +380,15 @@ export default function HomePage() {
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
                   <svg className="w-5 h-5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M6 18L18 6M6 6l12 12" />
+                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-white mb-1">&quot;What happens if the data center leaves?&quot;</h3>
-                  <p className="text-sm text-amber-300 mb-2">Stranded assets are a real risk.</p>
+                  <p className="text-sm text-amber-300 mb-2">Tariff structures include minimum contract terms to ensure full cost recovery.</p>
                   <p className="text-xs text-slate-300">
-                    If infrastructure is built for a data center that later closes or reduces load, remaining customers could
-                    be stuck paying for unused capacity. Minimum purchase requirements and exit fees can protect against this.{' '}
+                    Policies like AEP Ohio&apos;s 12-year minimum demand requirements and exit fees protect
+                    ratepayers from stranded asset risk.{' '}
                     <Link href="/methodology#policy-mechanisms" className="text-amber-300 hover:underline">See protections →</Link>
                   </p>
                 </div>
@@ -400,16 +400,16 @@ export default function HomePage() {
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
                   <svg className="w-5 h-5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-white mb-1">&quot;Is this just benefiting big tech while we pay?&quot;</h3>
-                  <p className="text-sm text-amber-300 mb-2">That&apos;s a legitimate concern.</p>
+                  <h3 className="text-base font-semibold text-white mb-1">&quot;Why are data centers coming here?&quot;</h3>
+                  <p className="text-sm text-amber-300 mb-2">AI data centers are the backbone of our future economy.</p>
                   <p className="text-xs text-slate-300">
-                    Without proper oversight, benefits can flow to corporations while costs are spread to households.
-                    Community engagement and regulatory participation are essential to ensuring fair outcomes.{' '}
-                    <Link href="/methodology#literature-review" className="text-amber-300 hover:underline">See the research →</Link>
+                    These facilities power innovations in medicine, materials science, climate modeling, and technology
+                    that benefit everyone. Communities with reliable power are uniquely positioned to participate.{' '}
+                    <Link href="/methodology#literature-review" className="text-amber-300 hover:underline">Learn more →</Link>
                   </p>
                 </div>
               </div>
