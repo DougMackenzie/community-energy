@@ -74,7 +74,7 @@ export default function CommunityGuidePage() {
           /* Header */
           .print-header {
             padding-bottom: 0.12in !important;
-            border-bottom: 3px solid #b45309 !important;
+            border-bottom: 3px solid #a69340 !important;
             margin-bottom: 0.15in !important;
           }
 
@@ -189,7 +189,7 @@ export default function CommunityGuidePage() {
             font-size: 10pt !important;
             font-weight: 700 !important;
             margin: 0 0 4pt 0 !important;
-            color: #b45309 !important;
+            color: #a69340 !important;
           }
 
           .print-checklist-item {
@@ -213,7 +213,7 @@ export default function CommunityGuidePage() {
 
           /* Why This Matters */
           .print-why-section {
-            border: 2px solid #b45309 !important;
+            border: 2px solid #a69340 !important;
             border-radius: 6px !important;
             padding: 0.12in !important;
             background: #fafaf9 !important;
@@ -254,7 +254,7 @@ export default function CommunityGuidePage() {
           }
 
           .print-why-check {
-            color: #b45309 !important;
+            color: #a69340 !important;
             font-size: 11pt !important;
             font-weight: bold !important;
             flex-shrink: 0 !important;
@@ -336,7 +336,7 @@ export default function CommunityGuidePage() {
         {/* Printable page - exactly 8.5 x 11 inches */}
         <div className="print-page bg-white p-6 md:p-8">
           {/* Header */}
-          <div className="print-header pb-3 border-b-[3px] border-amber-700 mb-4">
+          <div className="print-header pb-3 border-b-[3px] border-[#a69340] mb-4">
             <div className="flex items-center justify-between mb-1">
               <span className="print-brand text-sm font-bold text-slate-500 uppercase tracking-wide">POWER INSIGHT</span>
               <span className="text-sm text-slate-400">power-insight.org</span>
@@ -429,7 +429,7 @@ export default function CommunityGuidePage() {
             <div className="print-checklist-grid grid grid-cols-3 gap-5">
               {/* Cost Allocation */}
               <div>
-                <h4 className="print-checklist-category text-sm font-bold text-amber-700 mb-2">Cost Allocation</h4>
+                <h4 className="print-checklist-category text-sm font-bold text-[#a69340] mb-2">Cost Allocation</h4>
                 <div className="space-y-1.5">
                   <div className="print-checklist-item flex items-start gap-2 text-sm text-slate-600">
                     <span className="print-checkbox w-3.5 h-3.5 border-2 border-slate-400 rounded flex-shrink-0 mt-0.5"></span>
@@ -448,7 +448,7 @@ export default function CommunityGuidePage() {
 
               {/* Grid Reliability */}
               <div>
-                <h4 className="print-checklist-category text-sm font-bold text-amber-700 mb-2">Grid Reliability</h4>
+                <h4 className="print-checklist-category text-sm font-bold text-[#a69340] mb-2">Grid Reliability</h4>
                 <div className="space-y-1.5">
                   <div className="print-checklist-item flex items-start gap-2 text-sm text-slate-600">
                     <span className="print-checkbox w-3.5 h-3.5 border-2 border-slate-400 rounded flex-shrink-0 mt-0.5"></span>
@@ -467,7 +467,7 @@ export default function CommunityGuidePage() {
 
               {/* Risk Protection */}
               <div>
-                <h4 className="print-checklist-category text-sm font-bold text-amber-700 mb-2">Risk Protection</h4>
+                <h4 className="print-checklist-category text-sm font-bold text-[#a69340] mb-2">Risk Protection</h4>
                 <div className="space-y-1.5">
                   <div className="print-checklist-item flex items-start gap-2 text-sm text-slate-600">
                     <span className="print-checkbox w-3.5 h-3.5 border-2 border-slate-400 rounded flex-shrink-0 mt-0.5"></span>
@@ -487,7 +487,7 @@ export default function CommunityGuidePage() {
           </div>
 
           {/* Why This Matters */}
-          <div className="print-why-section rounded-lg bg-stone-50 p-4 border-2 border-amber-700 flex-1">
+          <div className="print-why-section rounded-lg bg-stone-50 p-4 border-2 border-[#a69340] flex-1">
             <h2 className="print-why-title text-lg font-bold text-slate-800 text-center mb-2">
               Why This Matters
             </h2>
@@ -496,15 +496,15 @@ export default function CommunityGuidePage() {
             </p>
             <div className="print-why-grid grid grid-cols-3 gap-4">
               <div className="print-why-item flex items-start gap-2 text-sm text-slate-600">
-                <span className="print-why-check text-amber-700 text-lg font-bold">✓</span>
+                <span className="print-why-check text-[#a69340] text-lg font-bold">✓</span>
                 <span><strong>Energy growth drives progress</strong> — from electrification to the internet, expanding energy has powered human advancement.</span>
               </div>
               <div className="print-why-item flex items-start gap-2 text-sm text-slate-600">
-                <span className="print-why-check text-amber-700 text-lg font-bold">✓</span>
+                <span className="print-why-check text-[#a69340] text-lg font-bold">✓</span>
                 <span><strong>AI accelerates breakthroughs</strong> — data centers power research in medicine, materials science, and clean energy.</span>
               </div>
               <div className="print-why-item flex items-start gap-2 text-sm text-slate-600">
-                <span className="print-why-check text-amber-700 text-lg font-bold">✓</span>
+                <span className="print-why-check text-[#a69340] text-lg font-bold">✓</span>
                 <span><strong>Smart policy protects ratepayers</strong> — with the right tariffs, large customers can lower bills for everyone.</span>
               </div>
             </div>
