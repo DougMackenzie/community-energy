@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useCalculator } from '@/hooks/useCalculator';
 import USDataCenterHeatMap from '@/components/USDataCenterHeatMap';
+import ShareButton from '@/components/ShareButton';
 
 export default function HomePage() {
   // Calculator context is still available if needed for future enhancements
@@ -400,16 +401,16 @@ export default function HomePage() {
               <div className="flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
                   <svg className="w-5 h-5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-base font-semibold text-white mb-1">&quot;Why are data centers coming here?&quot;</h3>
-                  <p className="text-sm text-amber-300 mb-2">AI data centers are the backbone of our future economy.</p>
+                  <h3 className="text-base font-semibold text-white mb-1">&quot;Will I have power outages?&quot;</h3>
+                  <p className="text-sm text-amber-300 mb-2">Modern data centers actually help stabilize the grid during emergencies.</p>
                   <p className="text-xs text-slate-300">
-                    These facilities power innovations in medicine, materials science, climate modeling, and technology
-                    that benefit everyone. Communities with reliable power are uniquely positioned to participate.{' '}
-                    <Link href="/methodology#literature-review" className="text-amber-300 hover:underline">Learn more →</Link>
+                    Data centers can reduce operations and activate on-site generators during peak demand,
+                    helping prevent brownouts and blackouts. Many include battery storage that acts as grid backup.{' '}
+                    <Link href="/methodology#policy-mechanisms" className="text-amber-300 hover:underline">See grid benefits →</Link>
                   </p>
                 </div>
               </div>
@@ -421,7 +422,7 @@ export default function HomePage() {
             <h3 className="text-xl font-bold text-white mb-2 text-center">Questions to Ask About Any Proposal</h3>
             <p className="text-slate-400 text-sm text-center mb-6">Use this checklist when evaluating data center proposals in your community.</p>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               {/* Cost Allocation */}
               <div>
                 <h4 className="text-sm font-semibold text-amber-300 mb-3">Cost Allocation</h4>
@@ -447,7 +448,7 @@ export default function HomePage() {
                 <ul className="space-y-2 text-xs text-slate-300">
                   <li className="flex items-start gap-2">
                     <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
-                    Will the load be firm or flexible?
+                    Is any of the load flexible?
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
@@ -478,36 +479,18 @@ export default function HomePage() {
                   </li>
                 </ul>
               </div>
-
-              {/* Public Process */}
-              <div>
-                <h4 className="text-sm font-semibold text-green-400 mb-3">Public Process</h4>
-                <ul className="space-y-2 text-xs text-slate-300">
-                  <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
-                    When is the public comment period?
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
-                    Has the PUC conducted a ratepayer impact analysis?
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
-                    Are consumer advocates reviewing the proposal?
-                  </li>
-                </ul>
-              </div>
             </div>
           </div>
 
           {/* Learn More Button */}
-          <div className="text-center">
+          <div className="text-center flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/methodology"
               className="inline-block px-8 py-4 bg-amber-400 text-slate-900 font-semibold rounded-full hover:bg-amber-300 transition-all duration-200 hover:scale-105"
             >
               Explore Our Full Methodology
             </Link>
+            <ShareButton />
           </div>
         </div>
       </section>
