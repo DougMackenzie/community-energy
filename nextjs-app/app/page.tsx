@@ -323,79 +323,179 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Advocate for Your Community */}
+      {/* What Communities Are Asking */}
       <section className="bg-gradient-to-br from-slate-700 to-slate-800 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">
-            Advocate for Your Community
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 text-center">
+            What Communities Are Asking
           </h2>
+          <p className="text-slate-300 text-center max-w-2xl mx-auto mb-10">
+            These are the questions we hear most often. They deserve honest, evidence-based answers.
+          </p>
 
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            {/* What's Driving Better Outcomes */}
-            <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-8 border border-white/20">
-              <h3 className="text-xl font-bold text-amber-300 mb-5">What's Driving Better Outcomes</h3>
-              <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-sm font-bold text-amber-300">1</span>
-                  </div>
-                  <div>
-                    <span className="text-sm text-white font-medium">Separate rate classes for large loads</span>
-                    <p className="text-xs text-slate-400 mt-1">Utilities are creating dedicated tariffs that require data centers to pay minimum demand charges for transmission and distribution</p>
-                  </div>
+          {/* FAQ Cards */}
+          <div className="grid md:grid-cols-2 gap-6 mb-10">
+            {/* Question 1 */}
+            <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-6 border border-white/20">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-sm font-bold text-amber-300">2</span>
-                  </div>
-                  <div>
-                    <span className="text-sm text-white font-medium">Incentivized flexibility and curtailment</span>
-                    <p className="text-xs text-slate-400 mt-1">Texas SB6 requires large loads to curtail during grid emergencies and reevaluates transmission cost allocation</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-sm font-bold text-amber-300">3</span>
-                  </div>
-                  <div>
-                    <span className="text-sm text-white font-medium">Public pressure and regulatory oversight</span>
-                    <p className="text-xs text-slate-400 mt-1">60+ bills in 22 states focused on ratepayer protection; voter concerns are reshaping utility elections</p>
-                  </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-1">&quot;Will my electric bill go up?&quot;</h3>
+                  <p className="text-sm text-amber-300 mb-2">It depends on rate design and policy choices.</p>
+                  <p className="text-xs text-slate-300">
+                    Without proper protections, large new loads can shift infrastructure costs to residential customers.
+                    With the right policies, they can help lower bills by spreading fixed costs across more users.{' '}
+                    <Link href="/methodology#market-structures" className="text-amber-300 hover:underline">See our model →</Link>
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* How You Can Take Action */}
-            <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-8 border border-white/20">
-              <h3 className="text-xl font-bold text-green-400 mb-5">How You Can Take Action</h3>
-              <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 12l2 2 4-4" />
+            {/* Question 2 */}
+            <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-6 border border-white/20">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
-                  <div>
-                    <span className="text-sm text-white font-medium">Comment on utility rate cases</span>
-                    <p className="text-xs text-slate-400 mt-1">Advocate for large loads to pay their fair share of infrastructure costs they create</p>
-                  </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 12l2 2 4-4" />
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-1">&quot;Who pays for all the new infrastructure?&quot;</h3>
+                  <p className="text-sm text-amber-300 mb-2">This is the key question to ask.</p>
+                  <p className="text-xs text-slate-300">
+                    New transmission lines and grid upgrades can cost billions. Whether data centers pay their fair share—or
+                    costs get socialized to all ratepayers—is determined by utility rate cases and state policy.{' '}
+                    <Link href="/methodology#revenue-adequacy" className="text-amber-300 hover:underline">See cost allocation →</Link>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Question 3 */}
+            <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-6 border border-white/20">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                  <div>
-                    <span className="text-sm text-white font-medium">Support state ratepayer protection bills</span>
-                    <p className="text-xs text-slate-400 mt-1">Contact your state legislators about data center cost allocation legislation</p>
-                  </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <svg className="w-6 h-6 text-green-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 12l2 2 4-4" />
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-1">&quot;What happens if the data center leaves?&quot;</h3>
+                  <p className="text-sm text-amber-300 mb-2">Stranded assets are a real risk.</p>
+                  <p className="text-xs text-slate-300">
+                    If infrastructure is built for a data center that later closes or reduces load, remaining customers could
+                    be stuck paying for unused capacity. Minimum purchase requirements and exit fees can protect against this.{' '}
+                    <Link href="/methodology#policy-mechanisms" className="text-amber-300 hover:underline">See protections →</Link>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Question 4 */}
+            <div className="rounded-xl bg-white/10 backdrop-blur-sm text-white p-6 border border-white/20">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-amber-400/20 border border-amber-400/30 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <div>
-                    <span className="text-sm text-white font-medium">Ask about incentives for flexibility</span>
-                    <p className="text-xs text-slate-400 mt-1">Advocate for incentive structures that promote load flexibility during grid stress events</p>
-                  </div>
                 </div>
+                <div>
+                  <h3 className="text-base font-semibold text-white mb-1">&quot;Is this just benefiting big tech while we pay?&quot;</h3>
+                  <p className="text-sm text-amber-300 mb-2">That&apos;s a legitimate concern.</p>
+                  <p className="text-xs text-slate-300">
+                    Without proper oversight, benefits can flow to corporations while costs are spread to households.
+                    Community engagement and regulatory participation are essential to ensuring fair outcomes.{' '}
+                    <Link href="/methodology#literature-review" className="text-amber-300 hover:underline">See the research →</Link>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Questions to Ask Checklist */}
+          <div className="rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 p-8 mb-8">
+            <h3 className="text-xl font-bold text-white mb-2 text-center">Questions to Ask About Any Proposal</h3>
+            <p className="text-slate-400 text-sm text-center mb-6">Use this checklist when evaluating data center proposals in your community.</p>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Cost Allocation */}
+              <div>
+                <h4 className="text-sm font-semibold text-amber-300 mb-3">Cost Allocation</h4>
+                <ul className="space-y-2 text-xs text-slate-300">
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    What rate schedule will the data center be on?
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    Does the rate cover full cost-of-service including demand charges?
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    Who pays for grid upgrades needed to serve the facility?
+                  </li>
+                </ul>
+              </div>
+
+              {/* Grid Reliability */}
+              <div>
+                <h4 className="text-sm font-semibold text-green-400 mb-3">Grid Reliability</h4>
+                <ul className="space-y-2 text-xs text-slate-300">
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    Will the load be firm or flexible?
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    Can operations be curtailed during grid emergencies?
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    Is on-site generation or battery storage included?
+                  </li>
+                </ul>
+              </div>
+
+              {/* Risk Protection */}
+              <div>
+                <h4 className="text-sm font-semibold text-amber-300 mb-3">Risk Protection</h4>
+                <ul className="space-y-2 text-xs text-slate-300">
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    Are there minimum purchase requirements?
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    What happens if the data center closes or reduces load?
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    Who bears the risk of stranded assets?
+                  </li>
+                </ul>
+              </div>
+
+              {/* Public Process */}
+              <div>
+                <h4 className="text-sm font-semibold text-green-400 mb-3">Public Process</h4>
+                <ul className="space-y-2 text-xs text-slate-300">
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    When is the public comment period?
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    Has the PUC conducted a ratepayer impact analysis?
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="w-4 h-4 border border-slate-500 rounded flex-shrink-0 mt-0.5"></span>
+                    Are consumer advocates reviewing the proposal?
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -403,10 +503,10 @@ export default function HomePage() {
           {/* Learn More Button */}
           <div className="text-center">
             <Link
-              href="/learn-more"
+              href="/methodology"
               className="inline-block px-8 py-4 bg-amber-400 text-slate-900 font-semibold rounded-full hover:bg-amber-300 transition-all duration-200 hover:scale-105"
             >
-              Learn More About Data Center Development
+              Explore Our Full Methodology
             </Link>
           </div>
         </div>
