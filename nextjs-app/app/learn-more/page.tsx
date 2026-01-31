@@ -49,19 +49,181 @@ export default function LearnMorePage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-8">
             {/* Header */}
             <div className="bg-gradient-to-br from-slate-100 to-slate-50 rounded-2xl p-8 border border-slate-200">
+                <div className="mb-4">
+                    <span className="inline-block px-3 py-1 bg-[#a69340]/10 rounded-full text-[#a69340] text-sm font-medium border border-[#a69340]/20">
+                        Community Guide
+                    </span>
+                </div>
                 <h1 className="text-3xl font-bold text-slate-800 mb-4">
-                    Learn More
+                    Understanding Data Centers & Your Electric Bill
                 </h1>
                 <p className="text-lg text-slate-600 max-w-3xl">
-                    This guide explains the basics of electricity costs and how large industrial loads like data centers
-                    can affect your bill. No technical background required—just the essentials for informed community members.
+                    Data centers are coming to communities across America. Research shows that with the right policies,
+                    this growth can mean <strong className="text-slate-800">lower bills</strong> and a more reliable grid.
+                    This guide gives you the essentials—no technical background required.
                 </p>
                 <p className="text-sm text-slate-500 mt-4">
-                    Looking for detailed methodology and data sources? See our{' '}
-                    <Link href="/methodology" className="text-amber-600 hover:underline font-medium">
-                        full methodology documentation
+                    Want to explore interactively?{' '}
+                    <Link href="/story" className="text-[#a69340] hover:underline font-medium">
+                        Try the AI Energy Explorer
+                    </Link>
+                    {' '}or see our{' '}
+                    <Link href="/methodology" className="text-[#a69340] hover:underline font-medium">
+                        full methodology
                     </Link>.
                 </p>
+            </div>
+
+            {/* Key Stats Banner */}
+            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="text-center">
+                        <div className="text-3xl font-bold text-slate-800">4% → 9%</div>
+                        <div className="text-sm text-slate-600 mt-1">Share of U.S. electricity from data centers by 2030</div>
+                    </div>
+                    <div className="text-center md:border-x md:border-slate-200">
+                        <div className="text-3xl font-bold text-slate-800">50-65 GW</div>
+                        <div className="text-sm text-slate-600 mt-1">New capacity expected (equal to 50-65 nuclear plants)</div>
+                    </div>
+                    <div className="text-center">
+                        <div className="text-3xl font-bold text-emerald-600">1-5%</div>
+                        <div className="text-sm text-slate-600 mt-1">Potential bill reduction with responsible development</div>
+                    </div>
+                </div>
+                <p className="text-xs text-slate-500 mt-4 text-center border-t border-slate-100 pt-4">
+                    Sources: LBNL, DOE, Grid Strategies, EPRI, E3 Ratepayer Study (2025)
+                </p>
+            </div>
+
+            {/* What Research Shows - New Section */}
+            <div className="bg-gradient-to-br from-emerald-50 to-slate-50 rounded-2xl p-8 border border-emerald-100">
+                <h2 className="text-2xl font-bold text-slate-800 mb-4 text-center">
+                    What Research Shows
+                </h2>
+                <p className="text-slate-600 text-center max-w-3xl mx-auto mb-6">
+                    Independent studies show that when data centers pay fair rates, they can actually help
+                    <strong className="text-slate-800"> lower bills for everyone</strong> by bringing new revenue to the grid.
+                </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div className="bg-white/70 rounded-lg p-4 border border-emerald-100">
+                        <p className="text-sm text-slate-700">
+                            <a href="https://www.ethree.com/ratepayer-study/" target="_blank" rel="noopener noreferrer" className="text-[#a69340] hover:underline font-medium">E3 Study (2025)</a>
+                            {' '}— A single data center can bring millions in extra revenue, lowering nearby bills by 1-2%
+                        </p>
+                    </div>
+                    <div className="bg-white/70 rounded-lg p-4 border border-emerald-100">
+                        <p className="text-sm text-slate-700">
+                            <a href="https://www.pbs.org/newshour/show/how-data-center-power-demand-could-help-lower-electricity-prices" target="_blank" rel="noopener noreferrer" className="text-[#a69340] hover:underline font-medium">LBNL / Brattle (2025)</a>
+                            {' '}— States with growing demand actually saw rates go down
+                        </p>
+                    </div>
+                    <div className="bg-white/70 rounded-lg p-4 border border-emerald-100">
+                        <p className="text-sm text-slate-700">
+                            <a href="https://www.utilitydive.com/news/grid-operators-ratepayers-shouldnt-fear-flexible-data-centers-gridcare/808032/" target="_blank" rel="noopener noreferrer" className="text-[#a69340] hover:underline font-medium">GridCARE (2025)</a>
+                            {' '}— Flexible data centers could cut costs by 5% for all customers
+                        </p>
+                    </div>
+                    <div className="bg-white/70 rounded-lg p-4 border border-emerald-100">
+                        <p className="text-sm text-slate-700">
+                            <a href="https://mitsloan.mit.edu/ideas-made-to-matter/flexible-data-centers-can-reduce-costs-if-not-emissions" target="_blank" rel="noopener noreferrer" className="text-[#a69340] hover:underline font-medium">MIT Sloan (2025)</a>
+                            {' '}— Shifting work to off-peak times saves money for the whole grid
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Common Questions Section */}
+            <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-2xl p-8 text-white">
+                <h2 className="text-2xl font-bold text-white mb-2 text-center">
+                    What Communities Are Asking
+                </h2>
+                <p className="text-slate-300 text-center mb-6">
+                    These questions deserve honest, evidence-based answers.
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                    {/* Question 1 */}
+                    <div className="rounded-xl bg-white/10 backdrop-blur-sm p-5 border border-white/20">
+                        <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-[#a69340]/20 border border-[#a69340]/30 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-5 h-5 text-[#a69340]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-white mb-1">&quot;Will my electric bill go up?&quot;</h3>
+                                <p className="text-sm text-[#a69340] mb-2">With the right policy, data centers apply downward pressure on rates.</p>
+                                <p className="text-xs text-slate-300">
+                                    Large customers bring new revenue that helps cover shared infrastructure costs.
+                                    The E3 study found data centers can lower nearby bills by 1-2%.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Question 2 */}
+                    <div className="rounded-xl bg-white/10 backdrop-blur-sm p-5 border border-white/20">
+                        <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-[#a69340]/20 border border-[#a69340]/30 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-5 h-5 text-[#a69340]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-white mb-1">&quot;Who pays for new infrastructure?&quot;</h3>
+                                <p className="text-sm text-[#a69340] mb-2">Industrial tariffs ensure data centers pay their full cost of service.</p>
+                                <p className="text-xs text-slate-300">
+                                    Utilities are creating dedicated rate classes with demand charges that recover
+                                    transmission and distribution costs directly from large loads.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Question 3 */}
+                    <div className="rounded-xl bg-white/10 backdrop-blur-sm p-5 border border-white/20">
+                        <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-[#a69340]/20 border border-[#a69340]/30 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-5 h-5 text-[#a69340]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-white mb-1">&quot;What if the data center leaves?&quot;</h3>
+                                <p className="text-sm text-[#a69340] mb-2">Tariff structures include minimum contract terms for full cost recovery.</p>
+                                <p className="text-xs text-slate-300">
+                                    Policies like AEP Ohio&apos;s 12-year minimum demand requirements and exit fees
+                                    protect ratepayers from stranded asset risk.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Question 4 */}
+                    <div className="rounded-xl bg-white/10 backdrop-blur-sm p-5 border border-white/20">
+                        <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-[#a69340]/20 border border-[#a69340]/30 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-5 h-5 text-[#a69340]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                                    <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-white mb-1">&quot;Will I have power outages?&quot;</h3>
+                                <p className="text-sm text-[#a69340] mb-2">Modern data centers actually help stabilize the grid during emergencies.</p>
+                                <p className="text-xs text-slate-300">
+                                    Data centers can reduce operations and activate on-site generators during peak demand,
+                                    helping prevent brownouts. Many include battery storage for grid backup.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Deep Dive Sections Header */}
+            <div className="text-center">
+                <h2 className="text-2xl font-bold text-slate-800 mb-2">Deep Dive Topics</h2>
+                <p className="text-slate-600">Click any topic below to learn more about how electricity costs work.</p>
             </div>
 
             {/* Sections */}
@@ -89,7 +251,7 @@ export default function LearnMorePage() {
                                     <span className="hidden sm:inline">Capacity</span>
                                     <span className="ml-1 opacity-75">25%</span>
                                 </div>
-                                <div className="bg-amber-500 flex items-center justify-center text-white text-xs font-semibold" style={{ width: '12%' }}>
+                                <div className="bg-[#a69340] flex items-center justify-center text-white text-xs font-semibold" style={{ width: '12%' }}>
                                     <span className="opacity-75">12%</span>
                                 </div>
                                 <div className="bg-orange-500 flex items-center justify-center text-white text-xs font-semibold" style={{ width: '25%' }}>
@@ -122,7 +284,7 @@ export default function LearnMorePage() {
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-3">
-                                    <div className="w-4 h-4 rounded bg-amber-500 flex-shrink-0 mt-1"></div>
+                                    <div className="w-4 h-4 rounded bg-[#a69340] flex-shrink-0 mt-1"></div>
                                     <div>
                                         <p className="font-medium text-gray-900">Transmission (~12%)</p>
                                         <p className="text-sm">High-voltage power lines and substations that move electricity
@@ -150,8 +312,8 @@ export default function LearnMorePage() {
                             </div>
                         </div>
 
-                        <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm">
-                            <span className="font-semibold text-amber-800">Model Assumption:</span>
+                        <div className="p-3 bg-[#a69340]/10 border border-[#a69340]/30 rounded-lg text-sm">
+                            <span className="font-semibold text-[#857628]">Model Assumption:</span>
                             <span className="text-gray-600"> These percentages are representative estimates. Actual composition varies
                                 by utility, state, and market structure. EIA reports delivery costs have risen from 31% to 46%
                                 of total costs over the past decade.</span>
@@ -173,65 +335,69 @@ export default function LearnMorePage() {
                 >
                     <div className="space-y-6 text-gray-600">
                         <p>
-                            When a large data center connects to the grid, it doesn't affect all parts of your bill equally.
-                            Understanding which components are impacted helps you evaluate proposals in your community.
+                            When a large data center connects to the grid, it brings both costs and revenue.
+                            Understanding how these balance out helps you evaluate proposals in your community.
                         </p>
 
+                        {/* Key insight box */}
+                        <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+                            <h4 className="font-semibold text-emerald-800 mb-2">The Revenue Side of the Equation</h4>
+                            <p className="text-sm text-gray-700">
+                                Data centers pay utility rates just like everyone else—but on a massive scale. A single 100 MW
+                                data center can bring <strong>$50-100+ million per year</strong> in new revenue to the utility.
+                                This revenue helps pay for shared infrastructure, which can <strong>lower costs for existing customers</strong>.
+                            </p>
+                        </div>
+
                         <div className="grid md:grid-cols-2 gap-6">
-                            <div className="border-2 border-amber-200 rounded-lg p-4 bg-amber-50">
-                                <h4 className="font-semibold text-amber-900 mb-3">Components Most Affected</h4>
+                            <div className="border-2 border-[#a69340]/30 rounded-lg p-4 bg-[#a69340]/10">
+                                <h4 className="font-semibold text-[#6b5d20] mb-3">Infrastructure Investments Needed</h4>
                                 <p className="text-sm text-gray-700 mb-3">
-                                    These infrastructure investments are driven by <strong>peak demand</strong>—the maximum amount
-                                    of power needed at any moment:
+                                    These are driven by <strong>peak demand</strong>—but proper tariffs ensure data centers pay their share:
                                 </p>
                                 <ul className="space-y-2 text-sm">
                                     <li className="flex items-start gap-2">
                                         <div className="w-3 h-3 rounded bg-blue-600 flex-shrink-0 mt-1"></div>
-                                        <span><strong>Generation Capacity</strong> — New power plants built to meet peak demand</span>
+                                        <span><strong>Generation Capacity</strong> — New power plants to meet demand</span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <div className="w-3 h-3 rounded bg-amber-500 flex-shrink-0 mt-1"></div>
-                                        <span><strong>Transmission</strong> — New high-voltage lines and substations</span>
+                                        <div className="w-3 h-3 rounded bg-[#a69340] flex-shrink-0 mt-1"></div>
+                                        <span><strong>Transmission</strong> — High-voltage lines and substations</span>
                                     </li>
                                     <li className="flex items-start gap-2">
                                         <div className="w-3 h-3 rounded bg-orange-500 flex-shrink-0 mt-1"></div>
-                                        <span><strong>Distribution</strong> — Local grid upgrades for the new load</span>
+                                        <span><strong>Distribution</strong> — Local grid upgrades</span>
                                     </li>
                                 </ul>
                             </div>
                             <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50">
-                                <h4 className="font-semibold text-green-900 mb-3">Components Less Affected</h4>
+                                <h4 className="font-semibold text-green-900 mb-3">How Good Policy Protects You</h4>
                                 <p className="text-sm text-gray-700 mb-3">
-                                    These costs scale more directly with <strong>energy consumption</strong> rather than peak demand:
+                                    Utilities are creating special tariffs that make data centers pay for what they use:
                                 </p>
                                 <ul className="space-y-2 text-sm">
                                     <li className="flex items-start gap-2">
-                                        <div className="w-3 h-3 rounded bg-blue-400 flex-shrink-0 mt-1"></div>
-                                        <span><strong>Fuel Costs</strong> — More load means more fuel revenue; roughly neutral to ratepayers</span>
+                                        <span className="text-green-600 font-bold">✓</span>
+                                        <span><strong>Demand charges</strong> based on peak usage</span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <div className="w-3 h-3 rounded bg-gray-400 flex-shrink-0 mt-1"></div>
-                                        <span><strong>Taxes & Fees</strong> — Usually percentage-based, scale with total usage</span>
+                                        <span className="text-green-600 font-bold">✓</span>
+                                        <span><strong>Minimum commitments</strong> to prevent stranded costs</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-green-600 font-bold">✓</span>
+                                        <span><strong>Exit fees</strong> if they leave early</span>
                                     </li>
                                 </ul>
                             </div>
                         </div>
 
                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                            <h4 className="font-semibold text-blue-900 mb-2">Why Renewables Are Different</h4>
+                            <h4 className="font-semibold text-blue-900 mb-2">Flexible Data Centers Provide Extra Benefits</h4>
                             <p className="text-sm text-gray-700">
-                                Solar, wind, and battery projects have minimal fuel costs—they're almost entirely <strong>capacity costs</strong>.
-                                When new renewable generation is built to serve data centers, it adds to the "Generation Capacity"
-                                portion of everyone's bill, not the fuel costs. This is why how infrastructure is allocated matters.
-                            </p>
-                        </div>
-
-                        <div className="p-4 bg-red-50 rounded-lg border border-red-200">
-                            <h4 className="font-semibold text-red-900 mb-2">Capacity Markets Can Amplify Impact</h4>
-                            <p className="text-sm text-gray-700">
-                                In regions with <strong>capacity markets</strong> (PJM, NYISO, MISO), large new loads can trigger
-                                price spikes that affect <em>all</em> ratepayers—not just through infrastructure costs, but through
-                                higher capacity prices paid by everyone. See the "Capacity Markets" section below for details.
+                                Data centers that can reduce power during peak hours require less infrastructure while providing
+                                the same revenue. They can also help stabilize the grid during emergencies by activating backup
+                                generators or reducing load—providing value that benefits all customers.
                             </p>
                         </div>
                     </div>
@@ -321,7 +487,7 @@ export default function LearnMorePage() {
                                         <td className="py-3 px-4">Highest infrastructure requirement</td>
                                     </tr>
                                     <tr className="border-t border-gray-200 bg-gray-50">
-                                        <td className="py-3 px-4 font-medium text-amber-700">Curtailable Load</td>
+                                        <td className="py-3 px-4 font-medium text-[#a69340]">Curtailable Load</td>
                                         <td className="py-3 px-4">Can reduce or shut off during grid emergencies</td>
                                         <td className="py-3 px-4">Moderate infrastructure savings</td>
                                     </tr>
@@ -397,8 +563,8 @@ export default function LearnMorePage() {
                                         <li><strong>Customer-based:</strong> Fixed costs spread per customer</li>
                                     </ul>
                                 </div>
-                                <div className="border border-amber-200 rounded-lg p-4 bg-amber-50">
-                                    <h4 className="font-semibold text-amber-900 mb-2">Why It Matters</h4>
+                                <div className="border border-[#a69340]/30 rounded-lg p-4 bg-[#a69340]/10">
+                                    <h4 className="font-semibold text-[#6b5d20] mb-2">Why It Matters</h4>
                                     <p className="text-sm text-gray-700">
                                         If a large data center gets a special rate that doesn't fully cover its share of
                                         infrastructure costs, other customers (including residential) may pay more. Proper
@@ -436,8 +602,8 @@ export default function LearnMorePage() {
                             bid to be available when needed. These markets can amplify the impact of large new loads like data centers.
                         </p>
 
-                        <div className="border border-amber-200 rounded-lg p-5 bg-amber-50">
-                            <h4 className="font-semibold text-amber-900 mb-3">How Capacity Cost Spillovers Work</h4>
+                        <div className="border border-[#a69340]/30 rounded-lg p-5 bg-[#a69340]/10">
+                            <h4 className="font-semibold text-[#6b5d20] mb-3">How Capacity Cost Spillovers Work</h4>
                             <p className="text-sm text-gray-700 mb-3">
                                 When massive new loads (like data centers) connect to the grid, they consume available <strong>reserve margin</strong>—the
                                 cushion of extra generation capacity that ensures reliability. As reserve margins shrink, capacity prices
@@ -555,7 +721,7 @@ export default function LearnMorePage() {
                                 </ul>
                             </div>
 
-                            <div className="border-l-4 border-amber-500 pl-4">
+                            <div className="border-l-4 border-[#a69340] pl-4">
                                 <h4 className="font-semibold text-gray-900">About Infrastructure</h4>
                                 <ul className="mt-2 space-y-1 text-sm">
                                     <li>• What new transmission or distribution infrastructure is required?</li>
@@ -670,23 +836,48 @@ export default function LearnMorePage() {
             </div>
 
             {/* Call to Action */}
-            <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-2xl p-8 text-white">
-                <h3 className="text-xl font-bold mb-3">Ready to Calculate Impact?</h3>
-                <p className="text-slate-300 mb-6">
-                    Use our calculator to see how a specific data center scenario might affect electricity costs in your community.
-                </p>
-                <div className="flex flex-wrap gap-4">
+            <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-2xl p-8 text-white">
+                    <h3 className="text-xl font-bold mb-3">Ready to Calculate Impact?</h3>
+                    <p className="text-slate-300 mb-6">
+                        Enter your utility's numbers to see projections specific to your community.
+                    </p>
                     <Link
                         href="/calculator"
-                        className="px-6 py-3 bg-amber-400 text-slate-900 font-semibold rounded-lg hover:bg-amber-300 transition-colors"
+                        className="inline-block px-6 py-3 bg-[#a69340] text-slate-900 font-semibold rounded-lg hover:bg-[#b8a54d] transition-colors"
                     >
                         Open Calculator →
                     </Link>
+                </div>
+                <div className="bg-white rounded-2xl p-8 border border-slate-200">
+                    <h3 className="text-xl font-bold text-slate-800 mb-3">Explore Interactively</h3>
+                    <p className="text-slate-600 mb-6">
+                        See the scale of AI data centers from a single GPU chip to the national grid.
+                    </p>
                     <Link
-                        href="/methodology"
-                        className="px-6 py-3 bg-slate-600 text-white font-semibold rounded-lg hover:bg-slate-500 transition-colors border border-slate-500"
+                        href="/story"
+                        className="inline-block px-6 py-3 bg-slate-100 text-slate-800 font-semibold rounded-lg hover:bg-slate-200 transition-colors"
                     >
-                        View Full Methodology
+                        AI Energy Explorer →
+                    </Link>
+                </div>
+            </div>
+
+            {/* Resources Footer */}
+            <div className="bg-slate-50 rounded-2xl p-6 border border-slate-200">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <h4 className="font-semibold text-slate-800 mb-1">Want to share this information?</h4>
+                        <p className="text-sm text-slate-600">Download our printable community guide to share at meetings.</p>
+                    </div>
+                    <Link
+                        href="/share/community-guide"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-700 font-medium rounded-lg border border-slate-300 hover:bg-slate-50 transition-colors"
+                    >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                            <path d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        Print Community Guide
                     </Link>
                 </div>
             </div>
