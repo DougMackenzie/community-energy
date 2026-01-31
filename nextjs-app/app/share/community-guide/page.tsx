@@ -40,7 +40,7 @@ export default function CommunityGuidePage() {
           .print-page {
             width: 8.5in !important;
             height: 11in !important;
-            padding: 0.35in !important;
+            padding: 0.3in !important;
             margin: 0 !important;
             box-sizing: border-box !important;
             display: flex !important;
@@ -51,53 +51,53 @@ export default function CommunityGuidePage() {
           }
 
           .print-header {
-            padding-bottom: 0.15in !important;
+            padding-bottom: 0.1in !important;
             border-bottom: 2px solid #1e293b !important;
-            margin-bottom: 0.15in !important;
+            margin-bottom: 0.1in !important;
           }
 
           .print-title {
-            font-size: 20pt !important;
+            font-size: 18pt !important;
             line-height: 1.1 !important;
             margin: 0 !important;
           }
 
           .print-subtitle {
-            font-size: 10pt !important;
+            font-size: 9pt !important;
             margin: 0 !important;
           }
 
           .print-faq-grid {
             display: grid !important;
             grid-template-columns: 1fr 1fr !important;
-            gap: 0.12in !important;
-            margin-bottom: 0.15in !important;
+            gap: 0.1in !important;
+            margin-bottom: 0.1in !important;
           }
 
           .print-faq-card {
             border: 1px solid #cbd5e1 !important;
             border-radius: 4px !important;
-            padding: 0.1in !important;
+            padding: 0.08in !important;
             background: #f8fafc !important;
           }
 
           .print-faq-q {
-            font-size: 10pt !important;
+            font-size: 9pt !important;
             font-weight: 600 !important;
             margin: 0 0 2pt 0 !important;
             color: #1e293b !important;
           }
 
           .print-faq-a {
-            font-size: 8.5pt !important;
+            font-size: 8pt !important;
             font-weight: 500 !important;
             margin: 0 0 2pt 0 !important;
             color: #d97706 !important;
           }
 
           .print-faq-detail {
-            font-size: 7.5pt !important;
-            line-height: 1.25 !important;
+            font-size: 7pt !important;
+            line-height: 1.2 !important;
             margin: 0 !important;
             color: #475569 !important;
           }
@@ -105,75 +105,122 @@ export default function CommunityGuidePage() {
           .print-checklist {
             border: 1px solid #cbd5e1 !important;
             border-radius: 4px !important;
-            padding: 0.12in !important;
+            padding: 0.1in !important;
             background: #f1f5f9 !important;
-            flex: 1 !important;
+            margin-bottom: 0.1in !important;
           }
 
           .print-checklist-title {
-            font-size: 11pt !important;
+            font-size: 10pt !important;
             font-weight: 700 !important;
             text-align: center !important;
-            margin: 0 0 0.08in 0 !important;
+            margin: 0 0 0.06in 0 !important;
             color: #1e293b !important;
           }
 
           .print-checklist-grid {
             display: grid !important;
             grid-template-columns: 1fr 1fr 1fr !important;
-            gap: 0.15in !important;
+            gap: 0.12in !important;
           }
 
           .print-checklist-category {
-            font-size: 8pt !important;
+            font-size: 7.5pt !important;
             font-weight: 600 !important;
-            margin: 0 0 4pt 0 !important;
+            margin: 0 0 3pt 0 !important;
           }
 
           .print-checklist-item {
-            font-size: 7pt !important;
-            line-height: 1.35 !important;
+            font-size: 6.5pt !important;
+            line-height: 1.3 !important;
             display: flex !important;
             align-items: flex-start !important;
-            gap: 4pt !important;
-            margin-bottom: 3pt !important;
+            gap: 3pt !important;
+            margin-bottom: 2pt !important;
             color: #334155 !important;
           }
 
           .print-checkbox {
-            width: 8pt !important;
-            height: 8pt !important;
+            width: 7pt !important;
+            height: 7pt !important;
             border: 1px solid #64748b !important;
             border-radius: 2px !important;
             flex-shrink: 0 !important;
             margin-top: 1pt !important;
           }
 
+          .print-why-section {
+            border: 1px solid #cbd5e1 !important;
+            border-radius: 4px !important;
+            padding: 0.1in !important;
+            background: #fefce8 !important;
+            flex: 1 !important;
+          }
+
+          .print-why-title {
+            font-size: 10pt !important;
+            font-weight: 700 !important;
+            text-align: center !important;
+            margin: 0 0 0.06in 0 !important;
+            color: #1e293b !important;
+          }
+
+          .print-why-quote {
+            font-size: 8pt !important;
+            font-style: italic !important;
+            text-align: center !important;
+            color: #475569 !important;
+            margin: 0 0 0.08in 0 !important;
+            padding: 0 0.2in !important;
+            line-height: 1.3 !important;
+          }
+
+          .print-why-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 0.08in !important;
+          }
+
+          .print-why-item {
+            font-size: 7pt !important;
+            line-height: 1.25 !important;
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 4pt !important;
+            color: #334155 !important;
+          }
+
+          .print-why-check {
+            color: #16a34a !important;
+            font-weight: bold !important;
+            flex-shrink: 0 !important;
+          }
+
           .print-footer {
             display: flex !important;
             justify-content: space-between !important;
             align-items: flex-end !important;
-            padding-top: 0.1in !important;
+            padding-top: 0.08in !important;
             border-top: 1px solid #e2e8f0 !important;
-            margin-top: 0.1in !important;
+            margin-top: 0.08in !important;
           }
 
           .print-footer-text {
-            font-size: 8pt !important;
+            font-size: 7pt !important;
             color: #64748b !important;
             margin: 0 !important;
           }
 
           .print-footer-url {
-            font-size: 10pt !important;
+            font-size: 9pt !important;
             font-weight: 600 !important;
             color: #1e293b !important;
             margin: 0 !important;
           }
 
           .print-qr {
-            width: 0.7in !important;
-            height: 0.7in !important;
+            width: 0.6in !important;
+            height: 0.6in !important;
           }
 
           .print-qr svg {
@@ -292,7 +339,7 @@ export default function CommunityGuidePage() {
           </div>
 
           {/* Checklist */}
-          <div className="print-checklist rounded-md bg-slate-100 p-4 border border-slate-200 flex-1">
+          <div className="print-checklist rounded-md bg-slate-100 p-4 border border-slate-200 mb-4">
             <h2 className="print-checklist-title text-base font-bold text-slate-800 text-center mb-3">
               Questions to Ask About Any Proposal
             </h2>
@@ -353,6 +400,34 @@ export default function CommunityGuidePage() {
                     <span>Who bears the risk of stranded assets?</span>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Why This Matters - NEW SECTION */}
+          <div className="print-why-section rounded-md bg-amber-50 p-4 border border-amber-200 flex-1">
+            <h2 className="print-why-title text-base font-bold text-slate-800 text-center mb-2">
+              Why This Matters
+            </h2>
+            <p className="print-why-quote text-sm italic text-slate-600 text-center mb-3 px-4">
+              &quot;The question isn&apos;t whether to build — it&apos;s how to build responsibly so that communities benefit and household bills stay affordable.&quot;
+            </p>
+            <div className="print-why-grid grid grid-cols-2 gap-3">
+              <div className="print-why-item flex items-start gap-2 text-xs text-slate-600">
+                <span className="print-why-check text-green-600 font-bold">✓</span>
+                <span><strong>Energy growth drives progress</strong> — from electrification to the internet, expanding energy has powered human advancement.</span>
+              </div>
+              <div className="print-why-item flex items-start gap-2 text-xs text-slate-600">
+                <span className="print-why-check text-green-600 font-bold">✓</span>
+                <span><strong>AI accelerates breakthroughs</strong> — data centers power research in medicine, materials science, and clean energy.</span>
+              </div>
+              <div className="print-why-item flex items-start gap-2 text-xs text-slate-600">
+                <span className="print-why-check text-green-600 font-bold">✓</span>
+                <span><strong>Smart policy protects ratepayers</strong> — with the right tariffs, large customers lower bills for everyone.</span>
+              </div>
+              <div className="print-why-item flex items-start gap-2 text-xs text-slate-600">
+                <span className="print-why-check text-green-600 font-bold">✓</span>
+                <span><strong>E3 Study (2025)</strong> — found data centers can reduce nearby residential bills by 1-2% through cost sharing.</span>
               </div>
             </div>
           </div>
