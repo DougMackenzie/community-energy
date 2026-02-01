@@ -229,6 +229,27 @@ def match_utility(feature, tariff_name):
 
     return False
 
+def calculate_area(geometry):
+    """Approximate area calculation for sorting (not geodetically accurate, but good enough for ordering)."""
+    def get_bounds(coords):
+        min_lon, max_lon = float('inf'), float('-inf')
+        min_lat, max_lat = float('inf'), float('-inf')
+
+        if isinstance(coords[0], (int, float)):
+            return coords[0], coords[0], coords[1], coords[1]
+
+        for c in coords:
+            c_min_lon, c_max_lon, c_min_lat, c_max_lat = get_bounds(c)
+            min_lon = min(min_lon, c_min_lon)
+            max_lon = max(max_lon, c_max_lon)
+            min_lat = min(min_lat, c_min_lat)
+            max_lat = max(max_lat, c_max_lat)
+
+        return min_lon, max_lon, min_lat, max_lat
+
+    min_lon, max_lon, min_lat, max_lat = get_bounds(geometry['coordinates'])
+    return (max_lon - min_lon) * (max_lat - min_lat)
+
 def process_features(features):
     """Process and tag features with tariff IDs."""
     processed = []
@@ -249,6 +270,9 @@ def process_features(features):
                 processed.append(feature)
                 matched_tariffs.add(tariff_name)
                 break
+
+    # Sort by area (largest first) so smaller utilities render on top
+    processed.sort(key=lambda f: calculate_area(f['geometry']), reverse=True)
 
     return processed, matched_tariffs
 
