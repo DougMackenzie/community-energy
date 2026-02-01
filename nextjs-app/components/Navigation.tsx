@@ -3,14 +3,20 @@
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useState, useEffect, useRef, Suspense } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import RegistrationForm from './RegistrationForm';
 
-// Methodology sub-pages for dropdown
+// Methodology sub-pages for dropdown (public pages only)
 const methodologySubPages = [
     { href: '/methodology?tab=research', label: 'Research & Framework' },
-    { href: '/methodology?tab=utility', label: 'Utility Data' },
-    { href: '/methodology?tab=geographic', label: 'Geographic View' },
     { href: '/methodology?tab=calculator', label: 'Calculator' },
     { href: '/methodology?tab=energy', label: 'Energy View' },
+];
+
+// Utility Portal sub-pages (protected - requires registration)
+const utilityPortalSubPages = [
+    { href: '/methodology?tab=utility', label: 'Utility Data' },
+    { href: '/methodology?tab=geographic', label: 'Geographic View' },
 ];
 
 // Learn More sub-pages for dropdown
@@ -23,12 +29,15 @@ const learnMoreSubPages = [
 const NavigationInner = () => {
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const { isRegistered, openRegistration, user, showRegistration } = useAuth();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMethodologyOpen, setIsMethodologyOpen] = useState(false);
     const [isLearnMoreOpen, setIsLearnMoreOpen] = useState(false);
+    const [isUtilityPortalOpen, setIsUtilityPortalOpen] = useState(false);
     const methodologyRef = useRef<HTMLDivElement>(null);
     const learnMoreRef = useRef<HTMLDivElement>(null);
+    const utilityPortalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -47,6 +56,9 @@ const NavigationInner = () => {
             if (learnMoreRef.current && !learnMoreRef.current.contains(event.target as Node)) {
                 setIsLearnMoreOpen(false);
             }
+            if (utilityPortalRef.current && !utilityPortalRef.current.contains(event.target as Node)) {
+                setIsUtilityPortalOpen(false);
+            }
         };
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -58,8 +70,23 @@ const NavigationInner = () => {
     ];
 
     // Check if we're on methodology page or learn more pages
-    const isMethodologyActive = pathname === '/methodology';
+    const currentTab = searchParams.get('tab');
+    const isMethodologyActive = pathname === '/methodology' && ['research', 'calculator', 'energy'].includes(currentTab || '');
     const isLearnMoreActive = pathname === '/learn-more' || pathname === '/share/community-guide';
+    const isUtilityPortalActive = pathname === '/methodology' && ['utility', 'geographic'].includes(currentTab || '');
+
+    // Handle utility portal link clicks - require registration
+    const handleUtilityPortalClick = (href: string) => {
+        if (isRegistered && user?.status === 'active') {
+            // User is registered, allow navigation
+            setIsUtilityPortalOpen(false);
+            window.location.href = href;
+        } else {
+            // User not registered, show registration modal
+            setIsUtilityPortalOpen(false);
+            openRegistration();
+        }
+    };
 
     return (
         <nav
@@ -145,6 +172,91 @@ const NavigationInner = () => {
                                             {subPage.label}
                                         </Link>
                                     ))}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Utility Portal Dropdown (Protected) */}
+                        <div className="relative" ref={utilityPortalRef}>
+                            <button
+                                onClick={() => setIsUtilityPortalOpen(!isUtilityPortalOpen)}
+                                className={`font-medium transition-colors duration-200 flex items-center gap-1 ${
+                                    isUtilityPortalActive
+                                        ? 'text-primary-600'
+                                        : 'text-gray-600 hover:text-primary-600'
+                                }`}
+                            >
+                                <svg
+                                    className="w-4 h-4 mr-1"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                                    />
+                                </svg>
+                                Utility Portal
+                                <svg
+                                    className={`w-4 h-4 transition-transform duration-200 ${isUtilityPortalOpen ? 'rotate-180' : ''}`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {/* Dropdown Menu */}
+                            {isUtilityPortalOpen && (
+                                <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                                    {/* Registration status indicator */}
+                                    <div className={`px-4 py-2 text-xs border-b border-gray-100 ${isRegistered ? 'text-green-600 bg-green-50' : 'text-amber-600 bg-amber-50'}`}>
+                                        {isRegistered ? (
+                                            <span className="flex items-center gap-1">
+                                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                                Registered Access
+                                            </span>
+                                        ) : (
+                                            <span className="flex items-center gap-1">
+                                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                                                </svg>
+                                                Registration Required
+                                            </span>
+                                        )}
+                                    </div>
+                                    {utilityPortalSubPages.map((subPage) => (
+                                        <button
+                                            key={subPage.href}
+                                            onClick={() => handleUtilityPortalClick(subPage.href)}
+                                            className={`w-full text-left block px-4 py-2 text-sm transition-colors ${
+                                                pathname === '/methodology' && searchParams.get('tab') === subPage.href.split('tab=')[1]
+                                                    ? 'bg-primary-50 text-primary-600'
+                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary-600'
+                                            }`}
+                                        >
+                                            {subPage.label}
+                                        </button>
+                                    ))}
+                                    {!isRegistered && (
+                                        <div className="px-4 py-2 border-t border-gray-100 mt-1">
+                                            <button
+                                                onClick={() => {
+                                                    setIsUtilityPortalOpen(false);
+                                                    openRegistration();
+                                                }}
+                                                className="w-full text-center text-sm bg-primary-600 hover:bg-primary-700 text-white py-2 px-3 rounded-md transition-colors"
+                                            >
+                                                Register for Free Access
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -280,6 +392,48 @@ const NavigationInner = () => {
                                 </div>
                             </div>
 
+                            {/* Utility Portal Section (Protected) */}
+                            <div className="border-t border-gray-100 pt-3">
+                                <span className={`font-medium py-2 flex items-center gap-2 ${isUtilityPortalActive ? 'text-primary-600' : 'text-gray-600'}`}>
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                    Utility Portal
+                                </span>
+                                <div className={`ml-4 text-xs mb-2 ${isRegistered ? 'text-green-600' : 'text-amber-600'}`}>
+                                    {isRegistered ? 'Registered Access' : 'Registration Required'}
+                                </div>
+                                <div className="ml-4 flex flex-col gap-2">
+                                    {utilityPortalSubPages.map((subPage) => (
+                                        <button
+                                            key={subPage.href}
+                                            onClick={() => {
+                                                setIsMobileMenuOpen(false);
+                                                handleUtilityPortalClick(subPage.href);
+                                            }}
+                                            className={`text-sm py-1 text-left transition-colors ${
+                                                pathname === '/methodology' && searchParams.get('tab') === subPage.href.split('tab=')[1]
+                                                    ? 'text-primary-600'
+                                                    : 'text-gray-500 hover:text-primary-600'
+                                            }`}
+                                        >
+                                            {subPage.label}
+                                        </button>
+                                    ))}
+                                    {!isRegistered && (
+                                        <button
+                                            onClick={() => {
+                                                setIsMobileMenuOpen(false);
+                                                openRegistration();
+                                            }}
+                                            className="text-sm bg-primary-600 hover:bg-primary-700 text-white py-2 px-3 rounded-md transition-colors mt-2"
+                                        >
+                                            Register for Free Access
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+
                             {/* Methodology Section */}
                             <div className="border-t border-gray-100 pt-3">
                                 <span className={`font-medium py-2 block ${isMethodologyActive ? 'text-primary-600' : 'text-gray-600'}`}>
@@ -322,6 +476,9 @@ const NavigationInner = () => {
                     </div>
                 )}
             </div>
+
+            {/* Registration Modal */}
+            {showRegistration && <RegistrationForm />}
         </nav>
     );
 };
