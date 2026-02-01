@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# user data (do not commit)
+/data/user-registry.json
+/data/access-log.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
