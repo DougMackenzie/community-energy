@@ -13,6 +13,12 @@ const methodologySubPages = [
     { href: '/methodology?tab=energy', label: 'Energy View' },
 ];
 
+// Learn More sub-pages for dropdown
+const learnMoreSubPages = [
+    { href: '/learn-more', label: 'Community Guide' },
+    { href: '/share/community-guide', label: 'Community Leader 1-Pager' },
+];
+
 // Inner component that uses searchParams
 const NavigationInner = () => {
     const pathname = usePathname();
@@ -20,7 +26,9 @@ const NavigationInner = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMethodologyOpen, setIsMethodologyOpen] = useState(false);
+    const [isLearnMoreOpen, setIsLearnMoreOpen] = useState(false);
     const methodologyRef = useRef<HTMLDivElement>(null);
+    const learnMoreRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -30,11 +38,14 @@ const NavigationInner = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Close dropdown when clicking outside
+    // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (methodologyRef.current && !methodologyRef.current.contains(event.target as Node)) {
                 setIsMethodologyOpen(false);
+            }
+            if (learnMoreRef.current && !learnMoreRef.current.contains(event.target as Node)) {
+                setIsLearnMoreOpen(false);
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -44,11 +55,11 @@ const NavigationInner = () => {
     const navLinks = [
         { href: '/', label: 'Home' },
         { href: '/story', label: 'AI Energy Explorer' },
-        { href: '/learn-more', label: 'Learn More' },
     ];
 
-    // Check if we're on methodology page
+    // Check if we're on methodology page or learn more pages
     const isMethodologyActive = pathname === '/methodology';
+    const isLearnMoreActive = pathname === '/learn-more' || pathname === '/share/community-guide';
 
     return (
         <nav
@@ -95,6 +106,48 @@ const NavigationInner = () => {
                                 {link.label}
                             </Link>
                         ))}
+
+                        {/* Learn More Dropdown */}
+                        <div className="relative" ref={learnMoreRef}>
+                            <button
+                                onClick={() => setIsLearnMoreOpen(!isLearnMoreOpen)}
+                                className={`font-medium transition-colors duration-200 flex items-center gap-1 ${
+                                    isLearnMoreActive
+                                        ? 'text-primary-600'
+                                        : 'text-gray-600 hover:text-primary-600'
+                                }`}
+                            >
+                                Learn More
+                                <svg
+                                    className={`w-4 h-4 transition-transform duration-200 ${isLearnMoreOpen ? 'rotate-180' : ''}`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {/* Dropdown Menu */}
+                            {isLearnMoreOpen && (
+                                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                                    {learnMoreSubPages.map((subPage) => (
+                                        <Link
+                                            key={subPage.href}
+                                            href={subPage.href}
+                                            onClick={() => setIsLearnMoreOpen(false)}
+                                            className={`block px-4 py-2 text-sm transition-colors ${
+                                                pathname === subPage.href
+                                                    ? 'bg-primary-50 text-primary-600'
+                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary-600'
+                                            }`}
+                                        >
+                                            {subPage.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
 
                         {/* Methodology Dropdown */}
                         <div className="relative" ref={methodologyRef}>
@@ -203,6 +256,29 @@ const NavigationInner = () => {
                                     {link.label}
                                 </Link>
                             ))}
+
+                            {/* Learn More Section */}
+                            <div className="border-t border-gray-100 pt-3">
+                                <span className={`font-medium py-2 block ${isLearnMoreActive ? 'text-primary-600' : 'text-gray-600'}`}>
+                                    Learn More
+                                </span>
+                                <div className="ml-4 flex flex-col gap-2 mt-2">
+                                    {learnMoreSubPages.map((subPage) => (
+                                        <Link
+                                            key={subPage.href}
+                                            href={subPage.href}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={`text-sm py-1 transition-colors ${
+                                                pathname === subPage.href
+                                                    ? 'text-primary-600'
+                                                    : 'text-gray-500 hover:text-primary-600'
+                                            }`}
+                                        >
+                                            {subPage.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
 
                             {/* Methodology Section */}
                             <div className="border-t border-gray-100 pt-3">
