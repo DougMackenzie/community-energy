@@ -535,7 +535,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- ALABAMA (TVA) ---
   {
-    id: 'tva-alabama',
+    id: 'tva-tn',  // Updated to match generated tariff ID format
     name: 'TVA - Alabama Power Distributors',
     shortName: 'TVA Alabama',
     state: 'Alabama',
@@ -560,7 +560,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- ARIZONA ---
   {
-    id: 'aps-arizona',
+    id: 'arizona-public-service-aps-az',  // Updated to match generated tariff ID format
     name: 'Arizona Public Service (APS)',
     shortName: 'APS Arizona',
     state: 'Arizona',
@@ -585,7 +585,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- ARKANSAS ---
   {
-    id: 'entergy-arkansas',
+    id: 'entergy-arkansas-ar',  // Updated to match generated tariff ID format
     name: 'Entergy Arkansas',
     shortName: 'Entergy Arkansas',
     state: 'Arkansas',
@@ -613,7 +613,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- COLORADO ---
   {
-    id: 'xcel-colorado',
+    id: 'xcel-energy-co-co',  // Updated to match generated tariff ID format
     name: 'Xcel Energy Colorado',
     shortName: 'Xcel Colorado',
     state: 'Colorado',
@@ -638,7 +638,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- FLORIDA ---
   {
-    id: 'duke-florida',
+    id: 'duke-energy-florida-fl',  // Updated to match generated tariff ID format
     name: 'Duke Energy Florida',
     shortName: 'Duke Florida',
     state: 'Florida',
@@ -663,7 +663,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- GEORGIA ---
   {
-    id: 'georgia-power',
+    id: 'georgia-power-ga',  // Updated to match generated tariff ID format
     name: 'Georgia Power',
     shortName: 'Georgia Power',
     state: 'Georgia',
@@ -688,7 +688,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- INDIANA ---
   {
-    id: 'aep-indiana-michigan',
+    id: 'aep-indiana-michigan-power-in',  // Updated to match generated tariff ID format
     name: 'Indiana Michigan Power (I&M)',
     shortName: 'AEP I&M',
     state: 'Indiana / Michigan',
@@ -721,7 +721,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- KENTUCKY (TVA) ---
   {
-    id: 'tva-kentucky',
+    id: 'tva-tn-ky',  // TVA Kentucky variant - unique ID (no exact generated match)
     name: 'TVA - Kentucky Distributors',
     shortName: 'TVA Kentucky',
     state: 'Kentucky',
@@ -746,7 +746,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- MISSISSIPPI ---
   {
-    id: 'entergy-mississippi',
+    id: 'entergy-mississippi-ms',  // Updated to match generated tariff ID format
     name: 'Entergy Mississippi',
     shortName: 'Entergy Mississippi',
     state: 'Mississippi',
@@ -774,7 +774,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- NEVADA ---
   {
-    id: 'nv-energy',
+    id: 'nv-energy-nv',  // Updated to match generated tariff ID format
     name: 'NV Energy',
     shortName: 'NV Energy Nevada',
     state: 'Nevada',
@@ -799,7 +799,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- NEW YORK ---
   {
-    id: 'coned-ny',
+    id: 'conedison-ny',  // Updated to match generated tariff ID format
     name: 'Consolidated Edison (ConEd)',
     shortName: 'ConEd NYC',
     state: 'New York',
@@ -826,7 +826,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     sources: ['ConEd PSC No. 10 Electricity', 'NYISO capacity data', 'NY PSC rate orders Dec 2023']
   },
   {
-    id: 'national-grid-ny',
+    id: 'national-grid-ny-ny',  // Updated to match generated tariff ID format
     name: 'National Grid Upstate NY',
     shortName: 'National Grid NY',
     state: 'New York',
@@ -852,7 +852,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     sources: ['National Grid PSC No. 220', 'NY PSC rate orders Sept 2025', 'NYISO data']
   },
   {
-    id: 'nyseg',
+    id: 'nyseg-ny',  // NYSEG unique - no direct match in generated (variant)
     name: 'New York State Electric & Gas (NYSEG)',
     shortName: 'NYSEG',
     state: 'New York',
@@ -880,7 +880,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- NORTH CAROLINA / SOUTH CAROLINA ---
   {
-    id: 'duke-carolinas',
+    id: 'duke-energy-carolinas-nc',  // Updated to match generated tariff ID format
     name: 'Duke Energy Carolinas',
     shortName: 'Duke Carolinas',
     state: 'North Carolina / South Carolina',
@@ -903,7 +903,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     sources: ['Duke Energy 2024 annual report', 'NC Utilities Commission filings', 'SemiAnalysis 2025']
   },
   {
-    id: 'duke-progress',
+    id: 'duke-energy-progress-nc',  // Duke Progress unique (variant of Duke Carolinas)
     name: 'Duke Energy Progress',
     shortName: 'Duke Progress',
     state: 'North Carolina / South Carolina',
@@ -928,7 +928,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- OHIO ---
   {
-    id: 'aep-ohio',
+    id: 'aep-ohio-oh',  // Updated to match generated tariff ID format
     name: 'AEP Ohio',
     shortName: 'AEP Ohio',
     state: 'Ohio',
@@ -960,7 +960,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- OKLAHOMA ---
   {
-    id: 'pso-oklahoma',
+    id: 'public-service-company-of-oklahoma-pso-ok',  // Updated to match generated tariff ID format
     name: 'Public Service Company of Oklahoma (PSO)',
     shortName: 'PSO Oklahoma',
     state: 'Oklahoma',
@@ -985,7 +985,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
   },
   // --- SOUTH DAKOTA ---
   {
-    id: 'bhe-south-dakota',
+    id: 'black-hills-energy-sd-sd',  // Updated to match generated tariff ID format
     name: 'Black Hills Energy South Dakota',
     shortName: 'BHE South Dakota',
     state: 'South Dakota',
@@ -1005,7 +1005,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- TENNESSEE (TVA) ---
   {
-    id: 'tva-tennessee',
+    id: 'tva-tn-main',  // TVA Tennessee main - unique ID (TVA multi-state)
     name: 'TVA - Tennessee Distributors',
     shortName: 'TVA Tennessee',
     state: 'Tennessee',
@@ -1030,7 +1030,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- TEXAS ---
   {
-    id: 'ercot-texas',
+    id: 'ercot-market-via-rep-tx',  // Updated to match generated tariff ID format
     name: 'ERCOT (Texas Grid)',
     shortName: 'ERCOT Texas',
     state: 'Texas',
@@ -1056,7 +1056,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     sources: ['ERCOT load forecasts', 'EIA Texas electricity data', 'Texas PUC filings', 'Potomac Economics 2024 State of the Market', 'SemiAnalysis 2025']
   },
   {
-    id: 'aep-swepco',
+    id: 'swepco-aep-tx',  // Updated to match generated tariff ID format
     name: 'Southwestern Electric Power (SWEPCO)',
     shortName: 'AEP SWEPCO',
     state: 'Texas (Panhandle) / Arkansas / Louisiana',
@@ -1079,7 +1079,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- VIRGINIA ---
   {
-    id: 'dominion-virginia',
+    id: 'dominion-energy-virginia-va',  // Updated to match generated tariff ID format
     name: 'Dominion Energy Virginia',
     shortName: 'Dominion Virginia',
     state: 'Virginia',
@@ -1112,7 +1112,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     sources: ['Dominion Energy 2024 IRP', 'Virginia SCC filings', 'JLARC Virginia Data Center Study 2024', 'PJM capacity auction results', 'SemiAnalysis 2025']
   },
   {
-    id: 'aep-appalachian-va',
+    id: 'aep-appalachian-power-va',  // Updated to match generated tariff ID format
     name: 'Appalachian Power (APCo) - Virginia',
     shortName: 'APCo Virginia',
     state: 'Virginia',
@@ -1145,7 +1145,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- WEST VIRGINIA ---
   {
-    id: 'aep-appalachian-wv',
+    id: 'aep-appalachian-power-wv',  // Unique (WV variant of APCo)
     name: 'Appalachian Power (APCo) - West Virginia',
     shortName: 'APCo West Virginia',
     state: 'West Virginia',
@@ -1176,7 +1176,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
     sources: ['APCo P.S.C. W.VA. Tariff No. 16', 'WV PSC Case No. 24-0854-E-42T', 'PJM capacity data']
   },
   {
-    id: 'mon-power-wv',
+    id: 'mon-power-wv',  // Unique (no direct generated match)
     name: 'Mon Power / Potomac Edison (FirstEnergy)',
     shortName: 'Mon Power WV',
     state: 'West Virginia',
@@ -1208,7 +1208,7 @@ export const UTILITY_PROFILES: UtilityProfile[] = [
 
   // --- WYOMING ---
   {
-    id: 'bhe-wyoming',
+    id: 'black-hills-energy-wy-wy',  // Updated to match generated tariff ID format
     name: 'Black Hills Energy Wyoming (Cheyenne)',
     shortName: 'BHE Cheyenne WY',
     state: 'Wyoming',
@@ -1462,13 +1462,43 @@ export function getAllUtilityProfiles(): UtilityProfile[] {
 }
 
 // Helper to get utility by ID
+// Merges generated tariff data into manual profiles to ensure Excel updates propagate
+// See QAQC Report Issues 2.1 and 2.2 for details
 export function getUtilityById(id: string): UtilityProfile | undefined {
-  // First check manually curated profiles
   const manual = UTILITY_PROFILES.find(u => u.id === id);
+  const tariff = GENERATED_TARIFFS.find(t => t.id === id);
+
+  // If both exist, merge: use manual profile structure but override tariff rates/scores
+  // with fresher data from generated (Excel-sourced) tariff database
+  if (manual && tariff) {
+    // Convert generated tariff charges to proper units
+    const peakDemandCharge = (tariff.peak_demand_charge || 5) * 1000; // $/kW to $/MW
+    const maxDemandCharge = (tariff.off_peak_demand_charge || tariff.peak_demand_charge * 0.4) * 1000;
+    const energyCharge = tariff.blendedRatePerKWh * 1000; // $/kWh to $/MWh
+    const ratchetPercent = tariff.protections.ratchet_pct
+      ? tariff.protections.ratchet_pct / 100
+      : manual.tariff.ratchetPercent;
+
+    return {
+      ...manual,
+      tariff: {
+        ...manual.tariff,
+        peakDemandCharge,
+        maxDemandCharge,
+        energyCharge,
+        ratchetPercent,
+        ratchetMonths: ratchetPercent ? 12 : manual.tariff.ratchetMonths,
+        tariffSource: `${tariff.tariff_name} (${tariff.rate_schedule}); ${manual.tariff.tariffSource}`,
+      },
+      // Note: protectionScore and protectionRating are on the tariff object, not the profile
+      // The generated tariff data is used via calculations that reference GENERATED_TARIFFS directly
+    };
+  }
+
+  // If only manual exists, return it
   if (manual) return manual;
 
-  // Then check generated tariffs
-  const tariff = GENERATED_TARIFFS.find(t => t.id === id);
+  // If only generated exists, convert to profile
   if (tariff) return enrichedTariffToUtilityProfile(tariff);
 
   return undefined;

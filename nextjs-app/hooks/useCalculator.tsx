@@ -70,7 +70,7 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
         'dispatchable',
     ]);
     const [projectionYears, setProjectionYears] = useState(10);
-    const [selectedUtilityId, setSelectedUtilityId] = useState<string>('pso-oklahoma');
+    const [selectedUtilityId, setSelectedUtilityId] = useState<string>('public-service-company-of-oklahoma-pso-ok');
 
     // Escalation control state - default OFF for flat baseline
     const [inflationEnabled, setInflationEnabled] = useState(false);
@@ -258,7 +258,7 @@ export const CalculatorProvider = ({ children }: { children: ReactNode }) => {
         setDataCenter(DEFAULT_DATA_CENTER);
         setSelectedScenarios(['baseline', 'unoptimized', 'flexible', 'dispatchable']);
         setProjectionYears(10);
-        setSelectedUtilityId('pso-oklahoma');
+        setSelectedUtilityId('public-service-company-of-oklahoma-pso-ok');
         // Reset escalation controls to defaults (OFF)
         setInflationEnabled(false);
         setInflationRate(ESCALATION_RANGES.inflation.default);

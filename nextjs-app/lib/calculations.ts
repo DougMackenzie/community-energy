@@ -1041,13 +1041,12 @@ const calculateNetResidentialImpact = (
         });
     }
 
-    // Net capacity cost after demand charge offset
-    // Peak/CP demand charges offset CP-related capacity costs
-    const peakDemandChargeAnnual = tariff
-        ? tariff.peakDemandCharge * 12
-        : DC_RATE_STRUCTURE.coincidentPeakChargePerMWMonth * 12;
-    const netCapacityCostPerMW = Math.max(0, baseCapacityCost - peakDemandChargeAnnual);
-    let capacityCostOrCredit = Math.max(0, effectivePeakMW) * netCapacityCostPerMW;
+    // Capacity cost calculation - use FULL base capacity cost
+    // NOTE: Demand charges are handled ONLY via the flow-through revenue offset mechanism
+    // (lines 1098-1111). Subtracting them here AND adding them to revenueOffset would
+    // double-count their benefit and artificially reduce bill impacts.
+    // See QAQC Report Issue 1.1 for details.
+    let capacityCostOrCredit = Math.max(0, effectivePeakMW) * baseCapacityCost;
 
     // ============================================
     // CAPACITY CREDITS for flexible operation
@@ -1190,6 +1189,31 @@ const calculateNetResidentialImpact = (
     const baseResidentialImpact = netAnnualImpact * adjustedAllocation;
     let residentialImpact = baseResidentialImpact + socializedCapacityCost;
 
+    // Calculate revenue adequacy FIRST (E3 methodology)
+    // We need this to apply the logic clamp below
+    const revenueAdequacy = calculateRevenueAdequacy(
+        dcCapacityMW,
+        loadFactor,
+        peakCoincidence,
+        tariff,
+        utility,
+        onsiteGenMW  // Pass onsite generation to reduce grid peak demand
+    );
+
+    // ============================================
+    // LOGIC CLAMP: Revenue Adequacy vs Bill Impact Consistency
+    // ============================================
+    // If Revenue Adequacy < 1.0 (deficit), bill impact MUST be positive.
+    // A deficit means DC revenue doesn't cover DC costs, so other ratepayers
+    // must cover the shortfall - they cannot simultaneously benefit.
+    // See QAQC Report Issue 1.2 for details.
+    if (revenueAdequacy.revenueAdequacyRatio < 1.0 && residentialImpact < 0) {
+        // Calculate minimum impact based on the deficit proportion
+        const deficitProportion = 1 - revenueAdequacy.revenueAdequacyRatio;
+        const minPositiveImpact = grossAnnualInfraCost * deficitProportion * residentialAllocation * 0.1;
+        residentialImpact = Math.max(minPositiveImpact, 0);
+    }
+
     // Apply floor to prevent unrealistically large bill decreases
     // Even with ideal DC integration, bills don't drop by more than ~15% from DC revenue alone
     // This reflects regulatory friction, utility retained earnings, and infrastructure reality
@@ -1200,16 +1224,6 @@ const calculateNetResidentialImpact = (
     }
 
     const perCustomerMonthly = residentialImpact / residentialCustomers / 12;
-
-    // Calculate revenue adequacy (E3 methodology)
-    const revenueAdequacy = calculateRevenueAdequacy(
-        dcCapacityMW,
-        loadFactor,
-        peakCoincidence,
-        tariff,
-        utility,
-        onsiteGenMW  // Pass onsite generation to reduce grid peak demand
-    );
 
     return {
         perCustomerMonthly,
@@ -1377,11 +1391,10 @@ export const calculateUnoptimizedTrajectory = (
 
             dcImpact = directImpact + socializedImpact;
 
-            if (dcImpact > 0) {
-                dcImpact *= Math.pow(1 + TIME_PARAMS.generalInflation, yearsOnline);
-            } else {
-                dcImpact *= Math.pow(1 + TIME_PARAMS.generalInflation * 0.8, yearsOnline);
-            }
+            // Apply symmetric inflation to both costs and benefits
+            // Previously used asymmetric rates (100% for costs, 80% for benefits)
+            // which biased results. See QAQC Report Issue 6.
+            dcImpact *= Math.pow(1 + TIME_PARAMS.generalInflation, yearsOnline);
         }
 
         const monthlyBill = baseline[year].monthlyBill + dcImpact;

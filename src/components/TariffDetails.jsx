@@ -54,7 +54,7 @@ const ProtectionBadge = ({ rating, score }) => {
   return (
     <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full ${colors.bg} ${colors.border} border`}>
       <span className={`text-sm font-medium ${colors.text}`}>{rating} Protection</span>
-      <span className={`text-xs ${colors.text} opacity-75`}>({score}/26)</span>
+      <span className={`text-xs ${colors.text} opacity-75`}>({score}/19)</span>
     </div>
   );
 };
