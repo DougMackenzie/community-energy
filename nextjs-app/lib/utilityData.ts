@@ -1348,3 +1348,92 @@ export function getMarketAdjustedAllocation(profile: UtilityProfile, dcPeakCoinc
   // Clamp to reasonable bounds
   return Math.max(0.20, Math.min(0.55, allocation));
 }
+
+// ============================================
+// ISO/RTO GROUPING FUNCTIONS
+// ============================================
+
+/**
+ * ISO/RTO labels for display
+ */
+const ISO_LABELS: Record<string, string> = {
+  'PJM': 'PJM Interconnection',
+  'ERCOT': 'ERCOT (Texas)',
+  'MISO': 'MISO',
+  'SPP': 'Southwest Power Pool',
+  'NYISO': 'New York ISO',
+  'ISO-NE': 'ISO New England',
+  'CAISO': 'California ISO',
+  'None': 'Regulated / Non-ISO',
+};
+
+/**
+ * Get utilities grouped by ISO/RTO
+ * Returns array of { label: string, iso: string, utilities: UtilityProfile[] }
+ */
+export function getUtilitiesGroupedByISO(): { label: string; iso: string; utilities: UtilityProfile[] }[] {
+  // Group utilities by ISO
+  const byISO = UTILITY_PROFILES.reduce((acc, utility) => {
+    // Map market type to ISO identifier
+    let iso = 'None';
+    switch (utility.market.type) {
+      case 'pjm': iso = 'PJM'; break;
+      case 'ercot': iso = 'ERCOT'; break;
+      case 'miso': iso = 'MISO'; break;
+      case 'spp': iso = 'SPP'; break;
+      case 'nyiso': iso = 'NYISO'; break;
+      case 'caiso': iso = 'CAISO'; break;
+      case 'regulated':
+      case 'tva':
+      default: iso = 'None'; break;
+    }
+
+    if (!acc[iso]) {
+      acc[iso] = [];
+    }
+    acc[iso].push(utility);
+    return acc;
+  }, {} as Record<string, UtilityProfile[]>);
+
+  // Convert to array with labels, filtering out empty groups
+  // Order: PJM, ERCOT, MISO, SPP, NYISO, ISO-NE, CAISO, None
+  const isoOrder = ['PJM', 'ERCOT', 'MISO', 'SPP', 'NYISO', 'ISO-NE', 'CAISO', 'None'];
+
+  return isoOrder
+    .filter(iso => byISO[iso]?.length > 0)
+    .map(iso => ({
+      label: ISO_LABELS[iso] || iso,
+      iso,
+      utilities: byISO[iso].sort((a, b) => {
+        // Sort by blended rate if available, otherwise by name
+        const aRate = a.tariff?.energyCharge || 0;
+        const bRate = b.tariff?.energyCharge || 0;
+        if (aRate !== bRate) return aRate - bRate;
+        return a.shortName.localeCompare(b.shortName);
+      }),
+    }));
+}
+
+/**
+ * Get tariff details for a utility profile
+ * Returns formatted tariff information for display
+ */
+export function getTariffDetails(profile: UtilityProfile): {
+  demandChargePeak: number;
+  demandChargeMax: number;
+  energyCharge: number;
+  ratchetPct: number | undefined;
+  flexBenefit: number;
+  tariffSource: string;
+  demandChargeType: string;
+} {
+  return {
+    demandChargePeak: profile.tariff.peakDemandCharge,
+    demandChargeMax: profile.tariff.maxDemandCharge,
+    energyCharge: profile.tariff.energyCharge,
+    ratchetPct: profile.tariff.ratchetPercent ? profile.tariff.ratchetPercent * 100 : undefined,
+    flexBenefit: profile.tariff.flexibilityBenefitMultiplier,
+    tariffSource: profile.tariff.tariffSource,
+    demandChargeType: profile.tariff.demandChargeType,
+  };
+}

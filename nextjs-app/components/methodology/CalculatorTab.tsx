@@ -6,7 +6,7 @@ import TrajectoryChart from '@/components/TrajectoryChart';
 import SummaryCards from '@/components/SummaryCards';
 import { useCalculator } from '@/hooks/useCalculator';
 import { formatCurrency, formatMW, SUPPLY_CURVE } from '@/lib/constants';
-import { getUtilitiesGroupedByState, type TariffStructure } from '@/lib/utilityData';
+import { getUtilitiesGroupedByState, getUtilitiesGroupedByISO, getTariffDetails, type TariffStructure } from '@/lib/utilityData';
 import { calculateDynamicCapacityPrice, calculateRevenueAdequacy, type CapacityPriceResult } from '@/lib/calculations';
 import { MARKET_FORECASTS } from '@/lib/marketForecasts';
 
@@ -361,11 +361,14 @@ export default function CalculatorTab({}: CalculatorTabProps = {}) {
                             onChange={(e) => selectUtilityProfile(e.target.value)}
                             className="w-full px-3 py-2.5 bg-white border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 text-slate-900 font-medium"
                         >
-                            {getUtilitiesGroupedByState().map((group) => (
-                                <optgroup key={group.state} label={group.state || 'Other Options'}>
+                            {/* Custom option */}
+                            <option value="custom">Custom / Enter Your Own</option>
+                            {/* Grouped by ISO/RTO */}
+                            {getUtilitiesGroupedByISO().map((group) => (
+                                <optgroup key={group.iso} label={group.label}>
                                     {group.utilities.map((profile) => (
                                         <option key={profile.id} value={profile.id}>
-                                            {profile.shortName}
+                                            {profile.shortName} {profile.state && `(${profile.state})`} - ${profile.tariff?.energyCharge?.toFixed(0) || '??'}/MWh
                                         </option>
                                     ))}
                                 </optgroup>
@@ -445,18 +448,54 @@ export default function CalculatorTab({}: CalculatorTabProps = {}) {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            {showAssumptions && (
-                                <div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-600 space-y-1">
-                                    <p>Market: <span className="font-medium text-slate-800">{utility.marketType?.toUpperCase() || 'REGULATED'}</span></p>
-                                    <p>Wholesale Energy: <span className="font-medium text-slate-800">${utility.marginalEnergyCost || 38}/MWh</span></p>
-                                    <p>CIAC Recovery: <span className="font-medium text-slate-800">{((utility.interconnection?.ciacRecoveryFraction || 0.60) * 100).toFixed(0)}%</span>
-                                        <span className="text-slate-400 ml-1">(DC pays upfront)</span>
-                                    </p>
-                                    <p>Network Upgrades: <span className="font-medium text-slate-800">${((utility.interconnection?.networkUpgradeCostPerMW || 140000) / 1000).toFixed(0)}k/MW</span>
-                                        <span className="text-slate-400 ml-1">(socialized)</span>
-                                    </p>
-                                    {utility.hasCapacityMarket && (
-                                        <p>Capacity Price: <span className="font-medium text-slate-800">${utility.capacityPrice2024?.toFixed(0) || 'N/A'}/MW-day</span></p>
+                            {showAssumptions && selectedUtilityProfile && (
+                                <div className="mt-2 pt-2 border-t border-slate-200 text-xs text-slate-600 space-y-2">
+                                    {/* Market Info */}
+                                    <div>
+                                        <p className="font-semibold text-slate-700 mb-1">Market & ISO</p>
+                                        <p>Market: <span className="font-medium text-slate-800">{utility.marketType?.toUpperCase() || 'REGULATED'}</span></p>
+                                        <p>Wholesale Energy: <span className="font-medium text-slate-800">${utility.marginalEnergyCost || 38}/MWh</span></p>
+                                        {utility.hasCapacityMarket && (
+                                            <p>Capacity Price: <span className="font-medium text-slate-800">${utility.capacityPrice2024?.toFixed(0) || 'N/A'}/MW-day</span></p>
+                                        )}
+                                    </div>
+
+                                    {/* Tariff Details */}
+                                    <div className="pt-2 border-t border-slate-200">
+                                        <p className="font-semibold text-slate-700 mb-1">Tariff Structure</p>
+                                        <p>Peak Demand: <span className="font-medium text-slate-800">${(selectedUtilityProfile.tariff?.peakDemandCharge / 1000).toFixed(2)}k/MW-mo</span>
+                                            <span className="text-slate-400 ml-1">({selectedUtilityProfile.tariff?.demandChargeType || 'N/A'})</span>
+                                        </p>
+                                        {selectedUtilityProfile.tariff?.maxDemandCharge > 0 && (
+                                            <p>Max Demand: <span className="font-medium text-slate-800">${(selectedUtilityProfile.tariff.maxDemandCharge / 1000).toFixed(2)}k/MW-mo</span></p>
+                                        )}
+                                        <p>Energy Rate: <span className="font-medium text-slate-800">${selectedUtilityProfile.tariff?.energyCharge?.toFixed(1) || 'N/A'}/MWh</span></p>
+                                        {selectedUtilityProfile.tariff?.ratchetPercent && (
+                                            <p>Ratchet: <span className="font-medium text-slate-800">{(selectedUtilityProfile.tariff.ratchetPercent * 100).toFixed(0)}%</span>
+                                                <span className="text-slate-400 ml-1">(of prior peak)</span>
+                                            </p>
+                                        )}
+                                        <p>Flex Benefit: <span className="font-medium text-slate-800">{selectedUtilityProfile.tariff?.flexibilityBenefitMultiplier?.toFixed(1) || '1.0'}x</span>
+                                            <span className="text-slate-400 ml-1">(from curtailment)</span>
+                                        </p>
+                                    </div>
+
+                                    {/* Infrastructure Costs */}
+                                    <div className="pt-2 border-t border-slate-200">
+                                        <p className="font-semibold text-slate-700 mb-1">Infrastructure</p>
+                                        <p>CIAC Recovery: <span className="font-medium text-slate-800">{((utility.interconnection?.ciacRecoveryFraction || 0.60) * 100).toFixed(0)}%</span>
+                                            <span className="text-slate-400 ml-1">(DC pays upfront)</span>
+                                        </p>
+                                        <p>Network Upgrades: <span className="font-medium text-slate-800">${((utility.interconnection?.networkUpgradeCostPerMW || 140000) / 1000).toFixed(0)}k/MW</span>
+                                            <span className="text-slate-400 ml-1">(socialized)</span>
+                                        </p>
+                                    </div>
+
+                                    {/* Source */}
+                                    {selectedUtilityProfile.tariff?.tariffSource && (
+                                        <p className="pt-2 border-t border-slate-200 text-[10px] text-slate-400 italic">
+                                            Source: {selectedUtilityProfile.tariff.tariffSource}
+                                        </p>
                                     )}
                                 </div>
                             )}
