@@ -71,7 +71,7 @@ const Footer = () => {
                             </li>
                             <li>
                                 <Link
-                                    href="/calculator"
+                                    href="/methodology?tab=calculator"
                                     className="text-gray-600 hover:text-primary-600 transition-colors"
                                 >
                                     Calculator

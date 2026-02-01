@@ -1,13 +1,25 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useState, useEffect, useRef, Suspense } from 'react';
 
-const Navigation = () => {
+// Methodology sub-pages for dropdown
+const methodologySubPages = [
+    { href: '/methodology?tab=research', label: 'Research & Framework' },
+    { href: '/methodology?tab=utility', label: 'Utility Data' },
+    { href: '/methodology?tab=calculator', label: 'Calculator' },
+    { href: '/methodology?tab=energy', label: 'Energy View' },
+];
+
+// Inner component that uses searchParams
+const NavigationInner = () => {
     const pathname = usePathname();
+    const searchParams = useSearchParams();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMethodologyOpen, setIsMethodologyOpen] = useState(false);
+    const methodologyRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -17,14 +29,25 @@ const Navigation = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (methodologyRef.current && !methodologyRef.current.contains(event.target as Node)) {
+                setIsMethodologyOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
     const navLinks = [
         { href: '/', label: 'Home' },
         { href: '/story', label: 'AI Energy Explorer' },
-        { href: '/calculator', label: 'Calculator' },
-        { href: '/energy-view', label: 'Energy View' },
         { href: '/learn-more', label: 'Learn More' },
-        { href: '/methodology', label: 'Methodology' },
     ];
+
+    // Check if we're on methodology page
+    const isMethodologyActive = pathname === '/methodology';
 
     return (
         <nav
@@ -71,6 +94,49 @@ const Navigation = () => {
                                 {link.label}
                             </Link>
                         ))}
+
+                        {/* Methodology Dropdown */}
+                        <div className="relative" ref={methodologyRef}>
+                            <button
+                                onClick={() => setIsMethodologyOpen(!isMethodologyOpen)}
+                                className={`font-medium transition-colors duration-200 flex items-center gap-1 ${
+                                    isMethodologyActive
+                                        ? 'text-primary-600'
+                                        : 'text-gray-600 hover:text-primary-600'
+                                }`}
+                            >
+                                Methodology
+                                <svg
+                                    className={`w-4 h-4 transition-transform duration-200 ${isMethodologyOpen ? 'rotate-180' : ''}`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            {/* Dropdown Menu */}
+                            {isMethodologyOpen && (
+                                <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                                    {methodologySubPages.map((subPage) => (
+                                        <Link
+                                            key={subPage.href}
+                                            href={subPage.href}
+                                            onClick={() => setIsMethodologyOpen(false)}
+                                            className={`block px-4 py-2 text-sm transition-colors ${
+                                                pathname === '/methodology' && searchParams.get('tab') === subPage.href.split('tab=')[1]
+                                                    ? 'bg-primary-50 text-primary-600'
+                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-primary-600'
+                                            }`}
+                                        >
+                                            {subPage.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+
                         <a
                             href="https://github.com/DougMackenzie/power-insight"
                             target="_blank"
@@ -136,6 +202,30 @@ const Navigation = () => {
                                     {link.label}
                                 </Link>
                             ))}
+
+                            {/* Methodology Section */}
+                            <div className="border-t border-gray-100 pt-3">
+                                <span className={`font-medium py-2 block ${isMethodologyActive ? 'text-primary-600' : 'text-gray-600'}`}>
+                                    Methodology
+                                </span>
+                                <div className="ml-4 flex flex-col gap-2 mt-2">
+                                    {methodologySubPages.map((subPage) => (
+                                        <Link
+                                            key={subPage.href}
+                                            href={subPage.href}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={`text-sm py-1 transition-colors ${
+                                                pathname === '/methodology' && searchParams.get('tab') === subPage.href.split('tab=')[1]
+                                                    ? 'text-primary-600'
+                                                    : 'text-gray-500 hover:text-primary-600'
+                                            }`}
+                                        >
+                                            {subPage.label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+
                             <a
                                 href="https://github.com/DougMackenzie/power-insight"
                                 target="_blank"
@@ -156,6 +246,23 @@ const Navigation = () => {
                 )}
             </div>
         </nav>
+    );
+};
+
+// Wrapper component with Suspense boundary for useSearchParams
+const Navigation = () => {
+    return (
+        <Suspense fallback={
+            <nav className="sticky top-0 z-50 bg-white border-b border-gray-200">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center h-16">
+                        <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-accent-600 rounded-lg" />
+                    </div>
+                </div>
+            </nav>
+        }>
+            <NavigationInner />
+        </Suspense>
     );
 };
 

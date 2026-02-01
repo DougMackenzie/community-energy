@@ -49,7 +49,7 @@ export default function HomePage() {
             </p>
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/calculator"
+                href="/methodology?tab=calculator"
                 className="px-8 py-4 bg-amber-400 text-slate-900 font-semibold rounded-full hover:bg-amber-300 transition-all duration-200 hover:scale-105"
               >
                 Calculate My Electric Costs
@@ -319,7 +319,7 @@ export default function HomePage() {
           </div>
 
           <p className="text-center text-sm text-slate-500 mt-6">
-            Use our <Link href="/calculator" className="text-amber-600 hover:underline font-medium">calculator</Link> to see projections specific to your utility and community.
+            Use our <Link href="/methodology?tab=calculator" className="text-amber-600 hover:underline font-medium">calculator</Link> to see projections specific to your utility and community.
           </p>
         </div>
       </section>
@@ -507,7 +507,7 @@ export default function HomePage() {
               specific situation.
             </p>
             <Link
-              href="/calculator"
+              href="/methodology?tab=calculator"
               className="inline-block px-6 py-3 bg-slate-700 text-white font-semibold rounded-full hover:bg-slate-600 transition-colors"
             >
               Open Calculator
