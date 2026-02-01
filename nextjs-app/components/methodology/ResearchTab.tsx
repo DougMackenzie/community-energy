@@ -85,6 +85,7 @@ interface ResearchTabProps {
  * explaining the technical framework, calculations, and data sources.
  */
 export default function ResearchTab({ initialSection = 'data-sources' }: ResearchTabProps) {
+    // Default to 'data-sources' so Revenue Adequacy section is visible
     const [expandedSection, setExpandedSection] = useState<string | null>(initialSection);
     const [carbonData, setCarbonData] = useState<CarbonData | null>(null);
 
@@ -208,7 +209,7 @@ export default function ResearchTab({ initialSection = 'data-sources' }: Researc
                             <p className="text-sm text-gray-700">
                                 The 25% peak reduction capability is based on{' '}
                                 <a href="https://dcflex.epri.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                                    EPRI&apos;s DCFlex initiative
+                                    EPRI's DCFlex initiative
                                 </a>
                                 —a 2024 field demonstration at a major data center that achieved 25% sustained power reduction
                                 during 3-hour peak events. While theoretical analysis suggests up to {(aggregateFlexibility * 100).toFixed(0)}% is possible,
@@ -265,8 +266,8 @@ export default function ResearchTab({ initialSection = 'data-sources' }: Researc
                                 </tbody>
                             </table>
                             <p className="text-xs text-gray-500">
-                                In regulated markets, PUC-approved tariffs are designed to recover the utility&apos;s cost of serving each customer class.
-                                When a data center pays its industrial tariff rates, those costs are considered &quot;recovered&quot;—not shifted to residential customers.
+                                In regulated markets, PUC-approved tariffs are designed to recover the utility's cost of serving each customer class.
+                                When a data center pays its industrial tariff rates, those costs are considered "recovered"—not shifted to residential customers.
                             </p>
                             <p className="text-xs text-gray-500 mt-2">
                                 Note: These flow-through rates determine how DC tariff revenue offsets infrastructure costs.
@@ -339,7 +340,7 @@ export default function ResearchTab({ initialSection = 'data-sources' }: Researc
                                 to off-peak hours, data centers can run at higher average utilization while reducing peak contribution.
                             </p>
                             <p className="text-sm mt-2">
-                                <strong>Note on firm load behavior:</strong> Firm data centers don&apos;t run at a constant 80%—they fluctuate
+                                <strong>Note on firm load behavior:</strong> Firm data centers don't run at a constant 80%—they fluctuate
                                 between roughly 70-100% of interconnected capacity based on IT workload demands. The key difference is that
                                 they <em>cannot coordinate</em> their load reductions with grid stress events. When the grid needs relief during
                                 peak hours, a firm data center may happen to be running at 90% or 100%, while a flexible data center can
@@ -375,7 +376,7 @@ export default function ResearchTab({ initialSection = 'data-sources' }: Researc
                                 <p className="mt-1">
                                     Utilities earn margin on each MWh sold, calculated dynamically as <code className="text-xs bg-gray-200 px-1 rounded">tariff energy rate - wholesale cost</code>.
                                     Wholesale costs vary by market: ERCOT $45, PJM $42, MISO $35, TVA $32, SPP $28, NYISO $55, Regulated $38/MWh.
-                                    This margin contributes to the utility&apos;s revenue requirement, which is then allocated across all customers.
+                                    This margin contributes to the utility's revenue requirement, which is then allocated across all customers.
                                 </p>
                                 <div className="mt-2 pl-4 border-l-2 border-blue-300">
                                     <p><strong>Firm (80% LF):</strong> 1,000 MW x 80% x 8,760 hrs = 7,008,000 MWh/year</p>
@@ -402,14 +403,14 @@ export default function ResearchTab({ initialSection = 'data-sources' }: Researc
                                     <div>
                                         <p><strong>Non-Coincident Peak (NCP) Charges</strong> (~${DC_RATE_STRUCTURE.nonCoincidentPeakChargePerMWMonth.toLocaleString()}/MW-month)</p>
                                         <p className="text-gray-600 text-xs mt-1">
-                                            Based on the customer&apos;s own monthly peak (any time). Both firm and flexible DCs pay
+                                            Based on the customer's own monthly peak (any time). Both firm and flexible DCs pay
                                             similar NCP charges based on their installed capacity.
                                         </p>
                                     </div>
                                 </div>
                                 <div className="mt-3 p-3 bg-amber-50 rounded border border-amber-200">
                                     <p className="text-sm text-amber-900">
-                                        <strong>Important nuance:</strong> When comparing &quot;same interconnection&quot; scenarios, flexible DCs
+                                        <strong>Important nuance:</strong> When comparing "same interconnection" scenarios, flexible DCs
                                         generate <strong>less</strong> CP demand revenue (they curtail during peaks) but similar NCP revenue.
                                         The net benefit to ratepayers comes primarily from reduced infrastructure costs, not increased demand charges.
                                     </p>
@@ -419,9 +420,9 @@ export default function ResearchTab({ initialSection = 'data-sources' }: Researc
 
                         <p className="mt-6"><strong>Residential Cost Allocation:</strong></p>
                         <p className="text-sm mb-3">
-                            The share of net costs allocated to residential customers depends on the utility&apos;s market structure
-                            and how well the data center&apos;s tariff payments cover its cost of service.
-                            See the <strong>&quot;Market Structures & Cost Allocation Framework&quot;</strong> section below for detailed
+                            The share of net costs allocated to residential customers depends on the utility's market structure
+                            and how well the data center's tariff payments cover its cost of service.
+                            See the <strong>"Market Structures & Cost Allocation Framework"</strong> section below for detailed
                             allocation factors by market type (regulated, PJM, ERCOT, etc.).
                         </p>
                         <ul className="list-disc list-inside space-y-1 ml-4 text-sm">
@@ -601,8 +602,8 @@ $1,120 | *  Emergency
                             </table>
                             <p className="text-xs text-gray-600">
                                 <strong>Why this matters:</strong> A 10 GW data center added to a 5 GW utility in PJM impacts the
-                                ~150 GW PJM reserve margin (~7% increase), not the utility&apos;s margin alone. The price
-                                increase is then borne by that utility&apos;s customers at their share of the ISO-wide impact.
+                                ~150 GW PJM reserve margin (~7% increase), not the utility's margin alone. The price
+                                increase is then borne by that utility's customers at their share of the ISO-wide impact.
                             </p>
                         </div>
                     </div>
@@ -617,7 +618,7 @@ $1,120 | *  Emergency
                 >
                     <div className="space-y-6 text-gray-600">
                         <p>
-                            When a data center triggers a capacity price increase, the cost isn&apos;t borne by the data center alone.
+                            When a data center triggers a capacity price increase, the cost isn't borne by the data center alone.
                             The increased capacity price applies to <strong>all load in the market</strong>, meaning existing
                             residential customers pay higher prices on their existing consumption. This spillover effect
                             has drawn regulatory attention in organized capacity markets.
@@ -629,8 +630,8 @@ $1,120 | *  Emergency
                                 Case Study: PJM 2025/26 Capacity Auction
                             </h4>
                             <p className="text-sm text-gray-700 mb-3">
-                                PJM&apos;s 2025/26 capacity auction illustrates how rapid load growth can affect prices for all customers.
-                                When a large data center adds to system peak, it doesn&apos;t just pay higher capacity prices for its own load—
+                                PJM's 2025/26 capacity auction illustrates how rapid load growth can affect prices for all customers.
+                                When a large data center adds to system peak, it doesn't just pay higher capacity prices for its own load—
                                 the capacity price increase affects <strong>all existing load</strong>.
                             </p>
                             <div className="grid md:grid-cols-2 gap-4 mt-4">
@@ -652,7 +653,7 @@ $1,120 | *  Emergency
                             <h4 className="font-semibold text-amber-900 mb-3">Socialized Cost Impact Formula</h4>
                             <p className="text-sm text-gray-700 mb-3">
                                 When the data center causes capacity prices to rise, existing customers pay the higher
-                                price on their <strong>existing load</strong>. This is the &quot;socialization&quot; effect:
+                                price on their <strong>existing load</strong>. This is the "socialization" effect:
                             </p>
                             <div className="bg-white p-4 rounded-lg font-mono text-sm overflow-x-auto">
                                 <p><strong>Socialized Cost = Existing Residential Peak x (New Price - Old Price) x 365 days</strong></p>
@@ -770,81 +771,20 @@ $1,120 | *  Emergency
                     </div>
                 </Section>
 
-                {/* DATA SOURCES & REVENUE ADEQUACY */}
+                {/* DATA SOURCES */}
                 <Section
                     id="data-sources"
-                    title="Data Sources & Revenue Adequacy Analysis"
+                    title="Data Sources & Specific Values Used"
                     expandedSection={expandedSection}
                     toggleSection={toggleSection}
-                    badge="E3 Methodology"
-                    badgeColor="bg-green-100 text-green-800"
                 >
                     <div className="space-y-6 text-gray-600">
-                        <p>
-                            Our revenue adequacy analysis follows the methodology from the E3 Study{' '}
-                            <a
-                                href="https://www.ethree.com/wp-content/uploads/2024/12/Tailored-for-Scale-Designing-Rates-to-Support-Data-Centers-E3-December-2024.pdf"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:underline"
-                            >
-                                &quot;Tailored for Scale: Designing Rates to Support Data Centers&quot;
-                            </a>{' '}
-                            (December 2024), which established the framework for evaluating whether data center tariffs
-                            adequately cover incremental infrastructure costs.
-                        </p>
-
                         <p className="text-sm bg-blue-50 p-4 rounded-lg border border-blue-200">
                             <strong>Transparency Note:</strong> Below we document data sources where available.
                             Values marked with <span className="inline-block px-1.5 py-0.5 bg-amber-100 text-amber-800 text-xs rounded font-medium">Model Assumption</span> are
                             based on industry understanding or selected from published ranges, but not directly cited from a specific source.
                             You can substitute your own values in the calculator.
                         </p>
-
-                        <div className="border border-green-200 rounded-lg p-4 bg-green-50">
-                            <h4 className="font-semibold text-green-900 mb-3">Revenue Adequacy Framework (E3 Methodology)</h4>
-                            <p className="text-sm text-gray-700 mb-3">
-                                The E3 study defines <strong>revenue adequacy</strong> as the ratio of data center
-                                tariff revenue to the incremental cost of serving that load. A ratio ≥ 100% indicates
-                                the tariff fully covers costs; below 100% indicates potential cross-subsidization.
-                            </p>
-                            <div className="bg-white p-4 rounded-lg font-mono text-sm overflow-x-auto">
-                                <p><strong>Revenue Adequacy Ratio = Annual Tariff Revenue / Annual Incremental Cost</strong></p>
-                                <p className="text-gray-500 mt-2">Where:</p>
-                                <ul className="text-gray-600 mt-1 space-y-1 text-xs">
-                                    <li>- Tariff Revenue = Demand Charges + Energy Charges + Fixed Charges</li>
-                                    <li>- Incremental Cost = Transmission + Distribution + Generation Capacity</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div className="grid md:grid-cols-3 gap-4 mt-4">
-                            <div className="border border-gray-200 rounded-lg p-4">
-                                <h4 className="font-semibold text-gray-900 mb-2">Infrastructure Costs</h4>
-                                <ul className="text-sm space-y-1">
-                                    <li><strong>Transmission:</strong> ${INFRASTRUCTURE_COSTS.transmissionCostPerMW.toLocaleString()}/MW</li>
-                                    <li><strong>Distribution:</strong> ${INFRASTRUCTURE_COSTS.distributionCostPerMW.toLocaleString()}/MW</li>
-                                    <li><strong>Generation:</strong> ${INFRASTRUCTURE_COSTS.capacityCostPerMWYear.toLocaleString()}/MW-year</li>
-                                </ul>
-                            </div>
-                            <div className="border border-gray-200 rounded-lg p-4">
-                                <h4 className="font-semibold text-gray-900 mb-2">Revenue Components</h4>
-                                <ul className="text-sm space-y-1">
-                                    <li><strong>CP Charge:</strong> ${DC_RATE_STRUCTURE.coincidentPeakChargePerMWMonth.toLocaleString()}/MW-mo</li>
-                                    <li><strong>NCP Charge:</strong> ${DC_RATE_STRUCTURE.nonCoincidentPeakChargePerMWMonth.toLocaleString()}/MW-mo</li>
-                                    <li><strong>Energy Margin:</strong> Varies by market</li>
-                                </ul>
-                            </div>
-                            <div className="border border-gray-200 rounded-lg p-4">
-                                <h4 className="font-semibold text-gray-900 mb-2">Market Wholesale Costs</h4>
-                                <ul className="text-sm space-y-1">
-                                    <li><strong>ERCOT:</strong> $45/MWh</li>
-                                    <li><strong>PJM:</strong> $42/MWh</li>
-                                    <li><strong>MISO:</strong> $35/MWh</li>
-                                    <li><strong>NYISO:</strong> $55/MWh</li>
-                                </ul>
-                            </div>
-                        </div>
 
                         {/* EIA Data */}
                         <div className="border border-gray-200 rounded-lg p-4">
@@ -941,6 +881,14 @@ $1,120 | *  Emergency
                                         </td>
                                     </tr>
                                     <tr className="border-b border-gray-100">
+                                        <td className="py-2">Distribution cost multiplier</td>
+                                        <td className="text-right font-medium">10-100%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium">Model Assumption</span>
+                                            <span className="block text-gray-400 mt-1">Large DCs (&gt;20 MW) connect at transmission voltage: 10%. Medium (10-20 MW): 40%. Small (&lt;10 MW): 100%</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
                                         <td className="py-2">Annual infrastructure upgrade rate</td>
                                         <td className="text-right font-medium">{(INFRASTRUCTURE_COSTS.annualBaselineUpgradePercent * 100).toFixed(1)}%</td>
                                         <td className="pl-4 text-xs">
@@ -958,6 +906,275 @@ $1,120 | *  Emergency
                                                 NREL ATB 2024: Fossil Energy Technologies
                                             </a>
                                             <span className="block text-gray-400">Range: $98k-$175k/MW-yr; <span className="px-1 bg-amber-100 text-amber-800 rounded">$150k selected as representative</span></span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Interconnection Cost Treatment */}
+                        <div className="border border-blue-200 bg-blue-50 rounded-lg p-4">
+                            <h4 className="font-semibold text-blue-900 mb-2">
+                                Interconnection Cost Treatment (CIAC vs Network Upgrades)
+                            </h4>
+                            <p className="text-sm text-gray-600 mb-3">
+                                Based on E3's "Tailored for Scale" methodology: costs for infrastructure exclusive to the data center
+                                facility that are paid upfront via CIAC (Contribution in Aid of Construction) are excluded from
+                                ratepayer impact calculations, as these are "simply passed through and would not have a ratepayer impact."
+                            </p>
+                            <div className="grid md:grid-cols-2 gap-4 mb-3">
+                                <div className="bg-white p-3 rounded border border-gray-200">
+                                    <p className="text-xs font-semibold text-gray-700 mb-1">CIAC-Recovered (DC Pays Upfront)</p>
+                                    <ul className="text-xs text-gray-600 space-y-0.5">
+                                        <li>• Dedicated distribution substations</li>
+                                        <li>• Interconnection lines to facility</li>
+                                        <li>• Metering and protection equipment</li>
+                                        <li>• Local transformer upgrades</li>
+                                    </ul>
+                                </div>
+                                <div className="bg-white p-3 rounded border border-gray-200">
+                                    <p className="text-xs font-semibold text-gray-700 mb-1">Network Upgrades (Potentially Socialized)</p>
+                                    <ul className="text-xs text-gray-600 space-y-0.5">
+                                        <li>• Transmission system reinforcement</li>
+                                        <li>• Generation interconnection facilities</li>
+                                        <li>• Regional grid upgrades</li>
+                                        <li>• Congestion-driven improvements</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Market Type</th>
+                                        <th className="text-right py-2 font-medium">CIAC Recovery</th>
+                                        <th className="text-right py-2 font-medium">Network Cost/MW</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">SPP / Regulated (PSO-like)</td>
+                                        <td className="text-right font-medium">95%</td>
+                                        <td className="text-right font-medium">$100,000/MW</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">PJM (Dominion, AEP Ohio)</td>
+                                        <td className="text-right font-medium">95%</td>
+                                        <td className="text-right font-medium">$250,000/MW</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">ERCOT (4CP allocation)</td>
+                                        <td className="text-right font-medium">70%</td>
+                                        <td className="text-right font-medium">$105,000/MW</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">MISO / Other Regulated</td>
+                                        <td className="text-right font-medium">55-60%</td>
+                                        <td className="text-right font-medium">$140,000-165,000/MW</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="text-xs text-gray-500 mt-2">
+                                Source: E3 "Tailored for Scale" (Dec 2025), utility tariff analysis. CIAC recovery fractions
+                                vary by utility policy and interconnection agreement terms.
+                            </p>
+                        </div>
+
+                        {/* Revenue Adequacy */}
+                        <div id="revenue-adequacy" className="border border-green-200 bg-green-50 rounded-lg p-4 scroll-mt-20">
+                            <h4 className="font-semibold text-green-900 mb-2">
+                                Revenue Adequacy Calculation
+                            </h4>
+                            <p className="text-sm text-gray-600 mb-3">
+                                Following E3 "Tailored for Scale" methodology, we calculate whether data center revenue (what they pay through tariffs)
+                                covers their marginal cost-to-serve. A ratio above 1.0 indicates surplus revenue that can
+                                benefit other ratepayers.
+                            </p>
+                            <div className="bg-white p-3 rounded border border-gray-200 mb-3">
+                                <p className="text-xs font-mono text-gray-700">
+                                    Revenue Adequacy Ratio = Total DC Revenue / Marginal Cost to Serve
+                                </p>
+                                <p className="text-xs font-mono text-gray-700 mt-2">
+                                    Surplus (or Deficit) = Total DC Revenue − Marginal Cost to Serve
+                                </p>
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Where: Revenue = Demand Charges + Energy Charges + Customer Charges
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                    Cost = Marginal Capacity + Marginal Energy + Network Upgrades (annualized)
+                                </p>
+                            </div>
+
+                            {/* Fuel Rider Revenue Treatment */}
+                            <h5 className="font-medium text-gray-800 mt-4 mb-2">Fuel Rider Revenue Treatment</h5>
+                            <p className="text-xs text-gray-600 mb-2">
+                                Some utility tariffs (like PSO&apos;s LPL) use a &quot;fuel rider&quot; structure where the base
+                                energy rate is low and wholesale energy costs are passed through separately:
+                            </p>
+                            <div className="bg-white p-3 rounded border border-gray-200 mb-3">
+                                <p className="text-xs font-mono text-gray-700">
+                                    Total Energy Revenue = Base Tariff Rate + Fuel Rider (≈ Wholesale Cost)
+                                </p>
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Detection: If tariff energy charge &lt; 80% of wholesale cost → fuel rider structure
+                                </p>
+                            </div>
+                            <p className="text-xs text-gray-500 mb-3">
+                                For fuel rider tariffs, both the fuel rider revenue collection AND the wholesale energy cost
+                                are included in the Revenue Adequacy calculation. This ensures the model correctly captures
+                                that fuel costs are a straight pass-through with no margin impact.
+                            </p>
+
+                            {/* Market-Specific Capacity Cost Treatment */}
+                            <h5 className="font-medium text-gray-800 mt-4 mb-2">Capacity Cost by Market Structure</h5>
+                            <p className="text-xs text-gray-600 mb-2">
+                                Different market structures have fundamentally different capacity cost mechanisms. Our model aligns
+                                Revenue Adequacy calculations with the Bill Forecast to ensure consistent results:
+                            </p>
+                            <table className="w-full text-sm mb-4">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Market</th>
+                                        <th className="text-left py-2 font-medium">Capacity Cost Method</th>
+                                        <th className="text-left py-2 font-medium">Rationale</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-amber-700 font-medium">ERCOT</td>
+                                        <td className="text-xs text-gray-600">50% of embedded capacity cost (scarcity pricing risk premiums)</td>
+                                        <td className="text-xs text-gray-500">Energy-only market - scarcity pricing and risk premiums flow through to ratepayers via retail providers</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-blue-700 font-medium">PJM / NYISO</td>
+                                        <td className="text-xs text-gray-600">Capacity market price × peak demand × 365</td>
+                                        <td className="text-xs text-gray-500">Capacity markets set explicit prices for reliability (~$60-150/MW-day)</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-green-700 font-medium">SPP / Regulated</td>
+                                        <td className="text-xs text-gray-600">Full embedded capacity cost</td>
+                                        <td className="text-xs text-gray-500">Revenue vs. gross cost comparison avoids double-netting demand charges</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-purple-700 font-medium">MISO</td>
+                                        <td className="text-xs text-gray-600">Mix of capacity market and embedded costs</td>
+                                        <td className="text-xs text-gray-500">Smaller capacity market with regulated utilities</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            {/* CIAC Recovery Explanation */}
+                            <h5 className="font-medium text-gray-800 mt-4 mb-2">CIAC Recovery Percentages</h5>
+                            <p className="text-xs text-gray-600 mb-2">
+                                <strong>CIAC (Contribution in Aid of Construction)</strong> represents the upfront payment data centers make
+                                for interconnection infrastructure. Based on E3 study cost-causation principles, the percentage varies by market:
+                            </p>
+                            <table className="w-full text-sm mb-3">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Market</th>
+                                        <th className="text-left py-2 font-medium">CIAC %</th>
+                                        <th className="text-left py-2 font-medium">Explanation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">SPP / Regulated (PSO-like)</td>
+                                        <td className="text-xs font-medium text-green-600">95%</td>
+                                        <td className="text-xs text-gray-500">Vertically integrated, minimal interconnection queue, DC pays nearly full cost</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">PJM (Dominion, AEP Ohio)</td>
+                                        <td className="text-xs font-medium text-green-600">95%</td>
+                                        <td className="text-xs text-gray-500">DCs pay for own substations; &quot;Deep Grid&quot; transmission upgrades ($250k/MW)</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">ERCOT</td>
+                                        <td className="text-xs font-medium text-amber-600">70%</td>
+                                        <td className="text-xs text-gray-500">Competitive market, moderate queue costs, some network upgrades socialized</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">MISO / Traditional Regulated</td>
+                                        <td className="text-xs font-medium text-purple-600">55-60%</td>
+                                        <td className="text-xs text-gray-500">Moderate queue, mix of direct assignment and socialization; varies by utility policy</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="text-xs text-gray-500 mb-3">
+                                The remaining percentage (non-CIAC) represents network upgrades that benefit multiple users and are
+                                socialized across ratepayers over a 20-year recovery period.
+                            </p>
+
+                            {/* Original Cost Components Table */}
+                            <h5 className="font-medium text-gray-800 mt-4 mb-2">Cost Components</h5>
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Cost Component</th>
+                                        <th className="text-left py-2 font-medium">Source</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Marginal Capacity Cost</td>
+                                        <td className="text-xs text-gray-600">Market-specific (see table above)</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Marginal Energy Cost</td>
+                                        <td className="text-xs text-gray-600">Wholesale LMP (ERCOT $45, PJM $42, MISO $35, TVA $32/MWh)</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Network Upgrade Cost</td>
+                                        <td className="text-xs text-gray-600">Annualized over 20-year recovery period (non-CIAC portion only)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="text-xs text-gray-500 mt-3">
+                                E3's analysis found typical data centers generate $33,500-$60,650/MW annual surplus when paying
+                                standard industrial tariffs with appropriate demand charges.
+                            </p>
+                        </div>
+
+                        {/* Data Center Specific */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2">
+                                Data Center Load Characteristics
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">Based on EPRI DCFlex research and industry publications</p>
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Data Point</th>
+                                        <th className="text-right py-2 font-medium">Value</th>
+                                        <th className="text-left py-2 pl-4 font-medium">Source</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Firm load factor</td>
+                                        <td className="text-right font-medium">{(DEFAULT_DATA_CENTER.firmLoadFactor * 100).toFixed(0)}%</td>
+                                        <td className="pl-4 text-xs">
+                                            <a href="https://eta-publications.lbl.gov/sites/default/files/2024-12/lbnl-2024-united-states-data-center-energy-usage-report_1.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                LBNL: U.S. Data Center Energy Usage Report (2024)
+                                            </a>
+                                            <span className="block text-gray-400">Typical hyperscale facilities operate 75-85% avg utilization</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Flexible load factor</td>
+                                        <td className="text-right font-medium">{(DEFAULT_DATA_CENTER.flexLoadFactor * 100).toFixed(0)}%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium">Model Assumption</span>
+                                            <span className="block text-gray-400 mt-1">Inferred: shifting peak workloads to off-peak enables higher avg utilization. Not directly measured.</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">Peak curtailment capability</td>
+                                        <td className="text-right font-medium">{((1 - DEFAULT_DATA_CENTER.flexPeakCoincidence) * 100).toFixed(0)}%</td>
+                                        <td className="pl-4 text-xs">
+                                            <a href="https://spectrum.ieee.org/dcflex-data-center-flexibility" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                IEEE Spectrum: Big Tech Tests Data Center Flexibility (2025)
+                                            </a>
+                                            <span className="block text-gray-400">Field-validated: 25% sustained reduction during 3-hour peak events</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -998,86 +1215,457 @@ $1,120 | *  Emergency
                                     </a>
                                     <span className="block text-xs text-gray-500 ml-0">Regional reserve margin projections and reliability assessments</span>
                                 </li>
+                                <li>
+                                    <a href="https://www.semianalysis.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        SemiAnalysis Large Load Queue Analysis (2025)
+                                    </a>
+                                    <span className="block text-xs text-gray-500 ml-0">Primary source for data center queue data by market; ERCOT 200+ GW, PJM 60+ GW</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.dominionenergy.com/projects-and-facilities/electric-projects/integrated-resource-plan" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        Dominion Energy Integrated Resource Plan (2024)
+                                    </a>
+                                    <span className="block text-xs text-gray-500 ml-0">Virginia data center growth forecast: 9+ GW by 2035</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.ercot.com/gridinfo/load/forecast" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        ERCOT Long-Term Load Forecast
+                                    </a>
+                                    <span className="block text-xs text-gray-500 ml-0">Texas grid planning and large load interconnection data</span>
+                                </li>
                             </ul>
                         </div>
                     </div>
                 </Section>
 
-                {/* WORKLOAD FLEXIBILITY */}
+                {/* RESEARCH LITERATURE REVIEW */}
                 <Section
-                    id="workload-flexibility"
-                    title="Workload Flexibility Model"
+                    id="research-literature"
+                    title="Research Literature Review"
                     expandedSection={expandedSection}
                     toggleSection={toggleSection}
+                    badge="2024-2025 Studies"
+                    badgeColor="bg-purple-100 text-purple-800"
                 >
                     <div className="space-y-6 text-gray-600">
+                        {/* Introduction */}
                         <p>
-                            Our workload flexibility model is based on the classification of data center workloads
-                            by their time-sensitivity and ability to be deferred or curtailed during peak demand periods.
+                            The question of whether large data center loads benefit or harm existing ratepayers
+                            is actively debated in academic and policy circles. Below we summarize key research
+                            from <strong>2024-2025</strong>, presenting both supporting and contradicting evidence.
                         </p>
 
-                        <div className="border border-gray-200 rounded-lg overflow-hidden">
-                            <table className="w-full text-sm">
-                                <thead className="bg-gray-100">
-                                    <tr>
-                                        <th className="text-left py-3 px-4 font-medium">Workload Type</th>
-                                        <th className="text-right py-3 px-4 font-medium">Share</th>
-                                        <th className="text-right py-3 px-4 font-medium">Flexibility</th>
-                                        <th className="text-left py-3 px-4 font-medium">Description</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {Object.entries(WORKLOAD_TYPES).map(([key, workload]) => (
-                                        <tr key={key} className="border-t border-gray-100">
-                                            <td className="py-2 px-4 font-medium">{workload.name}</td>
-                                            <td className="py-2 px-4 text-right">{(workload.percentOfLoad * 100).toFixed(0)}%</td>
-                                            <td className="py-2 px-4 text-right">{(workload.flexibility * 100).toFixed(0)}%</td>
-                                            <td className="py-2 px-4 text-gray-600 text-xs">{workload.description}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
-                            <h4 className="font-semibold text-amber-900 mb-2">Why We Use 25% (Not {(aggregateFlexibility * 100).toFixed(0)}%)</h4>
-                            <p className="text-sm text-amber-800">
-                                While the theoretical workload analysis suggests ~{(aggregateFlexibility * 100).toFixed(0)}% aggregate flexibility, our model uses
-                                a more conservative <strong>25% curtailable</strong> assumption based on:
-                            </p>
-                            <ul className="list-disc list-inside text-sm text-amber-800 mt-2 space-y-1">
-                                <li>Field-validated results from EPRI DCFlex demonstration (see below)</li>
-                                <li>Real-world constraints (coordination overhead, workload queuing, IT operations)</li>
-                                <li>Reliability margin for grid operators to depend on</li>
-                                <li>Conservative baseline that most data centers could achieve without major changes</li>
-                            </ul>
-                        </div>
-
-                        <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-                            <h4 className="font-semibold text-green-900 mb-2">EPRI DCFlex Field Demonstration (2024)</h4>
-                            <p className="text-sm text-green-800 mb-2">
-                                The EPRI DCFlex demonstration at a major hyperscale data center in Phoenix achieved:
-                            </p>
-                            <ul className="list-disc list-inside text-sm text-green-800 space-y-1">
-                                <li><strong>25% sustained power reduction</strong> during 3-hour peak grid events</li>
-                                <li><strong>Up to 40% reduction</strong> demonstrated while maintaining AI quality of service</li>
-                                <li><strong>~90% of workloads</strong> on representative clusters can be preempted (paused/delayed)</li>
-                            </ul>
-                            <p className="text-sm text-green-800 mt-2">
-                                This validates that 25% curtailment is achievable in real-world conditions, with potential
-                                for higher reductions as data center operators gain experience with demand response programs.
-                            </p>
-                        </div>
-
                         <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                            <p className="text-sm font-semibold text-blue-900 mb-2">Aggregate Flexibility Calculation</p>
+                            <p className="text-sm font-semibold text-blue-900 mb-2">
+                                How to Read This Section
+                            </p>
                             <p className="text-sm text-gray-700">
-                                Weighted average flexibility = Σ (share × flexibility) = <strong>{(aggregateFlexibility * 100).toFixed(0)}%</strong>
+                                This research review <strong>does not change our calculator&apos;s model</strong>—it provides
+                                context for the assumptions we&apos;ve made. Studies are organized by conclusion
+                                (supporting vs. contradicting the premise that flexible data centers benefit ratepayers).
+                                We note methodology differences and acknowledge that this is an evolving area of research.
                             </p>
-                            <p className="text-sm text-gray-600 mt-2">
-                                This represents the theoretical maximum load reduction achievable through workload shifting.
-                                The model uses 25% as the validated field value from EPRI DCFlex demonstrations.
+                        </div>
+
+                        {/* Balanced Evidence Summary - Side by Side */}
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {/* Supporting Evidence Summary */}
+                            <div className="border-2 border-green-200 rounded-lg p-5 bg-green-50">
+                                <h4 className="font-semibold text-green-900 mb-3 flex items-center gap-2">
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Supporting Evidence
+                                </h4>
+                                <p className="text-sm text-gray-700 mb-3">
+                                    Multiple studies find that <strong>flexible, high-load-factor</strong> data centers
+                                    can reduce costs for existing ratepayers through:
+                                </p>
+                                <ul className="space-y-2 text-sm text-gray-700">
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-green-600 font-bold">1.</span>
+                                        <span>Fixed cost spreading over more kWh</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-green-600 font-bold">2.</span>
+                                        <span>Demand response reducing capacity needs</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-green-600 font-bold">3.</span>
+                                        <span>Accelerated renewable deployment</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            {/* Contradicting Evidence Summary */}
+                            <div className="border-2 border-amber-200 rounded-lg p-5 bg-amber-50">
+                                <h4 className="font-semibold text-amber-900 mb-3 flex items-center gap-2">
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    Contradicting Evidence
+                                </h4>
+                                <p className="text-sm text-gray-700 mb-3">
+                                    Other studies raise concerns about cost-shifting, particularly for
+                                    <strong> firm loads in constrained regions</strong>:
+                                </p>
+                                <ul className="space-y-2 text-sm text-gray-700">
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-amber-600 font-bold">1.</span>
+                                        <span>Capacity market price spikes (PJM 10x)</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-amber-600 font-bold">2.</span>
+                                        <span>Regional bill impacts up to 25%</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <span className="text-amber-600 font-bold">3.</span>
+                                        <span>Infrastructure cost socialization</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Supporting Evidence Table */}
+                        <div className="border border-green-200 rounded-lg p-4 bg-green-50/30">
+                            <h4 className="font-semibold text-gray-900 mb-3">
+                                Studies Supporting Flexible Load Benefits
+                            </h4>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b border-green-200">
+                                            <th className="text-left py-2 font-medium">Study</th>
+                                            <th className="text-left py-2 font-medium">Key Finding</th>
+                                            <th className="text-left py-2 pl-4 font-medium">Source</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr className="border-b border-green-100">
+                                            <td className="py-2 font-medium">E3/Amazon (Dec 2025)</td>
+                                            <td className="py-2">$3.4M-$6.1M surplus revenue per 100MW facility; PG&E customers could see 1-2% bill reduction per GW</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://www.ethree.com/ratepayer-study/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    E3 Ratepayer Study
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-green-100">
+                                            <td className="py-2 font-medium">LBNL/Brattle (Oct 2025)</td>
+                                            <td className="py-2">Fixed cost spreading over more kWh reduces per-unit costs; states with demand growth saw falling rates</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://www.pbs.org/newshour/show/how-data-center-power-demand-could-help-lower-electricity-prices" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    PBS NewsHour
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-green-100">
+                                            <td className="py-2 font-medium">GridCARE (Dec 2025)</td>
+                                            <td className="py-2">1 GW flexible DC could reduce costs 5% across all customer classes or unlock $1.35B in capital</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://www.utilitydive.com/news/grid-operators-ratepayers-shouldnt-fear-flexible-data-centers-gridcare/808032/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    Utility Dive
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-green-100">
+                                            <td className="py-2 font-medium">Camus/Princeton/ZERO Lab</td>
+                                            <td className="py-2">500MW flexible DC connects 3-5 years sooner than inflexible; nearly eliminates incremental supply costs</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://www.utilitydive.com/news/grid-operators-ratepayers-shouldnt-fear-flexible-data-centers-gridcare/808032/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    Utility Dive
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-green-100">
+                                            <td className="py-2 font-medium">MIT Sloan/CEEPR (Oct 2025)</td>
+                                            <td className="py-2">Flexibility to shift workload always reduces costs; can encourage renewable investment</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://mitsloan.mit.edu/ideas-made-to-matter/flexible-data-centers-can-reduce-costs-if-not-emissions" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    MIT Sloan
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-green-100">
+                                            <td className="py-2 font-medium">RMI (Jul 2025)</td>
+                                            <td className="py-2">DC operators ready to invest in flexible, low-cost sources that mitigate stranded asset risks</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://rmi.org/fast-flexible-solutions-for-data-centers/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    RMI
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-green-100">
+                                            <td className="py-2 font-medium">Power Policy (Jul 2025)</td>
+                                            <td className="py-2">PJM could accommodate 13 GW without new capacity if loads are flexible 0.25% of uptime</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://www.powerpolicy.net/p/data-centers-could-make-or-break" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    Power Policy
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* Contradicting Evidence Table */}
+                        <div className="border border-amber-200 rounded-lg p-4 bg-amber-50/30">
+                            <h4 className="font-semibold text-gray-900 mb-3">
+                                Studies Raising Cost-Shift Concerns
+                            </h4>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b border-amber-200">
+                                            <th className="text-left py-2 font-medium">Study</th>
+                                            <th className="text-left py-2 font-medium">Key Finding</th>
+                                            <th className="text-left py-2 pl-4 font-medium">Source</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr className="border-b border-amber-100">
+                                            <td className="py-2 font-medium">Harvard ELI (Mar 2025)</td>
+                                            <td className="py-2">Concerns about utilities passing infrastructure costs to general ratepayers; regulatory capture risks</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://eelp.law.harvard.edu/wp-content/uploads/2025/03/Harvard-ELI-Extracting-Profits-from-the-Public.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    Harvard Law
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-amber-100">
+                                            <td className="py-2 font-medium">Carnegie Mellon (Jul 2025)</td>
+                                            <td className="py-2">DC growth could increase bills 8% nationally and up to 25% in some regional markets</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://www.law.georgetown.edu/environmental-law-review/blog/consumers-end-up-paying-for-the-energy-demands-of-data-centers-how-can-regulators-fight-back/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    Georgetown Law Review
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-amber-100">
+                                            <td className="py-2 font-medium">Virginia JLARC (2024)</td>
+                                            <td className="py-2">Unconstrained growth could increase bills $14-37/month by 2040 (independent of inflation)</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://www.datacenterdynamics.com/en/news/some-amazon-data-centers-are-driving-down-utility-costs-amazon-commissioned-report-finds/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    DCD Coverage
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-amber-100">
+                                            <td className="py-2 font-medium">IEEFA/PJM Analysis (2025)</td>
+                                            <td className="py-2">Projected DC growth spurs PJM capacity prices by factor of 10 (from $28 to $270/MW-day)</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://ieefa.org/resources/projected-data-center-growth-spurs-pjm-capacity-prices-factor-10" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    IEEFA
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-amber-100">
+                                            <td className="py-2 font-medium">Brattle Load Growth (Apr 2025)</td>
+                                            <td className="py-2">Peak loads to increase 175 GW by 2030 (24%); risk of over-forecasting leading to stranded costs</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://www.brattle.com/wp-content/uploads/2025/04/Meeting-Unprecedented-Load-Growth-Challenges-Opportunities.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    Brattle Group
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* Cost-Shift Study Assumptions Detail */}
+                        <div className="border border-amber-200 rounded-lg p-4 bg-amber-50/20">
+                            <h4 className="font-semibold text-gray-900 mb-3">
+                                What Drives Higher Cost Estimates in These Studies?
+                            </h4>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Understanding the key assumptions in each study helps explain the variation in projected cost impacts:
                             </p>
+
+                            {/* Study-specific assumptions */}
+                            <div className="space-y-4 mb-4">
+                                <div className="p-3 bg-white rounded-lg border border-amber-100">
+                                    <p className="font-medium text-gray-900 text-sm mb-2">Virginia JLARC (E3 modeling)</p>
+                                    <ul className="text-xs text-gray-600 space-y-1 list-disc list-inside">
+                                        <li><strong>Load factor:</strong> 82% (Dominion&apos;s 2024 assumption for large data centers)</li>
+                                        <li><strong>Load type:</strong> Modeled as &quot;flat, inflexible/non-interruptible load&quot;</li>
+                                        <li><strong>Capacity market:</strong> Dominion is in PJM; study includes capacity market price impacts</li>
+                                        <li><strong>Growth scenario:</strong> &quot;Unconstrained&quot; growth through 2040</li>
+                                        <li><strong>Key driver:</strong> New generation and transmission infrastructure built for data centers creates fixed costs socialized across all ratepayers</li>
+                                    </ul>
+                                </div>
+
+                                <div className="p-3 bg-white rounded-lg border border-amber-100">
+                                    <p className="font-medium text-gray-900 text-sm mb-2">Carnegie Mellon (TEMOA model)</p>
+                                    <ul className="text-xs text-gray-600 space-y-1 list-disc list-inside">
+                                        <li><strong>Growth scenario:</strong> 350% increase in data center/crypto demand by 2030</li>
+                                        <li><strong>Cost metric:</strong> Wholesale electricity costs (demand-weighted marginal generation costs)</li>
+                                        <li><strong>Generation mix:</strong> Rapid growth forces system to run more expensive, aging coal generators</li>
+                                        <li><strong>Regional variation:</strong> Virginia at 25% because it relies more on expensive generation sources vs. 8% nationally</li>
+                                        <li><strong>Key driver:</strong> Data center growth outpaces new generation buildout, forcing reliance on higher-cost existing plants</li>
+                                    </ul>
+                                </div>
+
+                                <div className="p-3 bg-white rounded-lg border border-amber-100">
+                                    <p className="font-medium text-gray-900 text-sm mb-2">Harvard ELI (Regulatory analysis)</p>
+                                    <ul className="text-xs text-gray-600 space-y-1 list-disc list-inside">
+                                        <li><strong>Methodology:</strong> Qualitative analysis of ~50 utility rate proceedings (not a quantitative model)</li>
+                                        <li><strong>Cost-shifting mechanisms:</strong> Special contracts, transmission/retail disconnect, colocation effects</li>
+                                        <li><strong>Key concern:</strong> Infrastructure costs built in anticipation of growth; if demand doesn&apos;t materialize, ratepayers bear stranded costs</li>
+                                        <li><strong>Regulatory capture:</strong> Utilities may over-build infrastructure and recover costs from all ratepayers before DC-specific tariffs mature</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            {/* Common factors */}
+                            <div className="p-3 bg-amber-100/50 rounded-lg border border-amber-200">
+                                <p className="font-medium text-amber-900 text-sm mb-2">Common Factors Driving Higher Estimates</p>
+                                <ul className="text-xs text-amber-800 space-y-1 list-disc list-inside">
+                                    <li><strong>Inflexible load assumption:</strong> Studies assume firm/non-interruptible operations (no demand response credit)</li>
+                                    <li><strong>Capacity market exposure:</strong> In PJM, large loads trigger capacity price spikes that affect all existing load</li>
+                                    <li><strong>Infrastructure anticipation:</strong> Utilities build generation/transmission before demand materializes</li>
+                                    <li><strong>Long time horizons:</strong> 15-25 year projections allow cost impacts to compound</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Policy Mechanisms Table */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2">
+                                Emerging Policy Mechanisms for Large Load Management
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">
+                                Several states and utilities have developed specialized frameworks to address cost allocation:
+                            </p>
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b border-gray-200">
+                                            <th className="text-left py-2 font-medium">Mechanism</th>
+                                            <th className="text-left py-2 font-medium">Jurisdiction</th>
+                                            <th className="text-left py-2 font-medium">Key Feature</th>
+                                            <th className="text-left py-2 pl-4 font-medium">Source</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr className="border-b border-gray-100">
+                                            <td className="py-2 font-medium">GS-5 Rate Class</td>
+                                            <td className="py-2">Virginia (Dominion)</td>
+                                            <td className="py-2">95% CIAC recovery; dedicated large load rate schedule with &quot;Deep Grid&quot; transmission upgrades</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://eta-publications.lbl.gov/sites/default/files/2025-01/electricity_rate_designs_for_large_loads_evolving_practices_and_opportunities_final.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    DOE/LBNL Brief
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-gray-100">
+                                            <td className="py-2 font-medium">SB6</td>
+                                            <td className="py-2">Texas</td>
+                                            <td className="py-2">Large load interconnection study requirements; grid emergency curtailment</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://www.utilitydive.com/news/data-center-load-growth-markets-ratepayer/749715/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    Utility Dive
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-gray-100">
+                                            <td className="py-2 font-medium">Industrial Power Tariff</td>
+                                            <td className="py-2">Indiana Michigan Power</td>
+                                            <td className="py-2">12-year minimum contract term after load ramp; protects against stranded costs</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://indianacapitalchronicle.com/2024/11/26/ratepayer-advocates-hail-landmark-settlement-with-data-centers-utility-company/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    IN Capital Chronicle
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr className="border-b border-gray-100">
+                                            <td className="py-2 font-medium">Data Center Tariff</td>
+                                            <td className="py-2">AEP Ohio</td>
+                                            <td className="py-2">85% minimum demand for 12 years (4-year ramp to 90%); approved July 2025</td>
+                                            <td className="pl-4 text-xs">
+                                                <a href="https://www.aepohio.com/company/about/rates/data-center-tariff/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                    AEP Ohio
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* Synthesis Callout */}
+                        <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
+                            <h4 className="font-semibold text-purple-900 mb-2">
+                                How This Research Informs Our Model
+                            </h4>
+                            <p className="text-sm text-gray-700 mb-3">
+                                Our calculator&apos;s assumptions align with the research consensus that:
+                            </p>
+                            <ul className="space-y-2 text-sm text-gray-700">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-purple-600">✓</span>
+                                    <span>
+                                        <strong>Flexibility matters:</strong> The difference between firm and flexible
+                                        load is significant (supporting E3, LBNL, GridCARE findings). Our model uses
+                                        25% curtailment based on EPRI DCFlex field validation—see the{' '}
+                                        <button
+                                            onClick={() => toggleSection('flexibility')}
+                                            className="text-blue-600 hover:underline font-medium"
+                                        >
+                                            Workload Flexibility Model
+                                        </button>
+                                        {' '}section.
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-purple-600">✓</span>
+                                    <span>
+                                        <strong>Capacity markets amplify impacts:</strong> PJM price spikes validate
+                                        our endogenous capacity pricing model—see the{' '}
+                                        <button
+                                            onClick={() => toggleSection('socialized-scarcity')}
+                                            className="text-blue-600 hover:underline font-medium"
+                                        >
+                                            Capacity Cost Spillovers
+                                        </button>
+                                        {' '}section.
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-purple-600">✓</span>
+                                    <span>
+                                        <strong>Regional variation is significant:</strong> Virginia JLARC and regional
+                                        studies inform our market-specific allocation factors in the{' '}
+                                        <button
+                                            onClick={() => toggleSection('market-structures')}
+                                            className="text-blue-600 hover:underline font-medium"
+                                        >
+                                            Market Structures
+                                        </button>
+                                        {' '}section.
+                                    </span>
+                                </li>
+                            </ul>
+                            <p className="text-sm text-purple-800 mt-3 font-medium">
+                                Bottom Line: The research supports the <em>possibility</em> of rate decreases under optimal
+                                conditions, but demonstrates the downside risks are equally real. Our model helps users
+                                explore both scenarios.
+                            </p>
+                        </div>
+
+                        {/* Model Assumptions callout */}
+                        <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <h4 className="font-semibold text-amber-900 mb-2">
+                                <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium text-xs mr-2">Research Notes</span>
+                                Limitations of Available Evidence
+                            </h4>
+                            <ul className="list-disc list-inside text-sm text-amber-800 space-y-1">
+                                <li><strong>Industry funding:</strong> E3 study was commissioned by Amazon (though E3 stated analysis was independent)</li>
+                                <li><strong>Facility vs. system-level:</strong> Most supporting studies analyze individual facility costs, not system-wide effects</li>
+                                <li><strong>Forward-looking projections:</strong> Few retrospective case studies exist showing actual rate decreases after large load additions</li>
+                                <li><strong>Contested methodology:</strong> Studies use different assumptions about load flexibility, timeline, and cost allocation</li>
+                            </ul>
                         </div>
                     </div>
                 </Section>
@@ -1092,6 +1680,7 @@ $1,120 | *  Emergency
                     badgeColor="bg-blue-100 text-blue-800"
                 >
                     <div className="space-y-6 text-gray-600">
+                        {/* Introduction */}
                         <p>
                             Our calculator models data center growth at the <strong>market level</strong>, not individual projects.
                             This macro-level approach reflects how grid planners and utilities forecast capacity needs across their
@@ -1150,6 +1739,565 @@ $1,120 | *  Emergency
                                 <li><strong>Phase-In Model:</strong> Linear cumulative ramp starting Year 2 (2027) through Year 10 (2035)</li>
                                 <li><strong>Construction Lag:</strong> 12-month lag from 2026 to account for interconnection and construction timelines</li>
                             </ul>
+                        </div>
+
+                        {/* Sources with hyperlinks */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2">Data Sources & References</h4>
+                            <ul className="space-y-3 text-sm">
+                                <li>
+                                    <a href="https://www.semianalysis.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        SemiAnalysis Large Load Queue Reports (2025)
+                                    </a>
+                                    <span className="block text-xs text-gray-500">Primary source for queue data. ERCOT 200+ GW in queue (46% from data centers).</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.dominionenergy.com/projects-and-facilities/electric-projects/integrated-resource-plan" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        Dominion Energy IRP 2024
+                                    </a>
+                                    <span className="block text-xs text-gray-500">Virginia data center forecast: 9+ GW by 2035 in Northern Virginia alone.</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.ercot.com/gridinfo/load/forecast" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        ERCOT Long-Term Load Forecast (2024)
+                                    </a>
+                                    <span className="block text-xs text-gray-500">Texas grid planning documents and large load analysis.</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.psoklahoma.com/company/about/rates/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        PSO Oklahoma IRP & Rate Filings
+                                    </a>
+                                    <span className="block text-xs text-gray-500">6+ GW in large load queue; 31% power deficit projected by 2031.</span>
+                                </li>
+                                <li>
+                                    <a href="https://gridstrategiesllc.com/wp-content/uploads/National-Load-Growth-Report-2024.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        Grid Strategies: National Load Growth Report (Dec 2024)
+                                    </a>
+                                    <span className="block text-xs text-gray-500">63% of PJM load growth attributed to data centers.</span>
+                                </li>
+                                <li>
+                                    <a href="https://www.nerc.com/pa/RAPA/ra/Reliability%20Assessments%20DL/NERC_LTRA_2024.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        NERC Long-Term Reliability Assessment 2024
+                                    </a>
+                                    <span className="block text-xs text-gray-500">Regional reserve margin and reliability projections.</span>
+                                </li>
+                                <li>
+                                    <a href="https://cdn.misoenergy.org/MTEP23%20Executive%20Summary630586.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">
+                                        MISO MTEP23 Transmission Expansion Plan
+                                    </a>
+                                    <span className="block text-xs text-gray-500">Midwest transmission planning and load forecasts.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Model Assumptions */}
+                        <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <h4 className="font-semibold text-amber-900 mb-2">
+                                <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium text-xs mr-2">Model Assumptions</span>
+                                Forecast Methodology Notes
+                            </h4>
+                            <ul className="list-disc list-inside text-sm text-amber-800 space-y-1">
+                                <li><strong>Aggressive default rationale:</strong> Queue data from SemiAnalysis suggests higher growth than utility IRPs capture</li>
+                                <li><strong>Conservative scenario:</strong> Based on utility IRPs and formal load forecasts filed with regulators</li>
+                                <li><strong>Regional concentration:</strong> NoVA (Dominion), Texas (ERCOT), and Oklahoma (SPP) have disproportionate growth</li>
+                                <li><strong>Uncertainty:</strong> Forecasts are estimates; actual buildout depends on financing, permits, power availability, and interconnection timelines</li>
+                            </ul>
+                        </div>
+                    </div>
+                </Section>
+
+                {/* WORKLOAD FLEXIBILITY */}
+                <Section
+                    id="flexibility"
+                    title="Workload Flexibility Model"
+                    expandedSection={expandedSection}
+                    toggleSection={toggleSection}
+                >
+                    <div className="space-y-4 text-gray-600">
+                        <p>
+                            Data center flexibility varies by workload type. The table below shows the theoretical
+                            flexibility potential based on typical workload mix:
+                        </p>
+
+                        <p className="text-sm bg-amber-50 p-3 rounded-lg border border-amber-200">
+                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium text-xs">Model Assumptions</span>
+                            <span className="ml-2">The workload percentages and flexibility values below are illustrative estimates based on industry understanding
+                            of AI/cloud workloads. Actual values vary significantly by data center operator and workload mix.</span>
+                        </p>
+
+                        <table className="w-full mt-4 text-sm">
+                            <thead>
+                                <tr className="border-b border-gray-200">
+                                    <th className="text-left py-2 font-medium">Workload Type</th>
+                                    <th className="text-right py-2 font-medium">% of Load</th>
+                                    <th className="text-right py-2 font-medium">Flexibility</th>
+                                    <th className="text-left py-2 pl-4 font-medium">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Object.entries(WORKLOAD_TYPES).map(([key, wl]) => (
+                                    <tr key={key} className="border-b border-gray-100">
+                                        <td className="py-2">{wl.name}</td>
+                                        <td className="text-right">{(wl.percentOfLoad * 100).toFixed(0)}%</td>
+                                        <td className="text-right">
+                                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                                wl.flexibility >= 0.6 ? 'bg-green-100 text-green-800' :
+                                                wl.flexibility >= 0.3 ? 'bg-amber-100 text-amber-800' :
+                                                'bg-red-100 text-red-800'
+                                            }`}>
+                                                {(wl.flexibility * 100).toFixed(0)}%
+                                            </span>
+                                        </td>
+                                        <td className="pl-4 text-gray-500 text-xs">{wl.description}</td>
+                                    </tr>
+                                ))}
+                                <tr className="border-t-2 border-gray-300 font-semibold">
+                                    <td className="py-2">Theoretical Aggregate</td>
+                                    <td className="text-right">100%</td>
+                                    <td className="text-right">~{(aggregateFlexibility * 100).toFixed(0)}%</td>
+                                    <td className="pl-4 text-gray-500 text-xs">Weighted sum of flexibility by load share</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <h4 className="font-semibold text-amber-900 mb-2">Why We Use 25% (Not {(aggregateFlexibility * 100).toFixed(0)}%)</h4>
+                            <p className="text-sm text-amber-800">
+                                While the theoretical workload analysis suggests ~{(aggregateFlexibility * 100).toFixed(0)}% aggregate flexibility, our model uses
+                                a more conservative <strong>25% curtailable</strong> assumption based on:
+                            </p>
+                            <ul className="list-disc list-inside text-sm text-amber-800 mt-2 space-y-1">
+                                <li>Field-validated results from EPRI DCFlex demonstration (see below)</li>
+                                <li>Real-world constraints (coordination overhead, workload queuing, IT operations)</li>
+                                <li>Reliability margin for grid operators to depend on</li>
+                                <li>Conservative baseline that most data centers could achieve without major changes</li>
+                            </ul>
+                        </div>
+
+                        <div className="mt-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                            <h4 className="font-semibold text-green-900 mb-2">EPRI DCFlex Field Demonstration (2024)</h4>
+                            <p className="text-sm text-green-800 mb-2">
+                                The EPRI DCFlex demonstration at a major hyperscale data center in Phoenix achieved:
+                            </p>
+                            <ul className="list-disc list-inside text-sm text-green-800 space-y-1">
+                                <li><strong>25% sustained power reduction</strong> during 3-hour peak grid events</li>
+                                <li><strong>Up to 40% reduction</strong> demonstrated while maintaining AI quality of service</li>
+                                <li><strong>~90% of workloads</strong> on representative clusters can be preempted (paused/delayed)</li>
+                            </ul>
+                            <p className="text-sm text-green-800 mt-2">
+                                This validates that 25% curtailment is achievable in real-world conditions, with potential
+                                for higher reductions as data center operators gain experience with demand response programs.
+                            </p>
+                        </div>
+
+                        <div className="mt-4 space-y-2">
+                            <p className="text-sm font-medium text-gray-700">Data Sources:</p>
+                            <ul className="list-disc list-inside text-sm text-gray-500 space-y-1">
+                                <li>
+                                    <a href="https://spectrum.ieee.org/dcflex-data-center-flexibility" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                        IEEE Spectrum: Big Tech Tests Data Center Flexibility (2025)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://arxiv.org/abs/2507.00909" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                        arXiv: Turning AI Data Centers into Grid-Interactive Assets - Phoenix Field Demonstration
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://www.latitudemedia.com/news/catalyst-the-mechanics-of-data-center-flexibility/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                        Latitude Media: The Mechanics of Data Center Flexibility
+                                    </a>
+                                    {' '}- includes 90% preemptible workload finding
+                                </li>
+                                <li>
+                                    <a href="https://cloud.google.com/blog/products/infrastructure/using-demand-response-to-reduce-data-center-power-consumption" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                        Google Cloud: Using Demand Response to Reduce Data Center Power Consumption
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://dcflex.epri.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                        EPRI DCFlex Initiative
+                                    </a>
+                                    {' '}- 45+ industry collaborators including major cloud and AI companies
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </Section>
+
+                {/* MARKET STRUCTURES */}
+                <Section
+                    id="market-structures"
+                    title="Market Structures & Cost Allocation Framework"
+                    expandedSection={expandedSection}
+                    toggleSection={toggleSection}
+                >
+                    <div className="space-y-6 text-gray-600">
+                        <p>
+                            Cost allocation to residential customers varies significantly based on the market structure
+                            in which a utility operates. Our model adjusts allocation factors based on five distinct market types.
+                            Each value below is linked to its source documentation.
+                        </p>
+
+                        {/* Regulated Markets */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+                                Regulated / Vertically Integrated Markets
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">
+                                Duke Energy Carolinas, Georgia Power, APS Arizona, NV Energy, Xcel Colorado
+                            </p>
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">Parameter</th>
+                                        <th className="text-right py-2 font-medium">Value</th>
+                                        <th className="text-left py-2 pl-4 font-medium text-xs">Source</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Base Residential Allocation</td>
+                                        <td className="text-right">40%</td>
+                                        <td className="pl-4 text-xs">
+                                            <a href="https://www.raponline.org/wp-content/uploads/2023/09/rap-lazar-chernick-marcus-lebel-electric-cost-allocation-new-era-2020-january.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                RAP: Electric Cost Allocation for a New Era (2020)
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Revenue Flow-Through</td>
+                                        <td className="text-right">90%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-green-100 text-green-800 rounded">Cost Causation</span>
+                                            <span className="block text-gray-400">Cost-of-service tariffs designed to recover costs directly</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
+                                        <td className="text-right">40%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Embedded in rate base; assumed equal to residential revenue share</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Utility Owns Generation</td>
+                                        <td className="text-right">Yes</td>
+                                        <td className="pl-4 text-xs">
+                                            <a href="https://www.eia.gov/electricity/data/eia861/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                EIA-861 Annual Electric Power Data
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="mt-3 text-sm text-gray-500">
+                                <strong>Cost Causation Principle:</strong> In regulated markets, PUC-approved tariffs are designed to recover
+                                the utility's cost of serving each customer class. When a data center pays its industrial tariff rates
+                                (demand charges + energy charges), those costs are considered "recovered"—not shifted to residential customers.
+                            </p>
+                            <p className="mt-2 text-sm text-gray-500">
+                                <strong>Allocation Formula:</strong> Residential Allocation = Base × (1 - Cost Recovery Ratio)<sup>0.5</sup>
+                            </p>
+                            <p className="mt-2 text-sm text-gray-500">
+                                <strong>Rate Spreading Benefit:</strong> High load factor industrial loads (≥80%) spread fixed system costs
+                                over more kWh, reducing average costs for all customers (5-10% additional reduction).
+                            </p>
+                        </div>
+
+                        {/* PJM Markets */}
+                        <div className="border border-amber-200 rounded-lg p-4 bg-amber-50">
+                            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-amber-500"></span>
+                                PJM Capacity Market
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">
+                                Dominion Virginia, AEP Ohio, AEP I&M, Appalachian Power
+                            </p>
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-amber-200">
+                                        <th className="text-left py-2 font-medium">Parameter</th>
+                                        <th className="text-right py-2 font-medium">Value</th>
+                                        <th className="text-left py-2 pl-4 font-medium text-xs">Source</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-amber-100">
+                                        <td className="py-2 font-medium">Base Residential Allocation</td>
+                                        <td className="text-right">35%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Lower than regulated due to deregulated retail market structure</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-amber-100">
+                                        <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
+                                        <td className="text-right">50%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Retail supplier pass-through of RPM costs; higher due to market structure</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-amber-100">
+                                        <td className="py-2 font-medium">2025/26 Capacity Price</td>
+                                        <td className="text-right font-bold text-amber-700">$269.92/MW-day</td>
+                                        <td className="pl-4 text-xs">
+                                            <a href="https://www.pjm.com/-/media/DotCom/markets-ops/rpm/rpm-auction-info/2025-2026/2025-2026-base-residual-auction-report.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                PJM 2025/26 BRA Report
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-amber-100">
+                                        <td className="py-2 font-medium">Price vs 2024/25</td>
+                                        <td className="text-right text-red-600">~10x increase</td>
+                                        <td className="pl-4 text-xs">
+                                            <a href="https://www.pjm.com/-/media/DotCom/markets-ops/rpm/rpm-auction-info/2024-2025/2024-2025-base-residual-auction-report.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                Prior auction: $28.92/MW-day
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-amber-100">
+                                        <td className="py-2 font-medium">Data center load attribution</td>
+                                        <td className="text-right">63%</td>
+                                        <td className="pl-4 text-xs">
+                                            <a href="https://gridstrategiesllc.com/wp-content/uploads/National-Load-Growth-Report-2024.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                Grid Strategies Load Growth Report
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="mt-3 text-sm text-gray-600">
+                                <strong>Allocation Method:</strong> PJM's Reliability Pricing Model (RPM) capacity auction cleared at
+                                $269.92/MW-day for 2025/26. Our model uses <em>Endogenous Capacity Pricing</em> to calculate the
+                                "socialized cost" impact when large loads consume reserve margin and trigger capacity price spikes.
+                                Due to recent auction timeline compression (auctions now clear 11-18 months ahead rather than 3 years),
+                                this cost applies <strong>immediately</strong> when data centers connect—current prices already reflect demand growth.
+                            </p>
+                        </div>
+
+                        {/* ERCOT */}
+                        <div className="border border-green-200 rounded-lg p-4 bg-green-50">
+                            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                                ERCOT Energy-Only Market
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">
+                                Texas Grid (ERCOT)
+                            </p>
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-green-200">
+                                        <th className="text-left py-2 font-medium">Parameter</th>
+                                        <th className="text-right py-2 font-medium">Value</th>
+                                        <th className="text-left py-2 pl-4 font-medium text-xs">Source</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-green-100">
+                                        <td className="py-2 font-medium">Base Residential Allocation</td>
+                                        <td className="text-right">30%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Lower allocation reflects competitive retail market; large loads face prices directly</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-green-100">
+                                        <td className="py-2 font-medium">Capacity Cost Pass-Through</td>
+                                        <td className="text-right">25%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">No capacity market; only transmission CREZ costs flow through</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-green-100">
+                                        <td className="py-2 font-medium">Capacity Market</td>
+                                        <td className="text-right">None</td>
+                                        <td className="pl-4 text-xs">
+                                            <a href="https://www.potomaceconomics.com/wp-content/uploads/2024/05/2023-State-of-the-Market-Report_Final.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                Potomac Economics: ERCOT State of the Market 2023
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-green-100">
+                                        <td className="py-2 font-medium">4CP Transmission Rate</td>
+                                        <td className="text-right font-bold text-green-700">~${DC_RATE_STRUCTURE.ercot4CPTransmissionRate}/kW-mo</td>
+                                        <td className="pl-4 text-xs">
+                                            <a href="https://www.ercot.com/services/rq/re/4cp" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                ERCOT 4CP Program
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div className="mt-3 p-3 bg-green-100 rounded-lg border border-green-300">
+                                <p className="text-sm font-semibold text-green-900 mb-1">ERCOT 4CP Transmission Allocation</p>
+                                <p className="text-xs text-green-800">
+                                    ERCOT allocates transmission costs based on <strong>Four Coincident Peak (4CP)</strong> methodology.
+                                    Transmission charges are based on a customer's load during the 4 highest system peak hours each year.
+                                    This creates a <strong>huge incentive for flexible loads</strong>: curtailing just 4 hours can reduce transmission costs by 25%+.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* SPP */}
+                        <div className="border border-purple-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-purple-500"></span>
+                                SPP (Southwest Power Pool)
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">
+                                PSO Oklahoma, SWEPCO
+                            </p>
+                            <table className="w-full text-sm">
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Base Residential Allocation</td>
+                                        <td className="text-right">40%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Based on{' '}
+                                                <a href="https://www.psoklahoma.com/company/about/rates/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">PSO rate structure</a>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Capacity Market</td>
+                                        <td className="text-right">None</td>
+                                        <td className="pl-4 text-xs">
+                                            <a href="https://www.spp.org/markets-operations/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                SPP Markets & Operations
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* MISO */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
+                                <span className="w-3 h-3 rounded-full bg-gray-500"></span>
+                                MISO Capacity Market
+                            </h4>
+                            <p className="text-sm text-gray-500 mb-3">
+                                Entergy Arkansas, Entergy Mississippi
+                            </p>
+                            <table className="w-full text-sm">
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">Base Residential Allocation</td>
+                                        <td className="text-right">38%</td>
+                                        <td className="pl-4 text-xs">
+                                            <span className="px-1 bg-amber-100 text-amber-800 rounded">Model Assumption</span>
+                                            <span className="block text-gray-400">Between regulated (40%) and PJM (35%)</span>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 font-medium">2024/25 Capacity Price</td>
+                                        <td className="text-right">$30/MW-day</td>
+                                        <td className="pl-4 text-xs">
+                                            <a href="https://www.misoenergy.org/markets-and-operations/resource-adequacy/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                                MISO Resource Adequacy
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Allocation Formula */}
+                        <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+                            <h4 className="font-semibold text-gray-900 mb-3">Market-Adjusted Allocation Formula</h4>
+                            <div className="bg-white p-4 rounded font-mono text-sm overflow-x-auto">
+                                <p className="mb-2">Base Allocation = Volumetric × 0.40 + Demand × 0.40 + Customer × 0.20</p>
+                                <p className="mb-2">Adjusted Allocation = Base Allocation × Market Adjustment</p>
+                                <p className="text-gray-500 text-xs mt-1 font-sans">
+                                    <span className="px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded font-medium">Model Assumption</span>{' '}
+                                    The 40/40/20 weighting blends volumetric (energy share), demand (peak share), and customer count factors.
+                                    This method is applied uniformly across all markets. See{' '}
+                                    <a href="https://www.raponline.org/wp-content/uploads/2023/09/rap-lazar-chernick-marcus-lebel-electric-cost-allocation-new-era-2020-january.pdf" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">RAP: Electric Cost Allocation for a New Era (2020)</a>.
+                                </p>
+                                <p className="text-gray-500 text-xs mt-3">Market-specific adjustments:</p>
+                                <ul className="text-xs text-gray-500 mt-1 space-y-2">
+                                    <li><strong>Regulated/SPP/TVA (cost-of-service):</strong> Cost Causation Adjustment
+                                        <br/>Formula: Base × √(1 − Cost Recovery Ratio) × Load Factor Benefit
+                                        <br/>At 100% cost recovery → allocation approaches 5% of base
+                                        <br/>High load factor (≥80%) provides additional 5-10% reduction
+                                    </li>
+                                    <li><strong>PJM/NYISO/MISO (capacity markets):</strong> 1.0 (no allocation adjustment)
+                                        <br/>Capacity cost spillovers captured via endogenous pricing model
+                                    </li>
+                                    <li><strong>ERCOT (energy-only):</strong> Dynamic penetration-based scaling
+                                        <br/>Scales from 30% → ~26% as DC grows from 0 → 45 GW
+                                    </li>
+                                </ul>
+                                <p className="text-xs text-gray-500 mt-3">
+                                    <strong>Note:</strong> For capacity markets (PJM/NYISO/MISO), socialized capacity costs are calculated
+                                    separately via the endogenous capacity pricing model and added to the residential impact.
+                                    This avoids double-counting while accurately capturing capacity cost spillovers.
+                                </p>
+                            </div>
+                            <p className="mt-3 text-sm text-gray-600">
+                                Final allocation clamped to 5-50% range to maintain reasonable bounds. See{' '}
+                                <a href="https://www.raponline.org/knowledge-center/electric-cost-allocation-new-era/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                    RAP: Electric Cost Allocation for a New Era
+                                </a>.
+                            </p>
+                        </div>
+
+                        {/* ERCOT Dynamic Allocation */}
+                        <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                            <h4 className="font-semibold text-amber-900 mb-3">ERCOT Dynamic Residential Allocation</h4>
+                            <p className="text-sm text-gray-600 mb-3">
+                                For ERCOT, residential allocation scales dynamically based on data center penetration
+                                as a percentage of total ERCOT system capacity (~90 GW). As DC capacity grows, the
+                                residential share of system load decreases proportionally.
+                            </p>
+                            <div className="bg-white p-3 rounded border border-gray-200 mb-3">
+                                <p className="text-xs font-mono text-gray-700">DC Penetration = DC Capacity / 90,000 MW</p>
+                                <p className="text-xs font-mono text-gray-700 mt-1">Scale Factor = 1 − (Penetration × 0.3)</p>
+                                <p className="text-xs font-mono text-gray-700 mt-1">Allocation = Base × max(0.5, Scale Factor)</p>
+                            </div>
+                            <table className="w-full text-sm mt-3">
+                                <thead>
+                                    <tr className="border-b border-gray-200">
+                                        <th className="text-left py-2 font-medium">DC Capacity</th>
+                                        <th className="text-left py-2 font-medium">Penetration</th>
+                                        <th className="text-left py-2 font-medium">Residential Allocation</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">0 GW</td>
+                                        <td className="text-xs">0%</td>
+                                        <td className="text-xs">30% (base)</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">9 GW</td>
+                                        <td className="text-xs">10%</td>
+                                        <td className="text-xs">~29%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">25 GW</td>
+                                        <td className="text-xs">~28%</td>
+                                        <td className="text-xs">~27%</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2">45 GW</td>
+                                        <td className="text-xs">50%</td>
+                                        <td className="text-xs">~26%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <p className="text-xs text-gray-500 mt-2">
+                                This reflects that as data centers become a larger portion of total system load,
+                                they bear more of the infrastructure costs, reducing the residential allocation.
+                                The floor (50% of base = 15%) only applies at theoretical penetration levels above 167%.
+                            </p>
                         </div>
                     </div>
                 </Section>
@@ -1244,8 +2392,8 @@ $1,120 | *  Emergency
 
                 {/* AI CARBON */}
                 <Section
-                    id="carbon"
-                    title="Carbon Footprint of This Calculator"
+                    id="ai-carbon"
+                    title="AI Development Carbon Footprint"
                     expandedSection={expandedSection}
                     toggleSection={toggleSection}
                 >
@@ -1265,23 +2413,57 @@ $1,120 | *  Emergency
                                     </span>
                                 )}
                             </h4>
-                            <div className="grid md:grid-cols-3 gap-4">
-                                <div className="p-4 bg-gray-50 rounded-lg">
-                                    <p className="text-2xl font-bold text-slate-700">{(totalTokens / 1000).toFixed(0)}K</p>
-                                    <p className="text-xs text-gray-500">Total tokens processed</p>
-                                </div>
-                                <div className="p-4 bg-gray-50 rounded-lg">
-                                    <p className="text-2xl font-bold text-slate-700">{totalKgCO2.toFixed(2)} kg</p>
-                                    <p className="text-xs text-gray-500">Estimated CO2 emissions</p>
-                                </div>
-                                <div className="p-4 bg-gray-50 rounded-lg">
-                                    <p className="text-2xl font-bold text-slate-700">{hamburgerEquiv.toFixed(1)}</p>
-                                    <p className="text-xs text-gray-500">Hamburger equivalents</p>
-                                </div>
-                            </div>
-                            <p className="text-sm text-gray-500 mt-4">
-                                Based on {gCO2PerK} gCO2/1000 tokens estimate. A hamburger produces approximately {hamburgerKg} kg CO2.
-                            </p>
+                            <table className="w-full text-sm">
+                                <tbody>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-gray-600">Tokens used in development</td>
+                                        <td className="py-2 text-right font-medium">{totalTokens.toLocaleString()} tokens</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-gray-600">CO2 per 1,000 tokens (Claude Opus)</td>
+                                        <td className="py-2 text-right font-medium">~{gCO2PerK} g CO2</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-gray-600">Total estimated emissions</td>
+                                        <td className="py-2 text-right font-bold text-gray-900">~{(totalKgCO2 * 1000).toFixed(0)} g CO2 ({totalKgCO2.toFixed(1)} kg)</td>
+                                    </tr>
+                                    <tr className="border-b border-gray-100">
+                                        <td className="py-2 text-gray-600">Carbon footprint of one beef hamburger</td>
+                                        <td className="py-2 text-right font-medium">~{hamburgerKg} kg CO2</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-2 text-gray-600">Hamburger equivalent</td>
+                                        <td className="py-2 text-right font-bold text-green-600">~{hamburgerEquiv.toFixed(1)} hamburgers</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Methodology */}
+                        <div className="border border-gray-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-gray-900 mb-2">Methodology & Sources</h4>
+                            <ul className="space-y-2 text-sm">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-gray-400">-</span>
+                                    <span>
+                                        <strong>Token emissions:</strong> Based on{' '}
+                                        <a href="https://www.launchbot.app/ai-offset-calculator" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                            Launchbot AI Emissions Calculator
+                                        </a>
+                                        . Claude Opus: ~1.2 gCO2/1k tokens.
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-gray-400">-</span>
+                                    <span>
+                                        <strong>Hamburger footprint:</strong> Based on{' '}
+                                        <a href="https://www.co2everything.com/co2e-of/beef" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                                            CO2 Everything
+                                        </a>
+                                        {' '}and Poore & Nemecek (2018). Beef burger: ~3-4 kg CO2e.
+                                    </span>
+                                </li>
+                            </ul>
                         </div>
 
                         <div className="p-4 bg-green-50 rounded-lg border border-green-200">
@@ -1301,7 +2483,7 @@ $1,120 | *  Emergency
                 <h3 className="text-lg font-semibold mb-3">Questions or Feedback?</h3>
                 <p className="text-gray-300 mb-4">
                     If you have questions about the methodology, want to report an error,
-                    or have suggestions for improvement, we&apos;d love to hear from you.
+                    or have suggestions for improvement, we'd love to hear from you.
                 </p>
                 <a
                     href="/"
