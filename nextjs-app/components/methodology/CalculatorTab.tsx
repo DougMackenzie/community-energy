@@ -303,6 +303,9 @@ const SliderField = ({
 
 export interface CalculatorTabProps {}
 
+// TEMPORARY: Under Construction flag - set to false to enable calculator
+const UNDER_CONSTRUCTION = true;
+
 export default function CalculatorTab({}: CalculatorTabProps = {}) {
     const {
         utility,
@@ -336,6 +339,52 @@ export default function CalculatorTab({}: CalculatorTabProps = {}) {
         max: 50000,
         step: 500,
     };
+
+    // Show Under Construction message
+    if (UNDER_CONSTRUCTION) {
+        return (
+            <div className="space-y-8">
+                {/* Header */}
+                <div className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-2xl p-8 text-white">
+                    <h1 className="text-3xl font-bold mb-4">Calculator: Your Community's Numbers</h1>
+                    <p className="text-lg text-slate-300 max-w-3xl">
+                        Adjust the parameters below to match your community's utility and the proposed data
+                        center. See how different configurations affect projected electricity costs.
+                    </p>
+                </div>
+
+                {/* Under Construction Message */}
+                <div className="flex flex-col items-center justify-center py-16 px-8">
+                    <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-12 max-w-2xl text-center shadow-lg">
+                        {/* Construction Icon */}
+                        <div className="mb-6">
+                            <svg className="w-24 h-24 mx-auto text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                            </svg>
+                        </div>
+
+                        <h2 className="text-2xl font-bold text-amber-800 mb-4">
+                            Under Construction
+                        </h2>
+
+                        <p className="text-amber-700 text-lg mb-6">
+                            We're currently updating the calculator with improved methodology and more accurate utility-specific calculations.
+                        </p>
+
+                        <div className="bg-white rounded-lg p-4 mb-6">
+                            <p className="text-slate-600 text-sm">
+                                <strong>Coming Soon:</strong> Enhanced rate structure modeling, regional capacity market integration, and improved revenue adequacy calculations.
+                            </p>
+                        </div>
+
+                        <p className="text-amber-600 text-sm">
+                            Check back shortly - we appreciate your patience!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-8">
