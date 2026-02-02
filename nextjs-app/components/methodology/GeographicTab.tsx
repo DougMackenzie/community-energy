@@ -42,16 +42,6 @@ export default function GeographicTab() {
                             Interactive map showing utility service territories with rate and ratepayer protection data.
                             Identify regions with favorable rates and strong consumer protections for large load customers.
                         </p>
-                        <div className="mt-4 flex flex-wrap gap-4 text-sm">
-                            <div className="flex items-center gap-2">
-                                <span className="w-3 h-3 rounded-full bg-green-600"></span>
-                                <span className="text-gray-600">Low Rate + High Protection (Best)</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className="w-3 h-3 rounded-full bg-red-300"></span>
-                                <span className="text-gray-600">High Rate + Low Protection (Caution)</span>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

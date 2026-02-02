@@ -331,17 +331,17 @@ function UtilityHeatmap({
                     </div>
 
                     {/* Axis Descriptions */}
-                    <div className="flex-1 space-y-3 text-sm">
+                    <div className="flex-1 space-y-3 text-sm ml-4">
                         <div>
                             <div className="font-semibold text-slate-700 mb-1">Ratepayer Protection (↑ vertical axis)</div>
-                            <p className="text-slate-500 text-xs">
+                            <p className="text-slate-500 text-xs leading-relaxed">
                                 Measures tariff safeguards: demand ratchets, CIAC requirements, cost allocation mechanisms,
                                 and regulatory oversight that protect existing ratepayers from bearing disproportionate infrastructure costs.
                             </p>
                         </div>
                         <div>
                             <div className="font-semibold text-slate-700 mb-1">Blended Rate (→ horizontal axis)</div>
-                            <p className="text-slate-500 text-xs">
+                            <p className="text-slate-500 text-xs leading-relaxed">
                                 All-in cost per kWh including demand charges, energy charges, and riders for a 100MW data center
                                 at 90% load factor.
                             </p>
