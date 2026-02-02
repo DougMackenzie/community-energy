@@ -760,18 +760,23 @@ export function calculateTariffBasedDemandCharges(
     switch (tariff.demandChargeType) {
         case 'TOU_PEAK_NCP':
             // PSO/Dominion style: Peak demand based on on-peak usage, Max based on any-time peak
-            // Flexible DCs can reduce peak demand by curtailing during on-peak hours
-            peakDemandMW = dcCapacityMW * peakCoincidence;
-            maxDemandMW = dcCapacityMW; // NCP is based on installed capacity
+            // 1. Calculate Actual Peak (Physical Load during on-peak hours)
+            const physicalPeakMW = dcCapacityMW * peakCoincidence;
 
-            // Apply ratchet if defined (e.g., 90% of highest peak in past 11 months)
-            if (tariff.ratchetPercent && tariff.ratchetMonths) {
-                // For firm load, ratchet keeps them paying high all year
-                // For flexible load, ratchet is set at their lower curtailed level
-                // This is a simplification - actual ratchet depends on operational history
-                const ratchetMultiplier = isFlexible ? 1.0 : 1.05; // Firm pays slightly more due to ratchet
-                peakDemandMW *= ratchetMultiplier;
-            }
+            // 2. Calculate Ratchet Floor (Contract Minimum)
+            // If ratchet is 90%, billing demand cannot drop below 90% of capacity
+            // This preserves utility revenue even when DC is flexible/curtailable
+            // PSO's 90% ratchet means even with 75% physical load, they bill at 90%
+            const ratchetFloorMW = tariff.ratchetPercent
+                ? (dcCapacityMW * tariff.ratchetPercent)
+                : 0;
+
+            // 3. Billing Demand is the HIGHER of physical peak vs ratchet floor
+            // This is the key fix - flexible DCs can't escape ratchet obligations
+            peakDemandMW = Math.max(physicalPeakMW, ratchetFloorMW);
+
+            // Max Demand (NCP) is always based on installed capacity for large loads
+            maxDemandMW = dcCapacityMW;
             break;
 
         case 'COINCIDENT_PEAK':
@@ -1259,7 +1264,12 @@ const calculateNetResidentialImpact = (
                                     0.50;
 
     // Total revenue offset
-    // Demand charges (both CP and NCP) offset fixed infrastructure costs
+    // FIX: Calculate FULL DC revenue (for fairness/cost causation tests)
+    // and FLOW-THROUGH revenue (for actual bill offset)
+    // Per Master QA/QC: Use full revenue to determine if DC is "paying its fair share"
+    const fullDCRevenue = dcRevenue.demandRevenue + dcRevenue.energyMargin;
+
+    // Flow-through revenue is what actually offsets bills (accounts for rate case lag)
     const demandRevenueOffset = dcRevenue.demandRevenue * demandChargeFlowThrough;
     const energyRevenueOffset = dcRevenue.energyMargin * energyMarginFlowThrough;
     let revenueOffset = demandRevenueOffset + energyRevenueOffset;
@@ -1310,7 +1320,10 @@ const calculateNetResidentialImpact = (
     // If DC revenue < DC costs caused → residential bears share of the gap
 
     // Calculate how well DC revenue covers DC-caused costs
-    const dcCostRecoveryRatio = Math.min(1.5, revenueOffset / Math.max(1, grossAnnualInfraCost));
+    // FIX: Use FULL DC revenue (not flow-through adjusted) for fairness test
+    // Per Master QA/QC: If DC pays $100 and Cost is $100, ratio is 1.0 (Fair)
+    // even if only $90 flows through to residents due to rate case lag
+    const dcCostRecoveryRatio = Math.min(1.5, fullDCRevenue / Math.max(1, grossAnnualInfraCost));
 
     // Apply cost causation adjustments for regulated markets
     // Note: ERCOT now uses standard allocation (no special 0.60 factor)
@@ -1375,17 +1388,26 @@ const calculateNetResidentialImpact = (
     );
 
     // ============================================
-    // LOGIC CLAMP: Revenue Adequacy vs Bill Impact Consistency
+    // CRITICAL LOGIC CLAMP: Revenue Adequacy vs Bill Impact Consistency
     // ============================================
-    // If Revenue Adequacy < 1.0 (deficit), bill impact MUST be positive.
+    // RULE: If Revenue Adequacy < 1.0 (Deficit), Bills CANNOT Decrease.
     // A deficit means DC revenue doesn't cover DC costs, so other ratepayers
     // must cover the shortfall - they cannot simultaneously benefit.
-    // See QAQC Report Issue 1.2 for details.
-    if (revenueAdequacy.revenueAdequacyRatio < 1.0 && residentialImpact < 0) {
-        // Calculate minimum impact based on the deficit proportion
+    // Per Master QA/QC: Strictly enforce that Deficits = Cost Increases.
+    if (revenueAdequacy.revenueAdequacyRatio < 1.0) {
+        // Calculate the magnitude of the deficit
         const deficitProportion = 1 - revenueAdequacy.revenueAdequacyRatio;
-        const minPositiveImpact = grossAnnualInfraCost * deficitProportion * residentialAllocation * 0.1;
-        residentialImpact = Math.max(minPositiveImpact, 0);
+
+        // The DC is creating a hole in the bucket. Residents must pay a share of it.
+        const minimumCostImpact = grossAnnualInfraCost * deficitProportion * residentialAllocation * 0.10;
+
+        // Force the impact to be positive (Cost) if below the minimum
+        if (residentialImpact < minimumCostImpact) {
+            residentialImpact = minimumCostImpact;
+        }
+
+        // Safety: Ensure it never shows a negative number (benefit) during a deficit
+        residentialImpact = Math.max(residentialImpact, 1000);
     }
 
     // Apply floor to prevent unrealistically large bill decreases

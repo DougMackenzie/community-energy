@@ -252,6 +252,7 @@ export const SCENARIO_PARAMS: Record<string, ScenarioParams> = {
 
 export const DEFAULT_UTILITY: Utility = {
     name: 'PSO-sized Utility',
+    state: 'OK',  // Default state (PSO is Oklahoma) - safety net for NBC cap check
     residentialCustomers: 560000,
     commercialCustomers: 85000,
     industrialCustomers: 5000,
