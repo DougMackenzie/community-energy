@@ -31,6 +31,30 @@ export type MarketType = 'regulated' | 'pjm' | 'ercot' | 'miso' | 'caiso' | 'spp
 export const HIGH_NBC_STATES: string[] = ['CA', 'NY', 'CT', 'MA', 'RI', 'NH'];
 
 /**
+ * State name to 2-letter code mapping for NBC detection
+ * Handles both full state names ('California') and 2-letter codes ('CA')
+ */
+const STATE_NAME_TO_CODE: Record<string, string> = {
+  'california': 'CA', 'ca': 'CA',
+  'new york': 'NY', 'ny': 'NY',
+  'connecticut': 'CT', 'ct': 'CT',
+  'massachusetts': 'MA', 'ma': 'MA',
+  'rhode island': 'RI', 'ri': 'RI',
+  'new hampshire': 'NH', 'nh': 'NH',
+};
+
+/**
+ * Normalize state identifier to 2-letter code for NBC detection
+ * Converts full state names ('New York') to 2-letter codes ('NY')
+ * Returns uppercase 2-letter code if recognized, otherwise returns input uppercased
+ */
+export function normalizeStateCode(state: string | undefined): string | undefined {
+  if (!state) return undefined;
+  const lower = state.toLowerCase().trim();
+  return STATE_NAME_TO_CODE[lower] || state.toUpperCase();
+}
+
+/**
  * Maximum energy margin that represents true fixed cost contribution ($/MWh)
  * In high-NBC states, retail rates include significant pass-through charges.
  * Amounts above this cap are assumed to be pass-through charges, not utility profit.

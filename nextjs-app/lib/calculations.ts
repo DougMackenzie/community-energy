@@ -16,6 +16,7 @@ import {
     getISODataForMarket,
     HIGH_NBC_STATES,
     MAX_ENERGY_MARGIN_CONTRIBUTION,
+    normalizeStateCode,
     type Utility,
     type DataCenter,
     type InterconnectionCosts,
@@ -328,7 +329,7 @@ export interface MarginalCapacityCostResult {
  * - SERC/Southeast: Similar to MISO (~$85k/MW)
  */
 const EMBEDDED_CAPACITY_BY_ISO: Record<string, number> = {
-    'ercot': 110000,     // ERCOT: $110k/MW (Brattle 2026 study - Aeroderivative CT)
+    'ercot': 95000,      // ERCOT: $95k/MW (Brattle 2026 - adjusted for scarcity pricing recovery)
     'spp': 85610,        // SPP: $85.6k/MW (Official 2025 CONE)
     'miso': 80000,       // MISO: ~$80k/MW (MISO 2024 Net-CONE)
     'pjm': 98000,        // PJM: ~$98k/MW ($269/MW-day × 365)
@@ -836,7 +837,9 @@ export function calculateTariffBasedDemandCharges(
     // pass-through charges (wildfire funds, PPP, PCIA, nuclear decommissioning).
     // Cap the "contribution to fixed costs" at realistic levels to avoid treating
     // pass-throughs as utility profit margin.
-    const energyMarginPerMWh = (state && HIGH_NBC_STATES.includes(state.toUpperCase()))
+    // Use normalizeStateCode() to handle both full state names ('California') and 2-letter codes ('CA')
+    const normalizedState = normalizeStateCode(state);
+    const energyMarginPerMWh = (normalizedState && HIGH_NBC_STATES.includes(normalizedState))
         ? Math.min(rawEnergyMargin, MAX_ENERGY_MARGIN_CONTRIBUTION)
         : Math.min(rawEnergyMargin, 80); // General cap of $80/MWh for any state
     const energyRevenue = annualMWh * energyMarginPerMWh;
@@ -1056,8 +1059,11 @@ const calculateNetResidentialImpact = (
         const annualTransmissionCost = Math.max(0, fourCPContributionMW) * 1000 * ercot4CPRate * 12;
 
         // Network upgrade portion (not covered by CIAC) - ERCOT has higher CIAC recovery
+        // For ERCOT, 4CP transmission rate already covers most network integration costs
+        // Only add network upgrades if they exceed 4CP contribution (use max, not sum)
         const networkUpgradeCost = Math.max(0, effectivePeakMW) * interconnection.networkUpgradeCostPerMW;
-        transmissionCost = annualTransmissionCost + (networkUpgradeCost / 20);
+        const networkAnnualized = networkUpgradeCost / 20;
+        transmissionCost = Math.max(annualTransmissionCost, networkAnnualized);
     } else {
         // Traditional markets: Only network upgrade costs are socialized
         // CIAC-covered costs (direct facility costs) are excluded per E3 methodology
