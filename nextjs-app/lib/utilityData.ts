@@ -1481,6 +1481,10 @@ export function getUtilityById(id: string): UtilityProfile | undefined {
 
     return {
       ...manual,
+      // CRITICAL: Preserve 2-letter state code from generated tariff for NBC energy margin cap
+      // Manual profiles use full state names ('California') but NBC check expects 2-letter codes ('CA')
+      // See HIGH_NBC_STATES in constants.ts and calculateTariffBasedDemandCharges() NBC check
+      state: tariff.state,
       tariff: {
         ...manual.tariff,
         peakDemandCharge,

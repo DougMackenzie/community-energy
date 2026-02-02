@@ -1758,11 +1758,23 @@ export const calculateDispatchableTrajectory = (
     const baseline = calculateBaselineTrajectory(utility, years, escalationConfig);
 
     const flexLF = dataCenter.flexLoadFactor || 0.95;
+    const firmLF = dataCenter.firmLoadFactor || 0.80;
     const flexPeakCoincidence = dataCenter.flexPeakCoincidence || 0.75;
     const onsiteGenMW = dataCenter.onsiteGenerationMW || dataCenter.capacityMW * 0.2;
 
     // Capacity costs apply immediately - see comment in calculateUnoptimizedTrajectory
     const marketLag = 0;
+
+    // CRITICAL: Calculate flex premium (same as in flexible trajectory)
+    // Optimized scenario gets flex benefits PLUS generation benefits
+    // The flex premium comes from higher load factor (95% vs 80%) and demand optimization
+    const flexPremium = calculateFlexibleLoadValue(
+        tariff,
+        utility,
+        dataCenter.capacityMW,
+        firmLF,
+        flexLF
+    );
 
     for (let year = 0; year <= years; year++) {
         let dcImpact = 0;
@@ -1821,7 +1833,13 @@ export const calculateDispatchableTrajectory = (
                 socializedImpact = socializedPerCustomerMonthly;
             }
 
-            dcImpact = directImpact + socializedImpact;
+            // CRITICAL: Add flex premium benefit (same as flexible trajectory)
+            // Optimized scenario = flex benefits + generation benefits
+            // Scale by phase-in fraction (capacity ramps up over time)
+            const scaledFlexPremium = flexPremium.perCustomerMonthly * growthResult.phaseInFraction;
+            const flexPremiumImpact = -scaledFlexPremium; // Negative = benefit to ratepayers
+
+            dcImpact = directImpact + socializedImpact + flexPremiumImpact;
 
             if (dcImpact > 0) {
                 dcImpact *= Math.pow(1 + TIME_PARAMS.generalInflation, yearsOnline);
@@ -1842,14 +1860,14 @@ export const calculateDispatchableTrajectory = (
             components: {
                 baseline: baseline[year].monthlyBill,
                 dcImpact,
-                cumulativeCapacityMW: effectiveCapacityMW,
-                phaseInFraction: growthResult.phaseInFraction,
+                flexPremiumImpact: effectiveCapacityMW > 0 ? -flexPremium.perCustomerMonthly * growthResult.phaseInFraction : 0,
             },
             parameters: {
                 loadFactor: flexLF,
                 peakCoincidence: flexPeakCoincidence,
                 onsiteGenerationMW: effectiveOnsiteGenMW,
                 residentialAllocation: effectiveCapacityMW > 0 ? currentAllocation : utility.baseResidentialAllocation,
+                flexPremiumPerMW: flexPremium.perMWValue,
             },
             metrics: yearMetrics,
         });
