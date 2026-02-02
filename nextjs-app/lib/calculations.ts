@@ -552,8 +552,23 @@ export function calculateRevenueAdequacy(
         marginalEnergyCost = annualMWh * wholesaleEnergyCost;
     }
 
-    // Calculate total revenue AFTER fuel rider adjustment
-    const totalRevenue = demandChargeRevenue + energyChargeRevenue + customerChargeRevenue;
+    // ============================================
+    // HIGH_NBC_STATES DEMAND CHARGE PASS-THROUGH
+    // ============================================
+    // In CA, NY, CT, MA, RI, NH - demand charges are "loaded" with pass-through costs
+    // (wildfire hardening, PPP, PCIA, nuclear decommissioning).
+    // Only ~60% represents true utility revenue for adequacy purposes.
+    // This prevents inflated surplus calculations that treat pass-throughs as profit.
+    const normalizedState = normalizeStateCode(utility?.state);
+    const demandChargePassThrough = (normalizedState && HIGH_NBC_STATES.includes(normalizedState))
+        ? 0.60  // High-NBC: only 60% is "real" utility revenue
+        : 1.0;  // Other states: full demand charge is revenue
+
+    // Apply pass-through to demand revenue before calculating total
+    const adjustedDemandChargeRevenue = demandChargeRevenue * demandChargePassThrough;
+
+    // Calculate total revenue AFTER fuel rider adjustment AND demand pass-through
+    const totalRevenue = adjustedDemandChargeRevenue + energyChargeRevenue + customerChargeRevenue;
 
     // Network upgrade cost (only socialized portion, not CIAC)
     const interconnection = utility?.interconnection ?? {
@@ -1337,9 +1352,29 @@ const calculateNetResidentialImpact = (
     // even if only $90 flows through to residents due to rate case lag
     const dcCostRecoveryRatio = Math.min(1.5, fullDCRevenue / Math.max(1, grossAnnualInfraCost));
 
+    // ============================================
+    // ERCOT-SPECIFIC COST HANDLING
+    // ============================================
+    // ERCOT is an energy-only market with transmission-based cost recovery (4CP).
+    // The isRegulatedMarket check below EXCLUDES ERCOT, so we need dedicated handling.
+    // In deregulated Texas, the key question is: does demand revenue cover transmission?
+    if (utility?.marketType === 'ercot') {
+        // ERCOT has no capacity market, so costs are primarily transmission (4CP)
+        // Demand charges flow through at 70%, energy margin at 0% (REPs keep it)
+        if (netAnnualImpact > 0) {
+            // DEFICIT: DC doesn't cover transmission costs
+            // Apply full residential allocation - they must pay the shortfall
+            adjustedAllocation = residentialAllocation;
+        } else {
+            // SURPLUS: DC covers its costs and generates excess
+            // Apply regulatory friction (60% sharing) - TDUs have regulatory lag too
+            const ercotSurplusSharing = 0.60;
+            adjustedAllocation = residentialAllocation * ercotSurplusSharing;
+        }
+    }
+
     // Apply cost causation adjustments for regulated markets
-    // Note: ERCOT now uses standard allocation (no special 0.60 factor)
-    // This ensures Revenue Adequacy and Bill Forecast align directionally
+    // Note: ERCOT is handled above, so this block only applies to regulated utilities
     if (isRegulatedMarket) {
         // KEY FIX: ASYMMETRIC TREATMENT FOR COSTS VS BENEFITS
         // If DC generates a SURPLUS (benefit), residents get FULL SHARE
@@ -1415,16 +1450,20 @@ const calculateNetResidentialImpact = (
         // Calculate the magnitude of the deficit
         const deficitProportion = 1 - revenueAdequacy.revenueAdequacyRatio;
 
-        // The DC is creating a hole in the bucket. Residents must pay a share of it.
-        const minimumCostImpact = grossAnnualInfraCost * deficitProportion * residentialAllocation * 0.10;
+        // FIX: Full deficit proportion (removed 0.10 multiplier that made clamp ineffective!)
+        // The DC is creating a hole in the bucket. Residents must pay their share of it.
+        const deficitToRecover = grossAnnualInfraCost * deficitProportion;
+        const minimumCostImpact = deficitToRecover * residentialAllocation;
 
         // Force the impact to be positive (Cost) if below the minimum
         if (residentialImpact < minimumCostImpact) {
             residentialImpact = minimumCostImpact;
         }
 
-        // Safety: Ensure it never shows a negative number (benefit) during a deficit
-        residentialImpact = Math.max(residentialImpact, 1000);
+        // FIX: Ensure at least $0.50/mo per customer increase during deficit
+        // (not flat $1000 which is meaningless for large utilities like ERCOT with 12M customers)
+        const minPerCustomerAnnual = residentialCustomers * 0.50 * 12; // $0.50/mo × 12 months
+        residentialImpact = Math.max(residentialImpact, minPerCustomerAnnual);
     }
 
     // Apply floor to prevent unrealistically large bill decreases
