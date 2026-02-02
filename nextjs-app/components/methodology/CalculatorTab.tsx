@@ -135,7 +135,7 @@ const RevenueAdequacyIndicator = ({ revenueAdequacy, utility, tariff, dcCapacity
 
     return (
         <div className="bg-white p-4 rounded-lg">
-            <p className="text-sm text-gray-600 mb-1">Revenue Adequacy <span className="text-xs text-gray-400">({scenarioLabel})</span></p>
+            <p className="text-sm text-gray-600 mb-1">Revenue Adequacy (Load Only) <span className="text-xs text-gray-400">({scenarioLabel})</span></p>
             <p className={`text-2xl font-bold ${contributesSurplus ? 'text-green-600' : 'text-amber-600'}`}>
                 {contributesSurplus ? '+' : ''}{formatCurrencyShort(surplusOrDeficitPerMW)}/MW
             </p>

@@ -329,7 +329,7 @@ export interface MarginalCapacityCostResult {
  */
 const EMBEDDED_CAPACITY_BY_ISO: Record<string, number> = {
     'ercot': 110000,     // ERCOT: $110k/MW (Brattle 2026 study - Aeroderivative CT)
-    'spp': 80000,        // SPP: ~$80k/MW (MISO South adjacent, wind-heavy)
+    'spp': 85610,        // SPP: $85.6k/MW (Official 2025 CONE)
     'miso': 80000,       // MISO: ~$80k/MW (MISO 2024 Net-CONE)
     'pjm': 98000,        // PJM: ~$98k/MW ($269/MW-day × 365)
     'nyiso': 105000,     // NYISO: ~$105k/MW (higher than PJM due to NYC constraints)
@@ -608,6 +608,101 @@ export function calculateRevenueAdequacy(
 }
 
 // ============================================
+// FLEXIBLE LOAD VALUE CALCULATION
+// ============================================
+
+/**
+ * Calculate the additional value from flexible data center operation
+ *
+ * CRITICAL: This is separate from demand charge reduction!
+ *
+ * Flexible loads provide value through:
+ * 1. HIGHER LOAD FACTOR (80% → 95%) = More energy revenue
+ *    - Same infrastructure serves more consumption
+ *    - Additional energy is consumed during OFF-PEAK hours
+ *
+ * 2. DEMAND OPTIMIZATION (Monthly Ratchet)
+ *    - Firm loads may only hit 90% of interconnection in winter
+ *    - Flex loads optimize workload to hit full interconnection every month
+ *    - Utility collects full demand charges year-round
+ *
+ * NOTE: Flex loads MAINTAIN same peak demand for billing purposes.
+ * The "75% peak" label means 75% of WORKLOAD is at peak times,
+ * NOT 75% of peak demand. The DC still hits full interconnection.
+ *
+ * @param tariff - Utility tariff structure for rate information
+ * @param utility - Utility for customer count (used for per-customer impact)
+ * @param capacityMW - Data center capacity in MW
+ * @param firmLoadFactor - Firm scenario load factor (default 0.80)
+ * @param flexLoadFactor - Flex scenario load factor (default 0.95)
+ * @returns Flex premium breakdown and total value
+ */
+export interface FlexLoadValue {
+    additionalEnergyRevenue: number;    // From higher load factor
+    demandOptimizationValue: number;    // From hitting peak every month
+    totalFlexPremium: number;
+    perMWValue: number;
+    perCustomerMonthly: number;         // Per residential customer per month
+}
+
+export function calculateFlexibleLoadValue(
+    tariff: TariffStructure | undefined,
+    utility: Utility | undefined,
+    capacityMW: number,
+    firmLoadFactor: number = 0.80,
+    flexLoadFactor: number = 0.95
+): FlexLoadValue {
+    const HOURS_PER_YEAR = 8760;
+
+    // ============================================
+    // COMPONENT 1: Additional Energy Revenue
+    // Flex adds load during off-peak hours (higher average consumption)
+    // ============================================
+    const additionalAverageMW = capacityMW * (flexLoadFactor - firmLoadFactor);
+    const additionalAnnualMWh = additionalAverageMW * HOURS_PER_YEAR;
+
+    // Use off-peak energy rate (that's when flex adds consumption)
+    // For fuel rider tariffs, use the all-in rate; otherwise use tariff energy charge
+    const offPeakRatePerMWh = tariff?.energyCharge ?? 35; // $/MWh
+    const additionalEnergyRevenue = additionalAnnualMWh * offPeakRatePerMWh;
+
+    // ============================================
+    // COMPONENT 2: Demand Optimization (Monthly Ratchet)
+    // Firm may only hit 90% of interconnection in winter months
+    // Flex optimizes workload to hit full interconnection every month
+    // ============================================
+    const WINTER_MONTHS = 6;
+    const WINTER_PEAK_SHORTFALL = 0.10; // Firm misses 10% in winter
+
+    // Monthly demand revenue at full interconnection
+    const peakDemandCharge = tariff?.peakDemandCharge ?? 5000; // $/MW-month
+    const maxDemandCharge = tariff?.maxDemandCharge ?? 3000;   // $/MW-month
+    const monthlyDemandRevenue = (peakDemandCharge + maxDemandCharge) * capacityMW;
+
+    // Lost revenue when firm load doesn't hit full peak in winter
+    const demandOptimizationValue = monthlyDemandRevenue * WINTER_PEAK_SHORTFALL * WINTER_MONTHS;
+
+    // ============================================
+    // TOTAL FLEX PREMIUM
+    // ============================================
+    const totalFlexPremium = additionalEnergyRevenue + demandOptimizationValue;
+    const perMWValue = totalFlexPremium / capacityMW;
+
+    // Calculate per-customer monthly impact
+    const residentialCustomers = utility?.residentialCustomers ?? 500000;
+    const residentialAllocation = utility?.baseResidentialAllocation ?? 0.40;
+    const perCustomerMonthly = (totalFlexPremium * residentialAllocation) / residentialCustomers / 12;
+
+    return {
+        additionalEnergyRevenue,
+        demandOptimizationValue,
+        totalFlexPremium,
+        perMWValue,
+        perCustomerMonthly,
+    };
+}
+
+// ============================================
 // TARIFF-BASED DEMAND CHARGE CALCULATIONS
 // ============================================
 
@@ -790,15 +885,18 @@ export interface TrajectoryPoint {
         annualIncreaseRate?: number;
         cumulativeCapacityMW?: number;
         phaseInFraction?: number;
+        flexPremiumImpact?: number;  // Flex premium contribution to bill impact
     };
     parameters?: {
         loadFactor?: number;
         peakCoincidence?: number;
+        peakCoincidenceForBilling?: number;  // Actual billing peak coincidence (1.0 for flex)
         residentialAllocation?: number;
         curtailablePercent?: number;
         onsiteGenerationMW?: number;
         cumulativeCapacityMW?: number;
         phaseInFraction?: number;
+        flexPremiumPerMW?: number;  // Flex premium value per MW
     };
     metrics?: any;
 }
@@ -1506,15 +1604,36 @@ export const calculateFlexibleTrajectory = (
     const baseline = calculateBaselineTrajectory(utility, years, escalationConfig);
 
     const flexLF = dataCenter.flexLoadFactor || 0.95;
-    const flexPeakCoincidence = dataCenter.flexPeakCoincidence || 0.75;
+    const firmLF = dataCenter.firmLoadFactor || 0.80;
+
+    // CRITICAL FIX: The "75% Peak" label means 75% of WORKLOAD is at peak times,
+    // NOT 75% of peak demand. Flex loads STILL hit full interconnection for billing.
+    // The value comes from:
+    // 1. Higher load factor (95% vs 80%) = more energy revenue
+    // 2. Hitting full interconnection every month (demand optimization)
+    //
+    // For billing/allocation purposes, flex uses same peak coincidence as firm
+    const flexWorkloadAtPeak = dataCenter.flexPeakCoincidence || 0.75; // For reference/display only
+    const flexPeakCoincidenceForBilling = 1.0; // Same as firm - still hits full interconnection
 
     // Capacity costs apply immediately - see comment in calculateUnoptimizedTrajectory
     const marketLag = 0;
+
+    // Calculate flex premium (additional value from flexible operation)
+    // This is the key value: higher load factor + demand optimization
+    const flexPremium = calculateFlexibleLoadValue(
+        tariff,
+        utility,
+        dataCenter.capacityMW,
+        firmLF,
+        flexLF
+    );
 
     for (let year = 0; year <= years; year++) {
         let dcImpact = 0;
         let currentAllocation = utility.baseResidentialAllocation;
         let yearMetrics = null;
+        let flexPremiumImpact = 0;
 
         // Use gradual growth model: DC capacity builds up 2027-2035
         const growthResult = calculateCumulativeDCCapacity(year, dataCenter.capacityMW, 2, 10);
@@ -1523,19 +1642,21 @@ export const calculateFlexibleTrajectory = (
         if (effectiveCapacityMW > 0) {
             const yearsOnline = year - 2;
 
+            // Use billing peak coincidence (1.0) for allocation calculation
             const allocationResult = calculateResidentialAllocation(
                 utility,
                 effectiveCapacityMW,
                 flexLF,
-                flexPeakCoincidence,
+                flexPeakCoincidenceForBilling,
                 yearsOnline
             );
             currentAllocation = allocationResult.allocation;
 
+            // Calculate base impact using billing peak coincidence (same demand as firm)
             const yearImpact = calculateNetResidentialImpact(
                 effectiveCapacityMW,
                 flexLF,
-                flexPeakCoincidence,
+                flexPeakCoincidenceForBilling, // Use 1.0 for billing, not 0.75
                 utility.residentialCustomers,
                 currentAllocation,
                 true,
@@ -1559,7 +1680,12 @@ export const calculateFlexibleTrajectory = (
                 socializedImpact = socializedPerCustomerMonthly;
             }
 
-            dcImpact = directImpact + socializedImpact;
+            // CRITICAL: Add flex premium benefit
+            // Scale by phase-in fraction (capacity ramps up over time)
+            const scaledFlexPremium = flexPremium.perCustomerMonthly * growthResult.phaseInFraction;
+            flexPremiumImpact = -scaledFlexPremium; // Negative = benefit to ratepayers
+
+            dcImpact = directImpact + socializedImpact + flexPremiumImpact;
 
             if (dcImpact > 0) {
                 dcImpact *= Math.pow(1 + TIME_PARAMS.generalInflation, yearsOnline);
@@ -1580,14 +1706,17 @@ export const calculateFlexibleTrajectory = (
             components: {
                 baseline: baseline[year].monthlyBill,
                 dcImpact,
+                flexPremiumImpact, // Track flex premium contribution
             },
             parameters: {
                 loadFactor: flexLF,
-                peakCoincidence: flexPeakCoincidence,
+                peakCoincidence: flexWorkloadAtPeak, // Display the workload percentage
+                peakCoincidenceForBilling: flexPeakCoincidenceForBilling, // Actual billing peak
                 residentialAllocation: effectiveCapacityMW > 0 ? currentAllocation : utility.baseResidentialAllocation,
-                curtailablePercent: 1 - flexPeakCoincidence,
+                curtailablePercent: 1 - flexWorkloadAtPeak,
                 cumulativeCapacityMW: effectiveCapacityMW,
                 phaseInFraction: growthResult.phaseInFraction,
+                flexPremiumPerMW: flexPremium.perMWValue,
             },
             metrics: yearMetrics,
         });
